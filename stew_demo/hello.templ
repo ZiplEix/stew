@@ -1,0 +1,29 @@
+package main
+
+import (
+    "github.com/ZiplEix/stew/sdk/live"
+    "os"
+)
+
+templ Page(name string) {
+	<!DOCTYPE html>
+	<html lang="fr">
+		<head>
+			<meta charset="UTF-8"/>
+			<title>Stew Live Reload Demo</title>
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+		</head>
+		<body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
+			<h1>🍲 Stew is cooking for { name }!</h1>
+			<p>Modifie ce fichier ou <code>main.go</code> pour voir la magie opérer.</p>
+
+            <button hx-post="/increment" hx-target="#counter" hx-swap="innerHTML">
+                Increment
+            </button>
+			
+			if os.Getenv("STEW_DEV") == "true" {
+				@templ.Raw(live.InjectScript())
+			}
+		</body>
+	</html>
+}
