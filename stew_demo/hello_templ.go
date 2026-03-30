@@ -8,11 +8,6 @@ package main
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"github.com/ZiplEix/stew/sdk/live"
-	"os"
-)
-
 func Page(name string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -34,30 +29,38 @@ func Page(name string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"fr\"><head><meta charset=\"UTF-8\"><title>Stew Live Reload Demo</title><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script></head><body style=\"font-family: sans-serif; text-align: center; padding-top: 50px;\"><h1>🍲 Stew is cooking for ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(name)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `hello.templ`, Line: 17, Col: 38}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "!</h1><p>Modifie ce fichier ou <code>main.go</code> pour voir la magie opérer.</p><button hx-post=\"/increment\" hx-target=\"#counter\" hx-swap=\"innerHTML\">Increment</button> ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if os.Getenv("STEW_DEV") == "true" {
-			templ_7745c5c3_Err = templ.Raw(live.InjectScript()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t\t:root {\n\t\t\t\t--stew-green: #2e7d32;\n\t\t\t\t--stew-blue: #1565c0;\n\t\t\t\tfont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n\t\t\t}\n\t\t\t.btn-stew {\n\t\t\t\tbackground: var(--stew-green);\n\t\t\t\tcolor: white;\n\t\t\t\tborder: none;\n\t\t\t\tpadding: 12px 24px;\n\t\t\t\tborder-radius: 8px;\n\t\t\t\tfont-weight: bold;\n\t\t\t\tcursor: pointer;\n\t\t\t\tfont-size: 1rem;\n\t\t\t\tbox-shadow: 0 4px 6px rgba(0,0,0,0.1);\n\t\t\t\ttransition: transform 0.1s, background 0.2s;\n\t\t\t}\n\t\t\t.btn-stew:hover {\n\t\t\t\tbackground: #1b5e20;\n\t\t\t\ttransform: translateY(-2px);\n\t\t\t}\n\t\t\t.btn-stew:active {\n\t\t\t\ttransform: translateY(0);\n\t\t\t}\n\t\t\t\n\t\t\tdialog {\n\t\t\t\tborder: none;\n\t\t\t\tborder-radius: 12px;\n\t\t\t\tpadding: 2rem;\n\t\t\t\tbox-shadow: 0 10px 25px rgba(0,0,0,0.2);\n\t\t\t\tmax-width: 400px;\n\t\t\t}\n\t\t\tdialog::backdrop {\n\t\t\t\tbackground: rgba(0, 0, 0, 0.5);\n\t\t\t\tbackdrop-filter: blur(4px);\n\t\t\t}\n\t\t\t.close-btn {\n\t\t\t\tmargin-top: 20px;\n\t\t\t\tbackground: #ddd;\n\t\t\t\tborder: none;\n\t\t\t\tpadding: 8px 16px;\n\t\t\t\tborder-radius: 4px;\n\t\t\t\tcursor: pointer;\n\t\t\t}\n\t\t</style> <div style=\"text-align: center; padding-top: 30px;\"><h1>🍲 Stew is cooking for ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `hello.templ`, Line: 53, Col: 38}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "!</h1><p>Modify this file or <code>main.go</code> to see the magic happen.</p><button class=\"btn-stew\" onclick=\"document.getElementById('myModal').showModal()\">✨ Open Recipe</button> <dialog id=\"myModal\"><h2 style=\"color: var(--stew-green)\">🥘 Secret Ingredient</h2><p>The secret to a great workflow is a bit of <strong>Go</strong> and a lot of <strong>Stew</strong>.</p><button class=\"close-btn\" onclick=\"this.closest('dialog').close()\">Close</button></dialog></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return nil
+		})
+		templ_7745c5c3_Err = Layout("Stew Live Reload Demo").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

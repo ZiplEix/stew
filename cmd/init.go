@@ -1,13 +1,17 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 const fileName = ".stew.yaml"
+const layoutFileName = "layout.templ"
+
 const defaultConfig = `commands:
   dev:
     parallel: true
@@ -46,6 +50,35 @@ requires:
     package: github.com/air-verse/air@latest
 `
 
+const defaultLayout = `package main
+
+import (
+	"github.com/ZiplEix/stew/sdk/live"
+	"os"
+)
+
+templ Layout(title string) {
+	<!DOCTYPE html>
+	<html lang="fr">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title }</title>
+			
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<script src="https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js"></script>
+		</head>
+		<body hx-ext="morph">
+			{ children... }
+
+			if os.Getenv("STEW_DEV") == "true" {
+				@templ.Raw(live.InjectScript())
+			}
+		</body>
+	</html>
+}
+`
+
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -53,31 +86,43 @@ var initCmd = &cobra.Command{
 	Long: `Create a new .stew.yaml file in the curent directory.
 This file is used to define personalized script for the development workflow.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, err := os.Stat(fileName); err == nil {
-			fmt.Printf("⚠️  %s already exists\n", fileName)
-			return
-		}
+		fmt.Println("🍲 Preparing your Stew project...")
+		fmt.Println("---------------------------------")
 
-		err := os.WriteFile(fileName, []byte(defaultConfig), 0644)
-		if err != nil {
-			fmt.Printf("❌ Error while creating %s: %s\n", fileName, err.Error())
-			return
-		}
+		handleFileCreation(fileName, defaultConfig)
+		handleFileCreation(layoutFileName, defaultLayout)
 
-		fmt.Printf("✅ %s created successfully\n", fileName)
+		fmt.Println("\n✅ Setup complete! Run 'stew install' to get your tools.")
 	},
+}
+
+func handleFileCreation(path string, content string) {
+	if _, err := os.Stat(path); err == nil {
+		fmt.Printf("⚠️  %s already exists. Overwrite? (y/N): ", path)
+		if !askConfirm() {
+			fmt.Printf("   Skipped %s\n", path)
+			return
+		}
+	}
+
+	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+		fmt.Printf("❌ Error creating %s: %s\n", path, err)
+	} else {
+		fmt.Printf("✨ %s created/updated\n", path)
+	}
+}
+
+func askConfirm() bool {
+	reader := bufio.NewReader(os.Stdin)
+	response, err := reader.ReadString('\n')
+	if err != nil {
+		return false
+	}
+
+	response = strings.ToLower(strings.TrimSpace(response))
+	return response == "y" || response == "yes"
 }
 
 func init() {
 	rootCmd.AddCommand(initCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// initCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// initCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -12,10 +12,10 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
-	// Route principale servant le template
+	// Main route to serve the template
 	mux.Handle("/", templ.Handler(Page("Developer")))
 
-	// Application du middleware Stew uniquement en dev
+	// Apply the Stew middleware only in dev
 	var handler http.Handler = mux
 	if os.Getenv("STEW_DEV") == "true" {
 		fmt.Println("🛠️  Development mode: Stew Middleware enabled")
