@@ -41,6 +41,11 @@ func (s *Scanner) Scan() (*RouteNode, error) {
 	nodes[""] = rootNode
 
 	err = filepath.WalkDir(absRoot, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			fmt.Printf("⚠️  Warning: could not access path %s: %v\n", path, err)
+			return nil
+		}
+
 		if !d.IsDir() || path == absRoot {
 			return nil
 		}
