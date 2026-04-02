@@ -39,7 +39,7 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 		data.Params["{{.}}"] = r.PathValue("{{.}}")
 		{{- end}}
 
-		component := {{$route.LayoutChain}}{{$route.PackageAlias}}.Page(data){{$route.CloseParens}}
+		component := {{$route.LayoutChain}}{{$route.PackageAlias}}.Page(data){{$route.LayoutCloseArgs}}
 		templ.Handler(component).ServeHTTP(w, r)
 	}){{stringsRepeat ")" (len (split $route.MiddlewareChain "(") | add -1)}})
 	{{- end}}
@@ -112,7 +112,8 @@ type RouteData struct {
 	Methods         []string
 	MiddlewareChain string
 	LayoutChain     string
-	CloseParens     string
+	LayoutCloseArgs string
+	MiddlewareClose string
 	ParamKeys       []string
 }
 
@@ -128,7 +129,7 @@ func (w *Writer) prepareData() TemplateData {
 
 		if n.HasPage || n.HasServer {
 			mwChain, mwCount := w.buildMiddlewareChain(n)
-			lyChain, lyCount := w.buildLayoutChain(n)
+			lyChain, lyClose := w.buildLayoutChain(n)
 
 			params := extractParamKeys(n.URLPath)
 
@@ -140,7 +141,8 @@ func (w *Writer) prepareData() TemplateData {
 				Methods:         n.Methods,
 				MiddlewareChain: mwChain,
 				LayoutChain:     lyChain,
-				CloseParens:     strings.Repeat(")", mwCount+lyCount),
+				LayoutCloseArgs: lyClose,
+				MiddlewareClose: strings.Repeat(")", mwCount),
 				ParamKeys:       params,
 			})
 		}
@@ -185,14 +187,18 @@ func (w *Writer) buildMiddlewareChain(n *RouteNode) (string, int) {
 	return strings.Join(mws, ""), len(mws)
 }
 
-func (w *Writer) buildLayoutChain(n *RouteNode) (string, int) {
+func (w *Writer) buildLayoutChain(n *RouteNode) (string, string) {
 	var layouts []string
+	var closeArgs []string
+
 	curr := n
 	for curr != nil {
 		if curr.HasLayout {
 			layouts = append([]string{curr.PackageAlias + ".Layout("}, layouts...)
+			closeArgs = append(closeArgs, ", data)")
 		}
 		curr = curr.Parent
 	}
-	return strings.Join(layouts, ""), len(layouts)
+
+	return strings.Join(layouts, ""), strings.Join(closeArgs, "")
 }

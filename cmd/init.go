@@ -89,10 +89,11 @@ const rootLayoutContent = `package pages
 
 import (
 	"github.com/ZiplEix/stew/sdk/live"
+	"github.com/ZiplEix/stew/sdk/stew"
 	"os"
 )
 
-templ Layout(contents templ.Component) {
+templ Layout(contents templ.Component, data stew.PageData) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
