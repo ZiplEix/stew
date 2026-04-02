@@ -1,0 +1,102 @@
+package routing
+
+import "github.com/ZiplEix/stew/sdk/stew"
+
+templ Page(data stew.PageData) {
+	<div class="space-y-10">
+		<header>
+			<div class="text-amber-600 font-mono text-sm mb-2">Guide / 02</div>
+			<h1 class="text-5xl font-black mb-4">File-based Routing</h1>
+			<p class="text-xl text-stone-500 leading-relaxed">
+				In Stew, your folder structure is your router. No more manual <code>mux.Handle</code> or complex routing configurations.
+			</p>
+		</header>
+
+		<section class="space-y-6">
+			<h2 class="text-2xl font-bold">The Convention</h2>
+			<p>
+				Every directory inside <code>pages/</code> represents a URL segment. To define a route, you simply drop a special <code>stew.</code> file inside.
+			</p>
+			
+			<div class="bg-stone-50 border border-stone-200 rounded-xl overflow-hidden">
+				<table class="w-full text-left text-sm">
+					<thead class="bg-stone-100 border-b border-stone-200">
+						<tr>
+							<th class="px-4 py-3 font-bold">File Path</th>
+							<th class="px-4 py-3 font-bold">URL Route</th>
+							<th class="px-4 py-3 font-bold">Type</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-stone-100 font-mono">
+						<tr>
+							<td class="px-4 py-3">pages/stew.page.templ</td>
+							<td class="px-4 py-3 text-amber-600">GET /</td>
+							<td class="px-4 py-3 text-stone-400 italic">UI Page</td>
+						</tr>
+						<tr>
+							<td class="px-4 py-3">pages/about/stew.page.templ</td>
+							<td class="px-4 py-3 text-amber-600">GET /about</td>
+							<td class="px-4 py-3 text-stone-400 italic">UI Page</td>
+						</tr>
+						<tr>
+							<td class="px-4 py-3">pages/api/stew.server.go</td>
+							<td class="px-4 py-3 text-amber-600">ANY /api</td>
+							<td class="px-4 py-3 text-stone-400 italic">API Handler</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section class="space-y-6">
+			<h2 class="text-2xl font-bold">Dynamic Routes</h2>
+			<p>
+				Stew uses standard Go 1.22+ path wildcards. To create a dynamic parameter, wrap the directory name in underscores.
+			</p>
+			
+			<div class="flex items-start gap-4 bg-stone-900 rounded-xl p-6 text-stone-300">
+				<div class="flex-1">
+					<div class="text-xs uppercase tracking-widest text-stone-500 mb-2 font-bold">Folder Structure</div>
+					<ul class="font-mono text-sm space-y-1">
+						<li>pages/</li>
+						<li>└── users/</li>
+						<li class="text-amber-400">    └── _id_/</li>
+						<li>        └── stew.page.templ</li>
+					</ul>
+				</div>
+				<div class="flex-1 border-l border-stone-800 pl-6">
+					<div class="text-xs uppercase tracking-widest text-stone-500 mb-2 font-bold">Resulting Route</div>
+					<code class="text-white font-mono">GET /users/{"{"}id{"}"}</code>
+				</div>
+			</div>
+
+			<p>
+				The parameter <code>id</code> is automatically extracted and injected into your <code>PageData</code> object { "for" } your convenience.
+			</p>
+		</section>
+
+		<div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-xl">
+			<h4 class="font-bold text-amber-900 mb-1">🧑‍🍳 Chef's Tip: Double Underscores</h4>
+			<p class="text-amber-800 text-sm leading-relaxed">
+				Stew maps <code>_name_</code> to <code>{"{"}name{"}"}</code>. You can also use <code>_name..._</code> {"for"} catch-all routes (e.g., <code>pages/files/_path..._</code> maps to <code>/files/{"{"}path...{"}"}</code>).
+			</p>
+		</div>
+
+		<section class="space-y-6">
+			<h2 class="text-2xl font-bold">Page vs Server</h2>
+			<p>
+				A directory can contain both a <code>stew.page.templ</code> and a <code>stew.server.go</code>.
+			</p>
+			<ul class="list-disc list-inside space-y-2 text-stone-600 ml-4">
+				<li>The <code class="text-stone-900 font-semibold">Page</code> file always handles <code class="text-amber-600 font-bold uppercase">GET</code> requests for rendering UI.</li>
+				<li>The <code class="text-stone-900 font-semibold">Server</code> file handles API methods (POST, PUT, DELETE, etc.).</li>
+				<li>If a method is defined in both, the Page file's GET takes priority.</li>
+			</ul>
+		</section>
+
+		<footer class="pt-10 border-t border-stone-100 flex justify-between">
+			<a href="/guide/installation" class="text-stone-400 hover:text-stone-600 transition">← Installation</a>
+			<a href="/guide/layouts" class="text-amber-600 font-bold hover:underline">Next: Layouts & Nesting →</a>
+		</footer>
+	</div>
+}
