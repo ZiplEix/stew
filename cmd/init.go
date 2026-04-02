@@ -20,6 +20,9 @@ const defaultConfig = `commands:
   dev:
     parallel: true
     scripts:
+      - name: stew
+        run: stew generate --watch
+        watch: true
       - name: templ
         run: templ generate --watch
         watch: true
