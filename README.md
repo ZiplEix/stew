@@ -53,9 +53,9 @@ Routes are defined by the folder structure inside the ``pages/`` directory. Each
 
 | File | Purpose | Function Signature |
 | --- | --- | --- |
-| ``stew.page.templ`` | Defines the UI for the route. | ``templ Page()`` |
+| ``stew.page.templ`` | Defines the UI for the route. | ``templ Page(data stew.PageData)`` |
 | ``stew.server.go`` | Defines API handlers (GET, POST, etc.). | ``func Method(w http.ResponseWriter, r *http.Request)`` |
-| ``stew.layout.templ`` | Wraps all child pages/layouts. | ``templ Layout(contents templ.Component)`` |
+| ``stew.layout.templ`` | Wraps all child pages/layouts. | ``templ Layout(contents templ.Component, data stew.PageData)`` |
 | ``stew.middleware.go`` | Intercepts requests for the branch. | ``func Middleware(next http.Handler) http.Handler`` |
 
 ### Route Mapping Examples
@@ -64,6 +64,7 @@ Routes are defined by the folder structure inside the ``pages/`` directory. Each
 - ``pages/about/stew.page.templ`` → ``GET /about``
 - ``pages/api/login/stew.server.go`` (with ``func Post``) → ``POST /api/login``
 - ``pages/users/_id_/stew.page.templ`` → ``GET /users/{id}`` (Standard Go 1.22+ wildcards)
+- ``pages/files/_path..._/stew.page.templ`` → ``GET /files/{path...}`` (Catch-all routes)
 
 ---
 
@@ -94,7 +95,9 @@ Defines the UI for the route.
 ```templ
 package pages
 
-templ Page() {
+import "github.com/ZiplEix/stew/sdk/stew"
+
+templ Page(data stew.PageData) {
     <h1>Hello, World!</h1>
 }
 ```
@@ -135,10 +138,12 @@ func Middleware(next http.Handler) http.Handler {
 
 Must accept ``templ.Component`` to allow nesting.
 
-```Go
+```templ
 package pages
 
-templ Layout(contents templ.Component) {
+import "github.com/ZiplEix/stew/sdk/stew"
+
+templ Layout(contents templ.Component, data stew.PageData) {
     <html>
         <body>
             <nav>Navbar</nav>
