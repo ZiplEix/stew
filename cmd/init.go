@@ -66,7 +66,6 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
-	// Register generated routes from /pages
 	RegisterStewRoutes(mux)
 
 	var handler http.Handler = mux
@@ -92,7 +91,7 @@ import (
 
 templ Layout(contents templ.Component) {
 	<!DOCTYPE html>
-	<html lang="fr">
+	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -113,11 +112,15 @@ templ Layout(contents templ.Component) {
 
 const rootPageContent = `package pages
 
-templ Page() {
+import (
+	"github.com/ZiplEix/stew/sdk/stew"
+)
+
+templ Page(data stew.PageData) {
 	<div style="text-align: center; font-family: sans-serif; padding-top: 20vh;">
 		<h1>🍲 Stew 2.0</h1>
-		<p>Votre framework Go Fullstack est prêt.</p>
-		<p>Modifiez <code>pages/stew.page.templ</code> pour commencer.</p>
+		<p>Your Go Fullstack framework is ready.</p>
+		<p>Modify <code>pages/stew.page.templ</code> to start.</p>
 	</div>
 }
 `
@@ -131,13 +134,10 @@ var initCmd = &cobra.Command{
 		fmt.Println("🍲 Simmering a new Stew project...")
 		fmt.Println("---------------------------------")
 
-		// 1. Initialisation Go Mod
 		handleGoMod(args)
 
-		// 2. Création du fichier de config Stew
 		handleFileCreation(stewConfigFile, defaultConfig)
 
-		// 3. Création de l'arborescence /pages
 		if err := os.MkdirAll(pagesDir, 0755); err != nil {
 			fmt.Printf("❌ Error creating pages directory: %v\n", err)
 		} else {
@@ -146,22 +146,17 @@ var initCmd = &cobra.Command{
 			handleFileCreation(filepath.Join(pagesDir, "stew.page.templ"), rootPageContent)
 		}
 
-		// 4. Création du main.go
 		handleFileCreation("main.go", mainGoContent)
 
 		fmt.Println("\n🛠️  Executing post-init sequence...")
 
-		// 5. stew install (Installe templ, air, etc.)
 		runCommand("stew", "install")
 
-		// 6. templ generate (Génère les fichiers _templ.go indispensables au routeur)
 		runCommand("templ", "generate")
 
-		// 7. stew generate (Génère le stew_router_gen.go)
 		fmt.Println("🏗️  Generating router...")
 		generateCmd.Run(generateCmd, []string{})
 
-		// 8. go mod tidy (Nettoie les dépendances et résout les imports locaux)
 		runCommand("go", "mod", "tidy")
 
 		fmt.Println("\n✅ Project fully initialized and ready to run!")
@@ -180,20 +175,17 @@ func runCommand(name string, args ...string) {
 }
 
 func handleGoMod(args []string) {
-	// Vérifier si go.mod existe déjà
 	if _, err := os.Stat("go.mod"); err == nil {
 		fmt.Println("ℹ️  go.mod already exists, skipping init.")
 		return
 	}
 
-	// Si pas d'argument, on ne fait rien
 	if len(args) == 0 {
 		return
 	}
 
 	moduleName := args[0]
 	if moduleName == "." {
-		// Prendre le nom du dossier courant
 		wd, _ := os.Getwd()
 		moduleName = filepath.Base(wd)
 	}

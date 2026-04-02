@@ -5,8 +5,15 @@ commands:
       - name: templ
         run: templ generate --watch
         watch: true
-      - name: api
+      - name: app
         run: air
+  build:
+    parallel: false
+    scripts:
+      - name: templ
+        run: templ generate
+      - name: go
+        run: go build -o ./bin/app .
 
 env_files:
   - .env

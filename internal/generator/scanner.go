@@ -122,15 +122,12 @@ func (s *Scanner) inspectServerMethods(filePath string) []string {
 
 	for _, decl := range node.Decls {
 		fn, ok := decl.(*ast.FuncDecl)
-		if !ok || fn.Recv != nil { // On ignore les méthodes avec receiver (struct methods)
+		if !ok || fn.Recv != nil {
 			continue
 		}
 
-		// On vérifie si le nom de la fonction correspond à une méthode HTTP
 		name := fn.Name.Name
 		if isHTTPMethod(strings.ToUpper(name)) {
-			// Optionnel : On pourrait vérifier ici si la signature est bien
-			// func(w http.ResponseWriter, r *http.Request)
 			methods = append(methods, name)
 		}
 	}

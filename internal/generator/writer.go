@@ -15,6 +15,7 @@ package main
 import (
 	"net/http"
 	"github.com/a-h/templ"
+	"github.com/ZiplEix/stew/sdk/stew"
 	{{range .Imports}}
 	{{.Alias}} "{{.Path}}"
 	{{- end}}
@@ -25,12 +26,27 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 	{{- $route := .}}
 	// --- Route: {{$route.URLPath}} ---
 	{{- if $route.HasPage}}
-	mux.Handle("GET {{$route.URLPath}}", {{$route.MiddlewareChain}}templ.Handler({{$route.LayoutChain}}{{$route.PackageAlias}}.Page(){{$route.CloseParens}}))
+	mux.Handle("GET {{$route.URLPath}}", {{$route.MiddlewareChain}}http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		{{range $route.ParamKeys}}
+		data.Params["{{.}}"] = r.PathValue("{{.}}")
+		{{- end}}
+
+		component := {{$route.LayoutChain}}{{$route.PackageAlias}}.Page(data){{$route.CloseParens}}
+		templ.Handler(component).ServeHTTP(w, r)
+	}){{stringsRepeat ")" (len (split $route.MiddlewareChain "(") | add -1)}})
 	{{- end}}
 	
 	{{- if $route.HasServer}}
 	{{- range $route.Methods}}
-	{{- if ne . "GET" | or (not $route.HasPage)}}
+	{{- if ne (toUpper .) "GET" | or (not $route.HasPage)}}
 	mux.Handle("{{toUpper .}} {{$route.URLPath}}", {{$route.MiddlewareChain}}http.HandlerFunc({{$route.PackageAlias}}.{{.}}){{stringsRepeat ")" (len (split $route.MiddlewareChain "(") | add -1)}})
 	{{- end}}
 	{{- end}}
@@ -97,6 +113,7 @@ type RouteData struct {
 	MiddlewareChain string
 	LayoutChain     string
 	CloseParens     string
+	ParamKeys       []string
 }
 
 func (w *Writer) prepareData() TemplateData {
@@ -113,6 +130,8 @@ func (w *Writer) prepareData() TemplateData {
 			mwChain, mwCount := w.buildMiddlewareChain(n)
 			lyChain, lyCount := w.buildLayoutChain(n)
 
+			params := extractParamKeys(n.URLPath)
+
 			routes = append(routes, RouteData{
 				URLPath:         n.URLPath,
 				PackageAlias:    n.PackageAlias,
@@ -122,6 +141,7 @@ func (w *Writer) prepareData() TemplateData {
 				MiddlewareChain: mwChain,
 				LayoutChain:     lyChain,
 				CloseParens:     strings.Repeat(")", mwCount+lyCount),
+				ParamKeys:       params,
 			})
 		}
 
@@ -140,6 +160,17 @@ func (w *Writer) prepareData() TemplateData {
 		Imports: imports,
 		Routes:  routes,
 	}
+}
+
+func extractParamKeys(path string) []string {
+	var keys []string
+	parts := strings.SplitSeq(path, "/")
+	for part := range parts {
+		if strings.HasPrefix(part, "{") && strings.HasSuffix(part, "}") {
+			keys = append(keys, part[1:len(part)-1])
+		}
+	}
+	return keys
 }
 
 func (w *Writer) buildMiddlewareChain(n *RouteNode) (string, int) {

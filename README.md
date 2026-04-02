@@ -73,7 +73,7 @@ Stew 2.0 uses a recursive nesting logic for both UI and Logic. When a route is a
 
 1. Layout Nesting
 
-    Layouts are emboîtés (nested) like Russian dolls. A page at ``/admin/settings`` will be rendered as:
+    Layouts are nested like Russian dolls. A page at ``/admin/settings`` will be rendered as:
 
     ``RootLayout( AdminLayout( SettingsPage() ) )``
 

@@ -15,7 +15,7 @@ var generateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		moduleName, err := generator.GetModuleName()
 		if err != nil {
-			fmt.Printf("❌ Erreur : Impossible de lire go.mod : %v\n", err)
+			fmt.Printf("❌ Error: Impossible to read go.mod : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -24,7 +24,7 @@ var generateCmd = &cobra.Command{
 		fmt.Println("🔍 Scanning pages...")
 		tree, err := scanner.Scan()
 		if err != nil {
-			fmt.Printf("❌ Erreur lors du scan : %v\n", err)
+			fmt.Printf("❌ Error: Impossible to scan pages : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -34,11 +34,11 @@ var generateCmd = &cobra.Command{
 		fmt.Printf("🏗️  Generating %s...\n", outputFile)
 
 		if err := writer.Generate(outputFile); err != nil {
-			fmt.Printf("❌ Erreur lors de la génération : %v\n", err)
+			fmt.Printf("❌ Error: Impossible to generate router : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("✅ Stew Router généré avec succès !")
+		fmt.Println("✅ Stew Router generated successfully !")
 	},
 }
 
