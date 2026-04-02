@@ -1,7 +1,6 @@
 # Binaries
 bin/
 dist/
-stew
 
 # Go dependencies & tools
 vendor/

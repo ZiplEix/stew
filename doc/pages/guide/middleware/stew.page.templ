@@ -1,0 +1,81 @@
+package middleware
+
+import "github.com/ZiplEix/stew/sdk/stew"
+
+templ Page(data stew.PageData) {
+	<div class="space-y-10">
+		<header>
+			<div class="text-amber-600 font-mono text-sm mb-2">Guide / 04</div>
+			<h1 class="text-5xl font-black mb-4">Middlewares</h1>
+			<p class="text-xl text-stone-500 leading-relaxed">
+				Secure your routes and inject data. Middlewares in Stew act as an onion, wrapping your handlers from the root down to the leaf.
+			</p>
+		</header>
+
+		<section class="space-y-6">
+			<h2 class="text-2xl font-bold">The Onion Model</h2>
+			<p>
+				Just like layouts, <code>stew.middleware.go</code> files are inherited. A middleware placed at the root will affect <strong>every</strong> single route in your application.
+			</p>
+			<div class="bg-stone-900 rounded-xl p-6 font-mono text-sm text-stone-400">
+				<div class="flex items-center gap-3">
+					<span class="text-amber-500">→</span>
+					<span>Root Middleware</span>
+				</div>
+				<div class="flex items-center gap-3 ml-6 mt-2">
+					<span class="text-amber-500">→</span>
+					<span>Admin Middleware</span>
+				</div>
+				<div class="flex items-center gap-3 ml-12 mt-2">
+					<span class="text-green-500">✓</span>
+					<span class="text-stone-200">Final Handler (Page or Server)</span>
+				</div>
+			</div>
+		</section>
+
+		<section class="space-y-6">
+			<h2 class="text-2xl font-bold">Standard Signature</h2>
+			<p>
+				Middlewares use the standard Go <code>http.Handler</code> signature. You must export a function named <code>Middleware</code>.
+			</p>
+			<div class="bg-stone-900 rounded-2xl p-8 shadow-2xl border border-stone-800">
+				<pre class="text-amber-100 font-mono text-sm leading-relaxed overflow-x-auto">
+{ `package auth
+
+import "net/http"
+
+func Middleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // 1. Logic before (Auth, Logging, etc.)
+        if r.Header.Get("Authorization") == "" {
+            http.Error(w, "Unauthorized", http.StatusUnauthorized)
+            return
+        }
+
+        // 2. Call next handler
+        next.ServeHTTP(w, r)
+    })
+}` }
+				</pre>
+			</div>
+		</section>
+
+		<section class="space-y-6">
+			<h2 class="text-2xl font-bold">Context Sharing</h2>
+			<p>
+				Middlewares can pass data to your pages via the request context. This data is then accessible in your <code>stew.PageData</code>.
+			</p>
+			<div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-xl">
+				<h4 class="font-bold text-blue-900 mb-1">🔗 Integrated Flow</h4>
+				<p class="text-blue-800 text-sm">
+					Inject a user ID in the context within your middleware, and retrieve it in your <code>stew.page.templ</code> using <code>data.Request.Context().Value("user")</code>.
+				</p>
+			</div>
+		</section>
+
+		<footer class="pt-10 border-t border-stone-100 flex justify-between">
+			<a href="/guide/layouts" class="text-stone-400 hover:text-stone-600 transition">← Layouts</a>
+			<a href="/guide/pagedata" class="text-amber-600 font-bold hover:underline">Next: PageData →</a>
+		</footer>
+	</div>
+}

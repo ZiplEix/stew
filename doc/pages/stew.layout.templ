@@ -1,0 +1,30 @@
+package pages
+
+import (
+	"github.com/ZiplEix/stew/sdk/live"
+	"github.com/ZiplEix/stew/sdk/stew"
+	"os"
+)
+
+templ Layout(contents templ.Component, data stew.PageData) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Stew | The Go Meta-Framework</title>
+
+			<script src="https://cdn.tailwindcss.com"></script>
+
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<script src="https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js"></script>
+		</head>
+		<body hx-ext="morph">
+			@contents
+
+			if os.Getenv("STEW_DEV") == "true" {
+				@templ.Raw(live.InjectScript())
+			}
+		</body>
+	</html>
+}
