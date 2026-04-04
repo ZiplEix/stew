@@ -5,7 +5,7 @@ import "github.com/ZiplEix/stew/sdk/stew"
 templ Page(data stew.PageData) {
 	<div class="space-y-10">
 		<header>
-			<div class="text-amber-600 font-mono text-sm mb-2">Guide / 10</div>
+			<div class="text-amber-600 font-mono text-sm mb-2">Guide / 05</div>
 			<h1 class="text-5xl font-black mb-4">Server Handlers</h1>
 			<p class="text-xl text-stone-500 leading-relaxed">
 				When you need more than just UI. <code>stew.server.go</code> files handle your API logic, form submissions, and data mutations.
@@ -80,8 +80,8 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		</section>
 
 		<footer class="pt-10 border-t border-stone-100 flex justify-between">
-			<a href="/guide/middleware" class="text-stone-400 hover:text-stone-600 transition">← Middlewares</a>
-			<a href="/guide/pagedata" class="text-amber-600 font-bold hover:underline">Next: Working with PageData →</a>
+			<a href="/guide/layouts" class="text-stone-400 hover:text-stone-600 transition">← Layouts & Nesting</a>
+			<a href="/guide/middleware" class="text-amber-600 font-bold hover:underline">Next: Middleware →</a>
 		</footer>
 	</div>
 }

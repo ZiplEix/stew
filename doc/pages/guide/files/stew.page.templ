@@ -5,7 +5,7 @@ import "github.com/ZiplEix/stew/sdk/stew"
 templ Page(data stew.PageData) {
 	<div class="space-y-10">
 		<header>
-			<div class="text-amber-600 font-mono text-sm mb-2">Guide / 07</div>
+			<div class="text-amber-600 font-mono text-sm mb-2">Guide / 10</div>
 			<h1 class="text-5xl font-black mb-4">Reserved Files</h1>
 			<p class="text-xl text-stone-500 leading-relaxed">
 				Stew uses a specific naming convention to identify the different parts of your application. Every reserved file must start with the <code>stew.</code> prefix.
@@ -78,13 +78,9 @@ templ Page(data stew.PageData) {
 		</div>
 
 
-        <footer class="pt-10 border-t border-stone-100 flex justify-center">
-			<div class="text-center">
-				<p class="text-stone-400 mb-4 text-sm font-medium italic">Congratulations! You've mastered the Stew basics.</p>
-				<a href="/" class="px-8 py-3 bg-stone-900 text-white rounded-xl font-bold hover:bg-stone-800 transition shadow-lg shadow-stone-200 inline-block">
-					Back to Home
-				</a>
-			</div>
+        <footer class="pt-10 border-t border-stone-100 flex justify-between">
+			<a href="/guide/assets-tailwind" class="text-stone-400 hover:text-stone-600 transition">← Assets & Tailwind</a>
+			<a href="/guide/deployment" class="text-amber-600 font-bold hover:underline">Next: Deployment →</a>
 		</footer>
 	</div>
 }
