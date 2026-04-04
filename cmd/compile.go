@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ZiplEix/stew/internal/tracker"
 	"github.com/ZiplEix/stew/stewlang"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
@@ -21,6 +22,7 @@ var compileCmd = &cobra.Command{
 	Short: "Compile .stew files to Go natively",
 	Run: func(cmd *cobra.Command, args []string) {
 		moduleBase := getModuleBase()
+		t := tracker.NewTracker()
 
 		// Full Scan Phase
 		fmt.Println("🍲 Stew Compiler starting...")
@@ -32,13 +34,17 @@ var compileCmd = &cobra.Command{
 				return filepath.SkipDir
 			}
 			if !d.IsDir() && strings.HasSuffix(path, ".stew") {
-				compileStewFile(path, moduleBase)
+				compileStewFile(path, moduleBase, t)
 			}
 			return nil
 		})
 
 		if err != nil {
 			log.Fatalf("Error scanning directory: %v", err)
+		}
+
+		if err := t.Save(); err != nil {
+			log.Printf("Warning: could not save tracker: %v", err)
 		}
 
 		if watchMode {
@@ -85,7 +91,7 @@ func resolveOutputName(sourcePath string) string {
 	return filepath.Join(dir, baseName+".go")
 }
 
-func compileStewFile(path string, moduleBase string) {
+func compileStewFile(path string, moduleBase string, t *tracker.Tracker) {
 	if !strings.HasSuffix(path, ".stew") {
 		return // Strict enforcement mapping rules
 	}
@@ -107,7 +113,7 @@ func compileStewFile(path string, moduleBase string) {
 
 	pkgName := getPackageNameSafe(path)
 
-	outputContent, err := stewlang.Compile(funcName, pkgName, moduleBase, path, string(content))
+	outputContent, extraArtifacts, err := stewlang.Compile(funcName, pkgName, moduleBase, path, string(content))
 	if err != nil {
 		log.Printf("Compile error in %s: %v\n", path, err)
 		return
@@ -119,10 +125,15 @@ func compileStewFile(path string, moduleBase string) {
 		log.Printf("Error writing output for %s: %v\n", path, err)
 	} else {
 		log.Printf("Compiled: %s -> %s\n", path, outFile)
+		t.Add(outFile)
+		for _, artifact := range extraArtifacts {
+			t.Add(artifact)
+		}
 	}
 }
 
 func startCompileWatcher(moduleBase string) {
+	t := tracker.NewTracker()
 	fmt.Println("👀 Watching for changes (.stew files)...")
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -154,11 +165,13 @@ func startCompileWatcher(moduleBase string) {
 				err := os.Remove(outFile)
 				if err == nil || os.IsNotExist(err) {
 					log.Printf("Deleted strictly mapped file: %s (source %s removed)\n", outFile, f)
+					t.Remove(outFile)
 				}
 			} else {
-				compileStewFile(f, moduleBase)
+				compileStewFile(f, moduleBase, t)
 			}
 		}
+		_ = t.Save()
 		changedFiles = make(map[string]bool)
 		deletedFiles = make(map[string]bool)
 	}

@@ -11,7 +11,7 @@ func TestCompilerBasic(t *testing.T) {
     <h1>Admin: {{ strings.ToUpper(data.User.Name) }}</h1>
 {{ end }}`
 
-	output, err := Compile("profile", "pages", "github.com/ZiplEix/stew", "test.stew", input)
+	output, _, err := Compile("profile", "pages", "github.com/ZiplEix/stew", "test.stew", input)
 	if err != nil {
 		t.Fatalf("Compile error: %v", err)
 	}
@@ -43,7 +43,7 @@ import "./components/UserCard.stew"
     <UserCard user={{ u }} index="{{ i }}" />
 {{ end }}`
 
-	output, err := Compile("Components", "pages", "github.com/ZiplEix/stew", "test.stew", input)
+	output, _, err := Compile("Components", "pages", "github.com/ZiplEix/stew", "test.stew", input)
 	if err != nil {
 		t.Fatalf("Compile error: %v", err)
 	}
@@ -71,7 +71,7 @@ type ButtonProps struct {
 </goscript>
 <button>{{ props.Label }} <slot /></button>
 `
-	output, err := Compile("Button", "pages", "github.com/ZiplEix/stew", "test.stew", input)
+	output, _, err := Compile("Button", "pages", "github.com/ZiplEix/stew", "test.stew", input)
 	if err != nil {
 		t.Fatalf("Compile error: %v", err)
 	}
@@ -94,7 +94,7 @@ import "./components/Layout.stew"
     <p>Welcome</p>
 </Layout>
 `
-	output, err := Compile("Page", "pages", "github.com/ZiplEix/stew", "test.stew", input)
+	output, _, err := Compile("Page", "pages", "github.com/ZiplEix/stew", "test.stew", input)
 	if err != nil {
 		t.Fatalf("Compile error: %v", err)
 	}
@@ -113,7 +113,7 @@ func TestCompilerMissingEndError(t *testing.T) {
 {{ if true }}
     <p>hi</p>
 `
-	_, err := Compile("Test", "pages", "github.com/ZiplEix/stew", "test.stew", input)
+	_, _, err := Compile("Test", "pages", "github.com/ZiplEix/stew", "test.stew", input)
 	if err == nil {
 		t.Errorf("expected error for missing {{ end }}")
 	} else if !strings.Contains(err.Error(), "missing {{ end }}") {

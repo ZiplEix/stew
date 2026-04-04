@@ -241,6 +241,10 @@ var initCmd = &cobra.Command{
 
 		handleFileCreation("main.go", mainGoContent)
 
+		// Create .gitignore with .stew/ cache folder
+		gitignore := "# Stew compiler cache\n.stew/\n\n# Go build artifacts\nbin/\n*.exe\n"
+		handleFileCreation(".gitignore", gitignore)
+
 		fmt.Println("\n🛠️  Executing post-init sequence...")
 
 		runCommand("stew", "install")

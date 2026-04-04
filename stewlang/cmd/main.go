@@ -37,7 +37,7 @@ func main() {
 		baseName = baseName[:len(baseName)-5]
 	}
 
-	output, err := stewlang.Compile(baseName, "pages", "github.com/ZiplEix/stew", fileName, string(content))
+	output, _, err := stewlang.Compile(baseName, "pages", "github.com/ZiplEix/stew", fileName, string(content))
 	if err != nil {
 		fmt.Printf("Compilation Error:\n%v\n", err)
 		os.Exit(1)
