@@ -2,19 +2,21 @@ commands:
   dev:
     parallel: true
     scripts:
-      - name: stew
-        run: stew generate --watch
+      - name: compile
+        run: stew compile --watch
         watch: true
-      - name: templ
-        run: templ generate --watch
+      - name: generate
+        run: stew generate --watch
         watch: true
       - name: app
         run: air
   build:
     parallel: false
     scripts:
-      - name: templ
-        run: templ generate
+      - name: compile
+        run: stew compile
+      - name: generate
+        run: stew generate
       - name: go
         run: go build -o ./bin/app .
 
@@ -33,7 +35,5 @@ colors:
   - '\033[95m' # Light Magenta
 
 requires:
-  - name: templ
-    package: github.com/a-h/templ/cmd/templ@latest
   - name: air
     package: github.com/air-verse/air@latest

@@ -1,0 +1,75 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 00</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Introduction à Stew 2.0</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Stew est un méta-framework Go opinioné, conçu pour construire des applications web full-stack servies depuis un seul binaire Go. Il intègre nativement le rendu serveur (SSR), les composants typés, le routing fichier, le morphing à chaud et une architecture Wasm isomorphique.
+        </p>
+    </header>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Philosophie</h2>
+        <p>Stew reposait initialement sur <code>templ</code> et les templates Go. La version 2.0 introduit le langage de templates <strong>natif Stew</strong> (<code>.stew</code>), un compilateur maison qui transforme ces fichiers en code Go idiomatique. Les principaux principes sont :</p>
+        <ul class="list-disc list-inside space-y-2 text-stone-700 text-sm">
+            <li><strong>One file, two contexts.</strong> Un fichier <code>.stew</code> peut contenir à la fois de la logique serveur (Go natif) et de la logique client (compilée en Wasm).</li>
+            <li><strong>Convention over configuration.</strong> La structure des dossiers définit le routing — aucune configuration manuelle n'est nécessaire.</li>
+            <li><strong>Go is the language.</strong> Pas de DSL obscur : la logique est du Go standard à l'intérieur des blocs <code>&lt;goscript&gt;</code>.</li>
+            <li><strong>Zéro build front-end.</strong> Pas de Node.js, pas de bundler. TinyGo seul pour le Wasm.</li>
+        </ul>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Stack technologique</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="p-4 rounded-xl border border-stone-200 text-sm">
+                <div class="font-bold mb-1">🖥️ Serveur</div>
+                <div class="text-stone-500">Go 1.22+ (natif)</div>
+            </div>
+            <div class="p-4 rounded-xl border border-stone-200 text-sm">
+                <div class="font-bold mb-1">🌐 Client</div>
+                <div class="text-stone-500">TinyGo → WebAssembly</div>
+            </div>
+            <div class="p-4 rounded-xl border border-stone-200 text-sm">
+                <div class="font-bold mb-1">🔗 Partiel</div>
+                <div class="text-stone-500">HTMX + idiomorph</div>
+            </div>
+            <div class="p-4 rounded-xl border border-stone-200 text-sm">
+                <div class="font-bold mb-1">🔥 Dev</div>
+                <div class="text-stone-500">SSE + air (live reload)</div>
+            </div>
+            <div class="p-4 rounded-xl border border-stone-200 text-sm">
+                <div class="font-bold mb-1">🎨 Styles</div>
+                <div class="text-stone-500">Tailwind CSS (CDN)</div>
+            </div>
+            <div class="p-4 rounded-xl border border-stone-200 text-sm">
+                <div class="font-bold mb-1">🛠 CLI</div>
+                <div class="text-stone-500">stew (Cobra)</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Structure minimale d'un projet</h2>
+        <pre><code>my-app/
+├── pages/
+│   ├── @layout.stew       ← Layout racine (HTML shell)
+│   ├── @page.stew         ← Route /
+│   └── users/
+│       ├── @layout.stew   ← Layout imbriqué (optionnel)
+│       ├── @page.stew     ← Route /users
+│       └── {id}/
+│           └── @page.stew ← Route /users/{id} (paramètres URL)
+├── component/
+│   └── Card.stew          ← Composant réutilisable
+├── static/
+│   └── wasm/              ← Binaires Wasm générés automatiquement
+├── .stew/                 ← Cache tracker (gitignore)
+├── .stew.yaml             ← Configuration Stew
+├── main.go                ← Point d'entrée du serveur
+└── stew_router_gen.go     ← Router généré automatiquement</code></pre>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-end">
+        <a href="/guide/installation" class="text-amber-600 font-bold hover:underline">Suivant : Installation →</a>
+    </footer>
+</div>

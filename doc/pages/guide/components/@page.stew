@@ -1,0 +1,127 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 04 — Templates</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Composants</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Les composants sont des fichiers <code>.stew</code> à nom commençant par une majuscule. Ils peuvent être organisés dans n'importe quel sous-dossier du projet (sauf à la racine). Ils reçoivent des <code>Props</code> structurées et peuvent exposer un <code>slot</code> pour injecter du contenu.
+        </p>
+    </header>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Créer un composant</h2>
+        <p class="text-sm text-stone-600">Le fichier <code>component/Card.stew</code> :</p>
+        <pre><code>&lt;goscript&gt;
+    // Déclarer les props du composant
+    type CardProps struct {
+        Title       string
+        Description string
+    }
+&lt;/goscript&gt;
+
+&lt;div class="p-6 bg-white rounded-2xl border border-stone-200 shadow-sm"&gt;
+    &lt;h2 class="text-xl font-bold mb-2"&gt;&#123;&#123; props.Title &#125;&#125;&lt;/h2&gt;
+    &lt;p class="text-stone-500 text-sm"&gt;&#123;&#123; props.Description &#125;&#125;&lt;/p&gt;
+
+    &lt;!-- Slot optionnel pour injecter du contenu --&gt;
+    &lt;slot /&gt;
+&lt;/div&gt;</code></pre>
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+            <strong class="text-amber-900">Règle :</strong> <span class="text-amber-800">Même si un composant n'a pas de props, la structure <code>type XxxProps struct {}</code> doit être déclarée (vide). Le compilateur en a besoin pour générer la signature Go.</span>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Utilisation</h2>
+        <p class="text-sm text-stone-600">Dans une page ou un autre composant, utilisez simplement son nom comme une balise HTML. Le compilateur gère l'import automatique tant que le composant n'est pas situé à la racine du projet.</p>
+        <pre><code>&lt;!-- pages/@page.stew --&gt;
+
+&lt;!-- Auto-fermant (sans slot) --&gt;
+&lt;Card Title="Mon titre" Description="Ma description" /&gt;
+
+&lt;!-- Avec slot : contenu entre les balises ouvrante et fermante --&gt;
+&lt;Card Title="Actions" Description="Boutons d'action"&gt;
+    &lt;div class="mt-4 flex gap-2"&gt;
+        &lt;button class="px-4 py-2 bg-stone-900 text-white rounded-lg"&gt;Valider&lt;/button&gt;
+        &lt;button class="px-4 py-2 border rounded-lg"&gt;Annuler&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/Card&gt;</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Composants Typés (Props)</h2>
+        <p class="text-sm text-stone-600">Pour passer des données à un composant, définissez une structure nommée <code>{Nom}Props</code>. Le compilateur injectera une variable <code>props</code> de ce type dans le scope du composant.</p>
+        <pre><code>&lt;!-- components/User.stew --&gt;
+&lt;goscript&gt;
+    type UserProps struct {
+        Name string
+        Age  int
+    }
+&lt;/goscript&gt;
+
+&lt;div&gt;
+    &lt;p&gt;Nom: &#123;&#123; props.Name &#125;&#125;&lt;/p&gt;
+    &lt;p&gt;Age: &#123;&#123; props.Age &#125;&#125;&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+            <strong class="text-amber-900">Note sur le typage :</strong> <span class="text-amber-800">Le compilateur Stew convertit automatiquement les attributs HTML (strings) vers les types Go simples (int, bool, float) de votre struct Props lors de l'appel.</span>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Props dynamiques</h2>
+        <p class="text-sm text-stone-600">Les props peuvent recevoir des expressions Go via la syntaxe <code>&#123;&#123; &#125;&#125;</code> :</p>
+        <pre><code>&#123;&#123; each data.Products as p, i &#125;&#125;
+    &lt;Card Title="&#123;&#123; p.Name &#125;&#125;" Description="&#123;&#123; p.Sku &#125;&#125;" /&gt;
+&#123;&#123; end &#125;&#125;</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Composants imbriqués</h2>
+        <p class="text-sm text-stone-600">Un composant peut importer et utiliser d'autres composants :</p>
+        <pre><code><span class="text-stone-400">&lt;!-- component/Card.stew --&gt;</span>
+&lt;goscript&gt;
+    import "./Badge.stew"
+
+    type CardProps struct {
+        Title string
+        Badge string
+    }
+&lt;/goscript&gt;
+
+&lt;div class="..."&gt;
+    &lt;Badge Label="&#123;&#123; props.Badge &#125;&#125;" /&gt;
+    &lt;h2&gt;&#123;&#123; props.Title &#125;&#125;&lt;/h2&gt;
+    &lt;slot /&gt;
+&lt;/div&gt;</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Ce que génère le compilateur</h2>
+        <p class="text-sm text-stone-600">Pour <code>Card.stew</code>, le compilateur génère <code>Card.go</code> :</p>
+        <pre><code><span class="text-stone-400">// Code generated by Stew-Lang. DO NOT EDIT.</span>
+package component
+
+import (
+    "io"
+    "github.com/ZiplEix/stew/sdk/stew"
+)
+
+type CardProps struct {
+    Title       string
+    Description string
+}
+
+func Card(w io.Writer, data stew.PageData, props CardProps, slot func()) {
+    w.Write([]byte(`&lt;div class="p-6 ..."&gt;`))
+    w.Write([]byte(html.EscapeString(fmt.Sprint(props.Title))))
+    <span class="text-stone-400">// ...</span>
+    if slot != nil { slot() }
+    w.Write([]byte(`&lt;/div&gt;`))
+}</code></pre>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/syntax" class="text-stone-400 hover:text-stone-600 transition">← Syntaxe</a>
+        <a href="/guide/routing" class="text-amber-600 font-bold hover:underline">Suivant : Routing →</a>
+    </footer>
+</div>

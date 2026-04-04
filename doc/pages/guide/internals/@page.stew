@@ -1,0 +1,149 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 16 — Internals</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Fonctionnement Interne</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Cette section détaille le fonctionnement interne du compilateur Stew-Lang, du générateur de routeur, et du tracker de fichiers.
+        </p>
+    </header>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Pipeline de compilation d'un fichier <code>.stew</code></h2>
+        <p class="text-sm text-stone-600">La commande <code>stew compile</code> traite chaque fichier <code>.stew</code> en 3 passes distinctes :</p>
+
+        <div class="space-y-3">
+            <div class="flex gap-3">
+                <div class="w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold shrink-0">1</div>
+                <div>
+                    <strong class="block text-sm">Lexer (<code>stewlang/lexer.go</code>)</strong>
+                    <p class="text-sm text-stone-600">Tokenise le fichier source. Identifie les balises <code>&lt;goscript&gt;</code>, les expressions <code>&#123;&#123; &#125;&#125;</code>, les blocs <code>&#123;&#123; if &#125;&#125;</code> / <code>&#123;&#123; each &#125;&#125;</code>, les attributs <code>bind:</code> / <code>on:</code>, les composants (majuscule), et le HTML brut.</p>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <div class="w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold shrink-0">2</div>
+                <div>
+                    <strong class="block text-sm">Parser (<code>stewlang/parser.go</code>)</strong>
+                    <p class="text-sm text-stone-600">Transforme la liste de tokens en un AST (Arbre de Syntaxe Abstraite) composé de nœuds : <code>NodeGoScript</code>, <code>NodeHTML</code>, <code>NodeExpr</code>, <code>NodeIf</code>, <code>NodeEach</code>, <code>NodeComponent</code>, <code>NodeBind</code>.</p>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <div class="w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold shrink-0">3</div>
+                <div>
+                    <strong class="block text-sm">Compiler (<code>stewlang/compiler.go</code>)</strong>
+                    <p class="text-sm text-stone-600">Traduit l'AST en code Go. Cette phase comprend plusieurs sous-étapes :</p>
+                    <ul class="list-disc list-inside space-y-1 text-stone-600 text-xs mt-2">
+                        <li><strong>Extraction des imports</strong> : Scanne les <code>NodeGoScript</code> pour extraire les imports serveur, client et Stew.</li>
+                        <li><strong>Extraction des types</strong> : Monte les structs (<code>type Xxx struct</code>) au niveau package.</li>
+                        <li><strong>Assignation des IDs de binding</strong> : Pour chaque <code>NodeBind</code>, génère un ID unique et l'injecte dans le nœud HTML précédent.</li>
+                        <li><strong>Build Wasm</strong> : Si des blocs client existent, génère le fichier Go temporaire et le compile avec TinyGo.</li>
+                        <li><strong>Émission Go serveur</strong> : Génère la fonction de rendu Go avec les <code>w.Write([]byte(...))</code> et les expressions formatées.</li>
+                        <li><strong>Gestion des imports dynamiques</strong> : N'inclut que les imports réellement utilisés dans le code généré (évite les erreurs <code>imported and not used</code>).</li>
+                        <li><strong>Formatage</strong> : Appelle <code>go/format</code> pour formater le code généré.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Pipeline de génération Wasm</h2>
+        <pre><code>pages/@page.stew
+      │
+      ▼ (stew compile)
+stewlang/compiler.go
+      │
+      ├── Extraction goscript client
+      ├── Génère /tmp/stew_main_wasm_pages_page.go
+      │
+      ▼
+tinygo build -target wasm -no-debug -o ./static/wasm/pages_page.wasm /tmp/...
+      │
+      ▼
+static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Générateur de routeur</h2>
+        <p class="text-sm text-stone-600"><code>stew generate</code> parcourt <code>pages/</code> via <code>internal/generator/scanner.go</code> et construit un arbre de nœuds <code>RouteNode</code>. <code>internal/generator/writer.go</code> traduit cet arbre en Go via <code>text/template</code> :</p>
+        <pre><code>RouteNode{
+    URLPath:      "/users/{id}"
+    HasPage:      true
+    HasLayout:    true (parent)
+    HasMiddleware: true (parent)
+    ImportPath:   "github.com/.../pages/users/{id}"
+    PackageAlias: "stew_pages_users_id"
+    Children: [...]
+}</code></pre>
+        <p class="text-sm text-stone-500">La chaîne de middlewares et de layouts est construite en remontant l'arbre vers la racine.</p>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Tracker de fichiers (<code>.stew/compiled.json</code>)</h2>
+        <p class="text-sm text-stone-600">Chaque appel à <code>stew compile</code> initialise un <code>Tracker</code> (<code>internal/tracker/tracker.go</code>) et enregistre tous les fichiers qu'il génère :</p>
+        <pre><code>{
+  "tracked_files": [
+    "pages/stew.layout.go",
+    "pages/stew.page.go",
+    "pages/blog/stew.page.go",
+    "static/wasm/pages_page.wasm",
+    "static/wasm/pages_blog_page.wasm"
+  ]
+}</code></pre>
+        <p class="text-sm text-stone-500">La commande <code>stew clean</code> lit ce fichier et supprime exactement ces fichiers, puis le dossier <code>.stew/</code> lui-même. Cela garantit un nettoyage précis même si des pages ont été renommées entre deux builds.</p>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Nommage de packages Go générés</h2>
+        <p class="text-sm text-stone-600">Pour éviter les conflits de noms de packages, le compilateur utilise le chemin relatif du dossier comme alias :</p>
+        <pre><code>pages/                    → package pages
+pages/users/              → package users (alias: stew_pages_users)
+pages/users/{id}/         → package stew_pages_users__id_
+pages/blog/{slug}/        → package stew_pages_blog__slug_</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">AST — Nœuds disponibles</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
+                <thead class="bg-stone-50">
+                    <tr>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Nœud</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Représente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">NodeHTML</td><td class="p-3">Bloc de HTML brut à émettre tel quel</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">NodeGoScript</td><td class="p-3">Bloc <code>&lt;goscript&gt;</code> avec son Context (server/client) et son contenu Go</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">NodeExpr</td><td class="p-3">Expression inline <code>&#123;&#123; expr &#125;&#125;</code></td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">NodeRaw</td><td class="p-3">Appel <code>&#123;&#123; raw(...) &#125;&#125;</code> (HTML non-échappé)</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">NodeIf</td><td class="p-3">Bloc conditionnel avec Then/Else</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">NodeEach</td><td class="p-3">Boucle avec Iterable, ItemName, IndexName</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">NodeComponent</td><td class="p-3">Appel de composant avec Props et Slot</td></tr>
+                    <tr><td class="p-3 font-mono">NodeBind</td><td class="p-3">Directive <code>bind:</code> ou <code>on:</code> avec BindType, BindVar, IsEvent</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Protocole Hot Morphing (SSE)</h2>
+        <p class="text-sm text-stone-600">Le Hot Morphing repose sur une connexion <strong>Server-Sent Events</strong> établie entre le navigateur et le serveur <code>stew run dev</code>. Voici le flux d'exécution :</p>
+        <div class="space-y-3 bg-stone-50 p-6 rounded-2xl border border-stone-200">
+            <ol class="list-decimal list-inside space-y-3 text-sm text-stone-700">
+                <li><strong>Détection</strong> : L'outil <code>air</code> (ou un watcher interne) détecte une modification de fichier.</li>
+                <li><strong>Rebuild</strong> : Les commandes <code>stew compile</code> et <code>stew generate</code> sont déclenchées par le watcher.</li>
+                <li><strong>Broadcast</strong> : Une fois le binaire Go recompilé, le serveur SSE envoie un événement <code>message</code> au client.</li>
+                <li><strong>Fetch</strong> : Le script injecté (<code>live.InjectScript()</code>) intercepte l'événement et effectue un <code>fetch</code> de l'URL courante.</li>
+                <li><strong>Morph</strong> : Le nouveau HTML est comparé à l'ancien via <strong>Idiomorph</strong>. Seuls les nœuds modifiés sont mis à jour, préservant l'état (focus, scroll, inputs).</li>
+            </ol>
+        </div>
+        <pre><code><span class="text-stone-400">// Exemple de payload SSE envoyé par le serveur :</span>
+event: message
+data: {"type": "reload", "path": "/guide/internals"}</code></pre>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/hotmorphing" class="text-stone-400 hover:text-stone-600 transition">← Hot Morphing</a>
+        <a href="/guide/deployment" class="text-amber-600 font-bold hover:underline">Suivant : Déploiement & Docker →</a>
+    </footer>
+</div>

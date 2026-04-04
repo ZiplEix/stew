@@ -1,0 +1,94 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 12 — Wasm Isomorphique</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Bindings DOM</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Les directives <code>bind:</code> et <code>on:</code> permettent de lier des variables Go et des événements du navigateur directement dans le HTML, sans code JavaScript.
+        </p>
+    </header>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Directive <code>bind:content</code></h2>
+        <p class="text-sm text-stone-600">Liaison unidirectionnelle <strong>Go → DOM</strong>. Met à jour l'<code>innerHTML</code> d'un élément quand la variable Go mute :</p>
+        <pre><code>&lt;goscript client&gt;
+    message := "Bonjour !"
+&lt;/goscript&gt;
+
+&lt;h1 bind&#58;content=&#123;&#123; message &#125;&#125;&gt;Chargement...&lt;/h1&gt;</code></pre>
+        <p class="text-sm text-stone-500">Le compilateur injecte un <code>id</code> unique sur l'élément et génère un appel <code>wasm.BindContent("id", &message)</code>. Le contenu initial du HTML est remplacé immédiatement au démarrage du Wasm.</p>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Directive <code>bind:value</code></h2>
+        <p class="text-sm text-stone-600">Liaison bidirectionnelle sur les <code>&lt;input&gt;</code> : <strong>Go → DOM</strong> et <strong>DOM → Go</strong> en temps réel :</p>
+        <pre><code>&lt;goscript client&gt;
+    name := "World"
+
+    wasm.OnUpdate(func() {
+        message = "Hello " + name + " !"
+    })
+
+    message := ""
+&lt;/goscript&gt;
+
+&lt;input type="text" bind&#58;value=&#123;&#123; name &#125;&#125; /&gt;
+&lt;p bind&#58;content=&#123;&#123; message &#125;&#125;&gt;&lt;/p&gt;</code></pre>
+        <p class="text-sm text-stone-500">Génère un listener <code>input</code> qui met à jour <code>name</code> à chaque frappe, et la boucle de dirty checking propage automatiquement <code>message</code> dans le DOM.</p>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Directive <code>on:click</code></h2>
+        <p class="text-sm text-stone-600">Attache un handler de clic directement dans le HTML. L'expression est exécutée lors du clic :</p>
+        <pre><code>&lt;goscript client&gt;
+    import "strconv"
+    count := 0
+    countStr := "0"
+    wasm.OnUpdate(func() { countStr = strconv.Itoa(count) })
+&lt;/goscript&gt;
+
+&lt;button on&#58;click=&#123;&#123; count-- &#125;&#125;&gt;−&lt;/button&gt;
+&lt;span bind&#58;content=&#123;&#123; countStr &#125;&#125;&gt;0&lt;/span&gt;
+&lt;button on&#58;click=&#123;&#123; count++ &#125;&#125;&gt;+&lt;/button&gt;</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Directive générique <code>on:&lt;event&gt;</code></h2>
+        <p class="text-sm text-stone-600">N'importe quel événement DOM peut être ciblé avec la syntaxe <code>on:&lt;eventName&gt;</code> :</p>
+        <pre><code>&lt;input type="text" on&#58;focus=&#123;&#123; inputFocused = true &#125;&#125; /&gt;
+&lt;div on&#58;mouseover=&#123;&#123; hovered = true &#125;&#125; on&#58;mouseleave=&#123;&#123; hovered = false &#125;&#125;&gt;&lt;/div&gt;</code></pre>
+        <p class="text-sm text-stone-500">Génère : <code>wasm.OnEvent("id", "focus", func() { inputFocused = true })</code></p>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Mécanisme interne</h2>
+        <p class="text-sm text-stone-600">Quand le compilateur rencontre un attribut <code>bind:</code> ou <code>on:</code> sur un élément HTML :</p>
+        <ol class="list-decimal list-inside space-y-2 text-stone-700 text-sm">
+            <li>Il génère un identifiant unique <code>"stew-bind-page-N"</code>.</li>
+            <li>Il injecte l'attribut <code>id="stew-bind-page-N"</code> sur l'élément HTML précédent dans le flux.</li>
+            <li>Il retire l'attribut <code>bind:</code>/<code>on:</code> du HTML final (invisible aux navigateurs).</li>
+            <li>Il génère le code de liaison correspondant dans la fonction <code>main()</code> du bundle Wasm.</li>
+        </ol>
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
+                <thead class="bg-stone-50">
+                    <tr>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Directive</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Direction</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Génère</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">bind:content=&#123;&#123; var &#125;&#125;</td><td class="p-3">Go → DOM</td><td class="p-3 font-mono text-xs">wasm.BindContent(id, &amp;var)</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">bind:value=&#123;&#123; var &#125;&#125;</td><td class="p-3">Go ↔ DOM</td><td class="p-3 font-mono text-xs">wasm.BindInput(id, &amp;var)</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">on:click=&#123;&#123; expr &#125;&#125;</td><td class="p-3">DOM → Go</td><td class="p-3 font-mono text-xs">wasm.OnEvent(id, "click", func(){expr})</td></tr>
+                    <tr><td class="p-3 font-mono">on:&lt;event&gt;=&#123;&#123; expr &#125;&#125;</td><td class="p-3">DOM → Go</td><td class="p-3 font-mono text-xs">wasm.OnEvent(id, "event", func(){expr})</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/goscriptclient" class="text-stone-400 hover:text-stone-600 transition">← goscript client</a>
+        <a href="/guide/wasmsdk" class="text-amber-600 font-bold hover:underline">Suivant : SDK Wasm →</a>
+    </footer>
+</div>

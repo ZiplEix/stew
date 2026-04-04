@@ -3,25 +3,34 @@ package main
 
 import (
 	"github.com/ZiplEix/stew/sdk/stew"
-	"github.com/a-h/templ"
 	"net/http"
 
 	stew_pages_root "github.com/ZiplEix/stew/doc/pages"
 	stew_guide "github.com/ZiplEix/stew/doc/pages/guide"
-	stew_guide_assets_tailwind "github.com/ZiplEix/stew/doc/pages/guide/assets-tailwind"
+	stew_guide_assets "github.com/ZiplEix/stew/doc/pages/guide/assets"
+	stew_guide_cli "github.com/ZiplEix/stew/doc/pages/guide/cli"
+	stew_guide_components "github.com/ZiplEix/stew/doc/pages/guide/components"
 	stew_guide_configuration "github.com/ZiplEix/stew/doc/pages/guide/configuration"
 	stew_guide_deployment "github.com/ZiplEix/stew/doc/pages/guide/deployment"
-	stew_guide_files "github.com/ZiplEix/stew/doc/pages/guide/files"
-	stew_guide_hot_morphing "github.com/ZiplEix/stew/doc/pages/guide/hot-morphing"
+	stew_guide_goscriptclient "github.com/ZiplEix/stew/doc/pages/guide/goscriptclient"
+	stew_guide_goscriptserver "github.com/ZiplEix/stew/doc/pages/guide/goscriptserver"
+	stew_guide_hotmorphing "github.com/ZiplEix/stew/doc/pages/guide/hotmorphing"
 	stew_guide_installation "github.com/ZiplEix/stew/doc/pages/guide/installation"
+	stew_guide_internals "github.com/ZiplEix/stew/doc/pages/guide/internals"
 	stew_guide_layouts "github.com/ZiplEix/stew/doc/pages/guide/layouts"
 	stew_guide_middleware "github.com/ZiplEix/stew/doc/pages/guide/middleware"
 	stew_guide_pagedata "github.com/ZiplEix/stew/doc/pages/guide/pagedata"
+	stew_guide_reservedfiles "github.com/ZiplEix/stew/doc/pages/guide/reservedfiles"
 	stew_guide_routing "github.com/ZiplEix/stew/doc/pages/guide/routing"
-	stew_guide_server_handlers "github.com/ZiplEix/stew/doc/pages/guide/server-handlers"
+	stew_guide_serverhandlers "github.com/ZiplEix/stew/doc/pages/guide/serverhandlers"
+	stew_guide_syntax "github.com/ZiplEix/stew/doc/pages/guide/syntax"
+	stew_guide_wasmbindings "github.com/ZiplEix/stew/doc/pages/guide/wasmbindings"
+	stew_guide_wasmsdk "github.com/ZiplEix/stew/doc/pages/guide/wasmsdk"
 )
 
 func RegisterStewRoutes(mux *http.ServeMux) {
+	// Serve static assets (like CSS, Wasm binaries, etc)
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	// --- Route: / ---
 	mux.Handle("GET /", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := stew.PageData{
@@ -32,8 +41,10 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_pages_root.Page(data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_pages_root.Page(w, data)
+		})
 	}))
 	// --- Route: /guide ---
 	mux.Handle("GET /guide", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -45,11 +56,15 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide.Page(w, data)
+			})
+		})
 	}))
-	// --- Route: /guide/assets-tailwind ---
-	mux.Handle("GET /guide/assets-tailwind", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// --- Route: /guide/assets ---
+	mux.Handle("GET /guide/assets", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := stew.PageData{
 			URL:     r.URL.Path,
 			Query:   r.URL.Query(),
@@ -58,8 +73,46 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_assets_tailwind.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_assets.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/cli ---
+	mux.Handle("GET /guide/cli", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_cli.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/components ---
+	mux.Handle("GET /guide/components", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_components.Page(w, data)
+			})
+		})
 	}))
 	// --- Route: /guide/configuration ---
 	mux.Handle("GET /guide/configuration", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -71,8 +124,12 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_configuration.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_configuration.Page(w, data)
+			})
+		})
 	}))
 	// --- Route: /guide/deployment ---
 	mux.Handle("GET /guide/deployment", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -84,11 +141,15 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_deployment.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_deployment.Page(w, data)
+			})
+		})
 	}))
-	// --- Route: /guide/files ---
-	mux.Handle("GET /guide/files", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// --- Route: /guide/goscriptclient ---
+	mux.Handle("GET /guide/goscriptclient", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := stew.PageData{
 			URL:     r.URL.Path,
 			Query:   r.URL.Query(),
@@ -97,11 +158,15 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_files.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_goscriptclient.Page(w, data)
+			})
+		})
 	}))
-	// --- Route: /guide/hot-morphing ---
-	mux.Handle("GET /guide/hot-morphing", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// --- Route: /guide/goscriptserver ---
+	mux.Handle("GET /guide/goscriptserver", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := stew.PageData{
 			URL:     r.URL.Path,
 			Query:   r.URL.Query(),
@@ -110,8 +175,29 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_hot_morphing.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_goscriptserver.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/hotmorphing ---
+	mux.Handle("GET /guide/hotmorphing", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_hotmorphing.Page(w, data)
+			})
+		})
 	}))
 	// --- Route: /guide/installation ---
 	mux.Handle("GET /guide/installation", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -123,8 +209,29 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_installation.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_installation.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/internals ---
+	mux.Handle("GET /guide/internals", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_internals.Page(w, data)
+			})
+		})
 	}))
 	// --- Route: /guide/layouts ---
 	mux.Handle("GET /guide/layouts", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -136,8 +243,12 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_layouts.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_layouts.Page(w, data)
+			})
+		})
 	}))
 	// --- Route: /guide/middleware ---
 	mux.Handle("GET /guide/middleware", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -149,8 +260,12 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_middleware.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_middleware.Page(w, data)
+			})
+		})
 	}))
 	// --- Route: /guide/pagedata ---
 	mux.Handle("GET /guide/pagedata", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -162,8 +277,29 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_pagedata.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_pagedata.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/reservedfiles ---
+	mux.Handle("GET /guide/reservedfiles", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_reservedfiles.Page(w, data)
+			})
+		})
 	}))
 	// --- Route: /guide/routing ---
 	mux.Handle("GET /guide/routing", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -175,11 +311,15 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_routing.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_routing.Page(w, data)
+			})
+		})
 	}))
-	// --- Route: /guide/server-handlers ---
-	mux.Handle("GET /guide/server-handlers", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// --- Route: /guide/serverhandlers ---
+	mux.Handle("GET /guide/serverhandlers", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := stew.PageData{
 			URL:     r.URL.Path,
 			Query:   r.URL.Query(),
@@ -188,7 +328,62 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_guide.Layout(stew_guide_server_handlers.Page(data), data), data)
-		templ.Handler(component).ServeHTTP(w, r)
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_serverhandlers.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/syntax ---
+	mux.Handle("GET /guide/syntax", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_syntax.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/wasmbindings ---
+	mux.Handle("GET /guide/wasmbindings", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_wasmbindings.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/wasmsdk ---
+	mux.Handle("GET /guide/wasmsdk", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_wasmsdk.Page(w, data)
+			})
+		})
 	}))
 }

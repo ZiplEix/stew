@@ -1,0 +1,41 @@
+<goscript>
+    import "os"
+    import "github.com/ZiplEix/stew/sdk/live"
+</goscript>
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Stew 2.0 — Documentation</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        <script src="https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js"></script>
+        <style>
+            .prose code:not(pre code) {
+                background: #f1f5f9;
+                color: #b45309;
+                padding: 0.15em 0.4em;
+                border-radius: 0.3em;
+                font-size: 0.875em;
+                font-weight: 600;
+            }
+            pre { background: #0f172a; border-radius: 0.75rem; padding: 1.25rem; overflow-x: auto; }
+            pre code { color: #e2e8f0; font-size: 0.82rem; line-height: 1.7; background: none; padding: 0; }
+            .token-comment { color: #64748b; }
+            .token-keyword { color: #fb923c; }
+            .token-string { color: #a3e635; }
+            .token-tag { color: #60a5fa; }
+        </style>
+    </head>
+    <body hx-ext="morph" class="bg-white text-stone-900 antialiased">
+
+        <slot />
+
+        {{ if os.Getenv("STEW_DEV") == "true" }}
+            {{ raw(live.InjectScript()) }}
+        {{ end }}
+    </body>
+</html>
+
