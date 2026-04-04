@@ -68,7 +68,7 @@ func (l *Lexer) Lex() []Token {
 			continue
 		}
 
-		if strings.HasPrefix(l.input[l.pos:], "<goscript") {
+		if strings.HasPrefix(l.input[l.pos:], "<goscript") && l.isTopLevel() {
 			tokens = append(tokens, l.lexGoScript())
 			continue
 		}
@@ -249,7 +249,7 @@ func (l *Lexer) lexHTML() Token {
 	
 	for l.pos < len(l.input) {
 		if strings.HasPrefix(l.input[l.pos:], "{{") || 
-		   strings.HasPrefix(l.input[l.pos:], "<goscript") ||
+		   (strings.HasPrefix(l.input[l.pos:], "<goscript") && l.isTopLevel()) ||
 		   strings.HasPrefix(l.input[l.pos:], "bind:") || strings.HasPrefix(l.input[l.pos:], "on:") ||
 		   l.isComponentStart() || l.isComponentClose() || l.isSlot() {
 			break
@@ -262,6 +262,24 @@ func (l *Lexer) lexHTML() Token {
 	}
 	
 	return Token{Type: TOKEN_HTML, Value: l.input[startPos:l.pos], Line: startLine}
+}
+
+func (l *Lexer) isTopLevel() bool {
+	if l.pos == 0 {
+		return true
+	}
+	// find start of current line
+	start := l.pos
+	for start > 0 && l.input[start-1] != '\n' {
+		start--
+	}
+	// check if all characters before l.pos on this line are whitespace
+	for i := start; i < l.pos; i++ {
+		if !unicode.IsSpace(rune(l.input[i])) {
+			return false
+		}
+	}
+	return true
 }
 
 func (l *Lexer) advance(n int) {
