@@ -1,0 +1,30 @@
+<goscript>
+    import "../../component/Card.stew"
+</goscript>
+
+<div class="flex flex-col items-center justify-center min-h-[80vh] font-sans p-6">
+    <div class="w-full max-w-4xl">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-black tracking-tighter mb-4">Components Test</h1>
+            <p class="text-stone-500 text-lg">Testing the Stew-Lang component system.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card Title="User Profile" Description="A component handling user sessions and data representation.">
+                <button class="bg-stone-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-stone-800">
+                    View Profile
+                </button>
+            </Card>
+
+            <Card Title="Analytics" Description="Displaying real-time charts and data directly fetched from Go.">
+                <button class="bg-stone-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-stone-800">
+                    Open Dashboard
+                </button>
+            </Card>
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/" class="text-amber-600 font-bold hover:underline">← Back to Home</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+commands:
+  dev:
+    parallel: true
+    scripts:
+      - name: compile
+        run: stew compile --watch
+        watch: true
+      - name: generate
+        run: stew generate --watch
+        watch: true
+      - name: app
+        run: air
+  build:
+    parallel: false
+    scripts:
+      - name: compile
+        run: stew compile
+      - name: generate
+        run: stew generate
+      - name: go
+        run: go build -o ./bin/app .
+
+env_files:
+  - .env
+  - .env.local
+
+colors:
+  - '\033[32m' # Green
+  - '\033[34m' # Blue
+  - '\033[35m' # Magenta
+  - '\033[36m' # Cyan
+  - '\033[33m' # Yellow
+  - '\033[92m' # Light Green
+  - '\033[94m' # Light Blue
+  - '\033[95m' # Light Magenta
+
+requires:
+  - name: air
+    package: github.com/air-verse/air@latest

@@ -20,19 +20,21 @@ const defaultConfig = `commands:
   dev:
     parallel: true
     scripts:
-      - name: stew
-        run: stew generate --watch
+      - name: compile
+        run: stew compile --watch
         watch: true
-      - name: templ
-        run: templ generate --watch
+      - name: generate
+        run: stew generate --watch
         watch: true
       - name: app
         run: air
   build:
     parallel: false
     scripts:
-      - name: templ
-        run: templ generate
+      - name: compile
+        run: stew compile
+      - name: generate
+        run: stew generate
       - name: go
         run: go build -o ./bin/app .
 
@@ -51,8 +53,6 @@ colors:
   - '\033[95m' # Light Magenta
 
 requires:
-  - name: templ
-    package: github.com/a-h/templ/cmd/templ@latest
   - name: air
     package: github.com/air-verse/air@latest
 `
@@ -85,48 +85,47 @@ func main() {
 }
 `
 
-const rootLayoutContent = `package pages
+const rootLayoutContent = `
+<goscript>
+    import "os"
+    import "github.com/ZiplEix/stew/sdk/live"
+</goscript>
 
-import (
-	"github.com/ZiplEix/stew/sdk/live"
-	"github.com/ZiplEix/stew/sdk/stew"
-	"os"
-)
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Stew App</title>
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        <script src="https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body hx-ext="morph" class="bg-stone-50 text-stone-900">
+        <slot />
 
-templ Layout(contents templ.Component, data stew.PageData) {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Stew App</title>
-			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
-			<script src="https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js"></script>
-		</head>
-		<body hx-ext="morph">
-			@contents
-
-			if os.Getenv("STEW_DEV") == "true" {
-				@templ.Raw(live.InjectScript())
-			}
-		</body>
-	</html>
-}
+        {{ if os.Getenv("STEW_DEV") == "true" }}
+            {{ raw(live.InjectScript()) }}
+        {{ end }}
+    </body>
+</html>
 `
 
-const rootPageContent = `package pages
-
-import (
-	"github.com/ZiplEix/stew/sdk/stew"
-)
-
-templ Page(data stew.PageData) {
-	<div style="text-align: center; font-family: sans-serif; padding-top: 20vh;">
-		<h1>🍲 Stew 2.0</h1>
-		<p>Your Go Fullstack framework is ready.</p>
-		<p>Modify <code>pages/stew.page.templ</code> to start.</p>
-	</div>
-}
+const rootPageContent = `
+<div class="flex flex-col items-center justify-center min-h-[80vh] text-center font-sans p-6">
+    <div class="bg-white p-12 rounded-[2.5rem] shadow-xl shadow-stone-200 border border-stone-100">
+        <h1 class="text-6xl mb-4">🍲</h1>
+        <h2 class="text-4xl font-black tracking-tighter mb-4">Stew 2.0 Alpha</h2>
+        <p class="text-stone-500 text-lg mb-8">Your Go Fullstack framework is ready to cook.</p>
+        
+        <div class="space-y-4">
+            <p class="text-sm text-stone-400">Modify <code class="bg-stone-100 px-2 py-1 rounded">pages/@page.stew</code> to start.</p>
+            <a href="https://github.com/ZiplEix/stew" class="inline-block text-amber-600 font-bold hover:underline">
+                Read the documentation →
+            </a>
+        </div>
+    </div>
+</div>
 `
 
 // initCmd represents the init command
@@ -146,8 +145,8 @@ var initCmd = &cobra.Command{
 			fmt.Printf("❌ Error creating pages directory: %v\n", err)
 		} else {
 			fmt.Println("📂 pages/ directory created")
-			handleFileCreation(filepath.Join(pagesDir, "stew.layout.templ"), rootLayoutContent)
-			handleFileCreation(filepath.Join(pagesDir, "stew.page.templ"), rootPageContent)
+			handleFileCreation(filepath.Join(pagesDir, "@layout.stew"), rootLayoutContent)
+			handleFileCreation(filepath.Join(pagesDir, "@page.stew"), rootPageContent)
 		}
 
 		handleFileCreation("main.go", mainGoContent)
@@ -156,7 +155,7 @@ var initCmd = &cobra.Command{
 
 		runCommand("stew", "install")
 
-		runCommand("templ", "generate")
+		runCommand("stew", "compile")
 
 		fmt.Println("🏗️  Generating router...")
 		generateCmd.Run(generateCmd, []string{})
@@ -184,12 +183,12 @@ func handleGoMod(args []string) {
 		return
 	}
 
-	if len(args) == 0 {
-		return
+	moduleName := ""
+	if len(args) > 0 {
+		moduleName = args[0]
 	}
 
-	moduleName := args[0]
-	if moduleName == "." {
+	if moduleName == "" || moduleName == "." {
 		wd, _ := os.Getwd()
 		moduleName = filepath.Base(wd)
 	}
