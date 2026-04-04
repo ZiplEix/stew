@@ -49,8 +49,16 @@ func (p *Parser) parseLoop(endToken TokenType, ExpectedComponentName string) ([]
 			nodes = append(nodes, NodeHTML{Content: t.Value})
 			p.pos++
 
-		case TOKEN_GOSCRIPT:
-			nodes = append(nodes, NodeGoScript{Content: t.Value})
+		case TOKEN_GOSCRIPT_SERVER:
+			nodes = append(nodes, NodeGoScript{Content: t.Value, Context: "server"})
+			p.pos++
+
+		case TOKEN_GOSCRIPT_CLIENT:
+			nodes = append(nodes, NodeGoScript{Content: t.Value, Context: "client"})
+			p.pos++
+
+		case TOKEN_BIND:
+			nodes = append(nodes, NodeBind{BindType: t.BindType, BindVar: t.BindVar, IsEvent: t.IsEvent})
 			p.pos++
 
 		case TOKEN_EXPRESSION:
@@ -160,9 +168,15 @@ func (p *Parser) parseNode() (Node, error) {
 	case TOKEN_HTML:
 		p.pos++
 		return NodeHTML{Content: t.Value}, nil
-	case TOKEN_GOSCRIPT:
+	case TOKEN_GOSCRIPT_SERVER:
 		p.pos++
-		return NodeGoScript{Content: t.Value}, nil
+		return NodeGoScript{Content: t.Value, Context: "server"}, nil
+	case TOKEN_GOSCRIPT_CLIENT:
+		p.pos++
+		return NodeGoScript{Content: t.Value, Context: "client"}, nil
+	case TOKEN_BIND:
+		p.pos++
+		return NodeBind{BindType: t.BindType, BindVar: t.BindVar, IsEvent: t.IsEvent}, nil
 	case TOKEN_EXPRESSION:
 		p.pos++
 		return NodeExpression{Content: t.Value}, nil

@@ -68,8 +68,13 @@ func (l *Lexer) Lex() []Token {
 			continue
 		}
 
-		if strings.HasPrefix(l.input[l.pos:], "<goscript>") {
+		if strings.HasPrefix(l.input[l.pos:], "<goscript") {
 			tokens = append(tokens, l.lexGoScript())
+			continue
+		}
+
+		if strings.HasPrefix(l.input[l.pos:], "bind:") || strings.HasPrefix(l.input[l.pos:], "on:") {
+			tokens = append(tokens, l.lexBindAttribute())
 			continue
 		}
 
@@ -157,18 +162,55 @@ func (l *Lexer) lexExpressionGroup() Token {
 
 func (l *Lexer) lexGoScript() Token {
 	startLine := l.line
-	l.advance(10) // skip "<goscript>"
+	
+	endTagStart := strings.Index(l.input[l.pos:], ">") 
+	if endTagStart == -1 {
+		val := l.input[l.pos:]
+		l.advance(len(val))
+		return Token{Type: TOKEN_GOSCRIPT_SERVER, Value: val, Line: startLine}
+	}
+	
+	tagFull := l.input[l.pos : l.pos+endTagStart+1]
+	tokenType := TOKEN_GOSCRIPT_SERVER
+	if strings.Contains(tagFull, "client") {
+		tokenType = TOKEN_GOSCRIPT_CLIENT
+	}
+	
+	l.advance(endTagStart + 1) // skip "<goscript ...>"
 	
 	endPos := strings.Index(l.input[l.pos:], "</goscript>")
 	if endPos == -1 {
 		val := l.input[l.pos:]
 		l.advance(len(val))
-		return Token{Type: TOKEN_GOSCRIPT, Value: val, Line: startLine}
+		return Token{Type: tokenType, Value: val, Line: startLine}
 	}
 	
 	val := l.input[l.pos : l.pos+endPos]
 	l.advance(endPos + 11) // skip "</goscript>"
-	return Token{Type: TOKEN_GOSCRIPT, Value: val, Line: startLine}
+	return Token{Type: tokenType, Value: val, Line: startLine}
+}
+
+func (l *Lexer) lexBindAttribute() Token {
+	startLine := l.line
+	// matches "bind:type={{ var }}" or "on:event={{ var }}"
+	re := regexp.MustCompile(`^(bind|on):([a-zA-Z0-9_-]+)=\{\{\s*([^}]+)\s*\}\}`)
+	match := re.FindStringSubmatch(l.input[l.pos:])
+	if match != nil {
+		fullMatch := match[0]
+		prefix := match[1]
+		bindType := match[2]
+		bindVar := strings.TrimSpace(match[3])
+		l.advance(len(fullMatch))
+		return Token{Type: TOKEN_BIND, Value: fullMatch, BindType: bindType, BindVar: bindVar, IsEvent: prefix == "on", Line: startLine}
+	}
+	
+	// If it fails to match the strict regex, eat the prefix and let HTML lexing continue...
+	if strings.HasPrefix(l.input[l.pos:], "bind:") {
+		l.advance(4)
+		return Token{Type: TOKEN_HTML, Value: "bind", Line: startLine}
+	}
+	l.advance(2)
+	return Token{Type: TOKEN_HTML, Value: "on", Line: startLine}
 }
 
 func (l *Lexer) lexComponentOrSlot() Token {
@@ -207,7 +249,8 @@ func (l *Lexer) lexHTML() Token {
 	
 	for l.pos < len(l.input) {
 		if strings.HasPrefix(l.input[l.pos:], "{{") || 
-		   strings.HasPrefix(l.input[l.pos:], "<goscript>") ||
+		   strings.HasPrefix(l.input[l.pos:], "<goscript") ||
+		   strings.HasPrefix(l.input[l.pos:], "bind:") || strings.HasPrefix(l.input[l.pos:], "on:") ||
 		   l.isComponentStart() || l.isComponentClose() || l.isSlot() {
 			break
 		}

@@ -12,6 +12,7 @@ func (n NodeHTML) nodeType() string { return "HTML" }
 
 type NodeGoScript struct {
 	Content string
+	Context string // "server" or "client"
 }
 
 func (n NodeGoScript) nodeType() string { return "GOSCRIPT" }
@@ -51,3 +52,11 @@ type NodeSlot struct {
 }
 
 func (n NodeSlot) nodeType() string { return "SLOT" }
+
+type NodeBind struct {
+	BindType string // e.g. "value", "content"
+	BindVar  string // e.g. "name"
+	IsEvent  bool
+}
+
+func (n NodeBind) nodeType() string { return "BIND" }

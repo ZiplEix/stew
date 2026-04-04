@@ -2,6 +2,7 @@
 package pages
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/ZiplEix/stew/sdk/stew"
 	"html"
@@ -11,14 +12,14 @@ import (
 
 func Page(w io.Writer, data stew.PageData) {
 
-	w.Write([]byte(`
-`))
-
 	count := 0
 	if c := data.Query.Get("count"); c != "" {
 		count, _ = strconv.Atoi(c)
 	}
 
+	w.Write([]byte(`
+
+`))
 	w.Write([]byte(`
 
 <div class="flex flex-col items-center justify-center min-h-[80vh] text-center font-sans p-6">
@@ -27,12 +28,13 @@ func Page(w io.Writer, data stew.PageData) {
         <h2 class="text-4xl font-black tracking-tighter mb-4">Stew 2.0 Alpha</h2>
         <p class="text-stone-500 text-lg mb-8">Your Go Fullstack framework is ready to cook.</p>
         
-        <!-- Live Counter -->
+        <!-- Server HTMX Counter -->
+        <h3 class="text-xl font-bold mt-12 mb-2 text-stone-700">Server Counter (HTMX)</h3>
         <div id="counter" 
              hx-select="#counter" 
              hx-target="#counter" 
              hx-swap="outerHTML" 
-             class="flex items-center justify-center gap-6 my-10 p-6 bg-stone-50 rounded-3xl border border-stone-100 shadow-inner">
+             class="flex items-center justify-center gap-6 mb-10 p-6 bg-stone-50 rounded-3xl border border-stone-100 shadow-inner">
             
             <button 
                 hx-get="/?count=`))
@@ -59,6 +61,33 @@ func Page(w io.Writer, data stew.PageData) {
             </button>
         </div>
 
+        <!-- Local Wasm Counter -->
+        <h3 class="text-xl font-bold mb-2 text-indigo-700">Client Counter (Wasm + TinyGo)</h3>
+        <p class="text-stone-500 text-sm mb-4">Reacts instantaneously at 60FPS using Dirty Checking.</p>
+        <div class="flex items-center justify-center gap-6 mb-10 p-6 bg-indigo-50/50 rounded-3xl border border-indigo-100 shadow-inner">
+            
+            <button 
+                id="stew-bind-page-0" `))
+	w.Write([]byte(`
+                class="w-14 h-14 flex items-center justify-center bg-white border border-indigo-200 rounded-2xl text-indigo-600 hover:bg-indigo-100 hover:-translate-y-0.5 active:translate-y-0 transition-all text-2xl font-bold shadow-sm"
+            >
+                -
+            </button>
+            
+            <div class="text-5xl font-black w-24 text-center tabular-nums text-indigo-800 tracking-tight" id="stew-bind-page-1" `))
+	w.Write([]byte(`>
+                0
+            </div>
+            
+            <button 
+                id="stew-bind-page-2" `))
+	w.Write([]byte(`
+                class="w-14 h-14 flex items-center justify-center bg-indigo-600 text-white rounded-2xl hover:bg-indigo-500 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all text-2xl font-bold"
+            >
+                +
+            </button>
+        </div>
+
         <div class="space-y-4">
             <p class="text-sm text-stone-400">Modify <code class="bg-stone-100 px-2 py-1 rounded">pages/@page.stew</code> to start.</p>
             <a href="https://github.com/ZiplEix/stew" class="inline-block text-amber-600 font-bold hover:underline">
@@ -68,4 +97,9 @@ func Page(w io.Writer, data stew.PageData) {
     </div>
 </div>
 `))
+	dataJSON, _ := json.Marshal(data)
+	w.Write([]byte(`<script type="application/json" id="stew-pagedata">`))
+	w.Write(dataJSON)
+	w.Write([]byte(`</script>`))
+	w.Write([]byte(`<script src="/static/wasm/wasm_exec.js"></script><script>const go = new Go(); WebAssembly.instantiateStreaming(fetch("/static/wasm/page.wasm"), go.importObject).then((result) => { go.run(result.instance); });</script>`))
 }

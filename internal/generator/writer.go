@@ -21,6 +21,10 @@ import (
 )
 
 func RegisterStewRoutes(mux *http.ServeMux) {
+	// Serve static assets (like CSS, Wasm binaries, etc)
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+
     {{- range .Routes}}
     {{- $route := .}}
     // --- Route: {{$route.URLPath}} ---

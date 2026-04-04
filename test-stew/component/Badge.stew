@@ -1,9 +1,0 @@
-<goscript>
-    type BadgeProps struct {
-        Text string
-    }
-</goscript>
-
-<span class="inline-block px-2 py-1 bg-stone-100 text-stone-600 text-xs font-bold rounded-full mb-3 border border-stone-200">
-    {{ props.Text }}
-</span>

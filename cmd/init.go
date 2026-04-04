@@ -111,13 +111,84 @@ const rootLayoutContent = `
 </html>
 `
 
-const rootPageContent = `
+const rootPageContent = `<goscript>
+    import "strconv"
+
+    count := 0
+    if c := data.Query.Get("count"); c != "" {
+        count, _ = strconv.Atoi(c)
+    }
+</goscript>
+
+<goscript client>
+    import "strconv"
+
+    wasmCount := 0
+    wasmCountStr := "0"
+
+    // Computed reactivity
+    wasm.OnUpdate(func() {
+        wasmCountStr = strconv.Itoa(wasmCount)
+    })
+</goscript>
+
 <div class="flex flex-col items-center justify-center min-h-[80vh] text-center font-sans p-6">
     <div class="bg-white p-12 rounded-[2.5rem] shadow-xl shadow-stone-200 border border-stone-100">
         <h1 class="text-6xl mb-4">🍲</h1>
         <h2 class="text-4xl font-black tracking-tighter mb-4">Stew 2.0 Alpha</h2>
         <p class="text-stone-500 text-lg mb-8">Your Go Fullstack framework is ready to cook.</p>
         
+        <!-- Server HTMX Counter -->
+        <h3 class="text-xl font-bold mt-12 mb-2 text-stone-700">Server Counter (HTMX)</h3>
+        <div id="counter" 
+             hx-select="#counter" 
+             hx-target="#counter" 
+             hx-swap="outerHTML" 
+             class="flex items-center justify-center gap-6 mb-10 p-6 bg-stone-50 rounded-3xl border border-stone-100 shadow-inner">
+            
+            <button 
+                hx-get="/?count={{ count - 1 }}" 
+                class="w-14 h-14 flex items-center justify-center bg-white border border-stone-200 rounded-2xl text-stone-600 hover:bg-stone-100 hover:text-stone-900 hover:-translate-y-0.5 active:translate-y-0 transition-all text-2xl font-bold shadow-sm"
+            >
+                -
+            </button>
+            
+            <div class="text-5xl font-black w-24 text-center tabular-nums text-stone-800 tracking-tight">
+                {{ count }}
+            </div>
+            
+            <button 
+                hx-get="/?count={{ count + 1 }}" 
+                class="w-14 h-14 flex items-center justify-center bg-stone-900 text-white rounded-2xl hover:bg-stone-800 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all text-2xl font-bold"
+            >
+                +
+            </button>
+        </div>
+
+        <!-- Local Wasm Counter -->
+        <h3 class="text-xl font-bold mb-2 text-indigo-700">Client Counter (Wasm + TinyGo)</h3>
+        <p class="text-stone-500 text-sm mb-4">Reacts instantaneously at 60FPS using Dirty Checking.</p>
+        <div class="flex items-center justify-center gap-6 mb-10 p-6 bg-indigo-50/50 rounded-3xl border border-indigo-100 shadow-inner">
+            
+            <button 
+                on:click={{ wasmCount-- }}
+                class="w-14 h-14 flex items-center justify-center bg-white border border-indigo-200 rounded-2xl text-indigo-600 hover:bg-indigo-100 hover:-translate-y-0.5 active:translate-y-0 transition-all text-2xl font-bold shadow-sm"
+            >
+                -
+            </button>
+            
+            <div class="text-5xl font-black w-24 text-center tabular-nums text-indigo-800 tracking-tight" bind:content={{ wasmCountStr }}>
+                0
+            </div>
+            
+            <button 
+                on:click={{ wasmCount++ }}
+                class="w-14 h-14 flex items-center justify-center bg-indigo-600 text-white rounded-2xl hover:bg-indigo-500 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all text-2xl font-bold"
+            >
+                +
+            </button>
+        </div>
+
         <div class="space-y-4">
             <p class="text-sm text-stone-400">Modify <code class="bg-stone-100 px-2 py-1 rounded">pages/@page.stew</code> to start.</p>
             <a href="https://github.com/ZiplEix/stew" class="inline-block text-amber-600 font-bold hover:underline">
@@ -147,6 +218,25 @@ var initCmd = &cobra.Command{
 			fmt.Println("📂 pages/ directory created")
 			handleFileCreation(filepath.Join(pagesDir, "@layout.stew"), rootLayoutContent)
 			handleFileCreation(filepath.Join(pagesDir, "@page.stew"), rootPageContent)
+		}
+
+		publicWasmDir := "public"
+		os.MkdirAll(publicWasmDir, 0755)
+		fmt.Println("🚀 Fetching WebAssembly runtime from TinyGo...")
+		out, err := exec.Command("tinygo", "env", "TINYGOROOT").Output()
+		if err == nil {
+			tinygoRoot := strings.TrimSpace(string(out))
+			wasmExecSrc := filepath.Join(tinygoRoot, "targets", "wasm_exec.js")
+			wasmExecDest := filepath.Join(publicWasmDir, "wasm_exec.js")
+			input, err := os.ReadFile(wasmExecSrc)
+			if err == nil {
+				os.WriteFile(wasmExecDest, input, 0644)
+				fmt.Println("✅ Copied wasm_exec.js successfully")
+			} else {
+				fmt.Println("⚠️  Warning: Could not read wasm_exec.js from TinyGo installation")
+			}
+		} else {
+			fmt.Println("⚠️  Warning: TinyGo is not installed, Wasm client features will be unavailable. Install it: https://tinygo.org/")
 		}
 
 		handleFileCreation("main.go", mainGoContent)
