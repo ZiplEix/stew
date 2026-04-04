@@ -3,14 +3,14 @@
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 11 — Logique Go</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4">Handlers Serveur</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Pour les méthodes HTTP non-GET (POST, PUT, DELETE, etc.) ou les réponses API JSON, utilisez le fichier <code>server.go</code>.
+            Pour les méthodes HTTP complexes (POST, PUT, DELETE, etc.) ou les réponses API JSON, utilisez le fichier <code>stew.server.go</code>.
         </p>
     </header>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold font-mono text-stone-900 border-b-2 border-stone-200 pb-2">Fichier server.go</h2>
-        <p class="text-sm text-stone-600">Le scanneur de <code>stew generate</code> détecte automatiquement toutes les fonctions exportées dans <code>server.go</code> dont le nom correspond à une méthode HTTP (<code>Post</code>, <code>Put</code>, <code>Delete</code>, <code>Patch</code>). Elles sont automatiquement enregistrées dans le routeur pour le dossier courant.</p>
-        <pre><code><span class="text-stone-400">// pages/users/server.go</span>
+        <h2 class="text-2xl font-bold font-mono text-stone-900 border-b-2 border-stone-200 pb-2">Fichier stew.server.go</h2>
+        <p class="text-sm text-stone-600">Le scanneur de <code>stew generate</code> détecte automatiquement toutes les fonctions exportées dans <code>stew.server.go</code> dont le nom correspond à une méthode HTTP (<code>Get</code>, <code>Post</code>, <code>Put</code>, <code>Delete</code>, <code>Patch</code>). Elles sont automatiquement enregistrées dans le routeur pour le dossier courant.</p>
+        <pre><code><span class="text-stone-400">// pages/users/stew.server.go</span>
 package users
 
 import (
@@ -37,10 +37,13 @@ func Delete(w http.ResponseWriter, r *http.Request) {
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Avantages du server.go</h2>
+        <h2 class="text-2xl font-bold">Règles de priorité</h2>
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+            <strong class="text-amber-900">⚠️ Conflit de route GET :</strong> <span class="text-amber-800">Si un fichier <code>@page.stew</code> (qui génère un <code>stew.page.go</code>) ET une fonction <code>Get</code> dans <code>stew.server.go</code> existent dans le même dossier, c'est <code>la page Stew</code> qui prend la priorité pour traiter la requête GET. La fonction <code>Get</code> du serveur sera ignorée.</span>
+        </div>
         <ul class="list-disc list-inside text-stone-600 text-sm space-y-2">
             <li><strong>Encapsulation</strong> : Séparez la logique de traitement des formulaires et des API du code d'affichage des templates <code>.stew</code>.</li>
-            <li><strong>Isomorphisme</strong> : Le fichier <code>@page.stew</code> peut toujours s'occuper de l'affichage (GET), tandis que <code>server.go</code> s'occupe de la mutation (POST).</li>
+            <li><strong>Isomorphisme</strong> : Le fichier <code>@page.stew</code> s'occupe de l'affichage (GET), tandis que <code>stew.server.go</code> s'occupe de la mutation (POST).</li>
             <li><strong>Standard Go</strong> : Vous écrivez des fonctions <code>http.HandlerFunc</code> standard, ce qui facilite l'utilisation de packages tiers.</li>
         </ul>
     </section>
