@@ -1,180 +1,115 @@
 # 🍲 STEW 2.0
 
-**Stew** is an opinionated, high-performance **Meta-Framework** and orchestrator built for the **Go + Templ + HTMX** stack. It transforms Go's standard library into a modern fullstack experience with **File-Based Routing**, automatic **Middleware/Layout nesting**, and built-in **Hot Morphing**.
+**Stew** is a high-performance, opinionated **Isomorphic Go Framework** designed for the **Go + Wasm + HTMX** stack. It transforms Go's standard library into a modern fullstack experience with **File-Based Routing**, **Isomorphic Reactivity**, and built-in **Hot Morphing**.
 
-Inspired by the developer experience of SvelteKit but powered by the type-safety of Go, Stew handles the "plumbing" of your application so you can focus on building features.
+Inspired by SvelteKit but powered by the performance and type-safety of Go, Stew handles the "plumbing" of your application, from Wasm compilation (TinyGo) to server-side rendering, so you can focus on building features.
 
 ---
 
 ## ✨ Key Features
 
-- 📂 **File-Based Routing**: Your directory structure in ``pages/`` defines your API and UI routes.
-- 🏗️ **Recursive Nesting**: Automatically wrap pages in hierarchical layouts and protect them with cascading middlewares.
-- 🔄 **Hot Morphing (DX)**: Built-in SSE-based watcher. Updates the browser via Idiomorph without losing state (inputs, scroll position, and modals remain intact).
-- 🛡️ **Type-Safe API**: Catch routing errors at compile-time. If a page or handler is missing, Go won't compile.
-- 📦 **Orchestration**: Built-in task runner to manage ``templ``, ``air``, and ``stew`` generation in parallel.
+- 📂 **File-Based Routing**: Your directory structure in `pages/` defines your UI and API routes automatically.
+- 🏗️ **Recursive Nesting**: Automatically wrap pages in hierarchical layouts (`@layout.stew`) and protect them with cascading Go middlewares (`stew.middleware.go`).
+- ⚡ **Isomorphic Wasm**: Write Go logic in `<goscript client>` blocks. Stew compiles it to Wasm and handles all bindings (`bind:`, `on:`) automatically.
+- 🔄 **Hot Morphing (SSE)**: Built-in dev server. Updates the browser via **Idiomorph** without losing state (focus, scroll position, and inputs are preserved).
+- 🛡️ **No Dependencies (Runtime)**: Stew compiles your entire project into a single, dependency-free Go binary for production.
 
 ---
 
 ## 🚀 Quick Start
 
-1. Install Stew
+1. **Install Stew CLI**
+   ```bash
+   go install github.com/ZiplEix/stew@latest
+   ```
 
-```Bash
-go install github.com/ZiplEix/stew@latest
-```
+2. **Initialize a Project**
+   ```bash
+   # Initialize in current directory with a module name
+   stew init github.com/username/my-app
+   ```
 
-2. Initialize a Project
-
-```Bash
-# Initialize in current directory with a module name
-stew init github.com/username/my-app
-```
-
-This command performs a full "simmering" process:
-1. Creates ``go.mod`` and ``.stew.yaml``.
-2. Scaffolds the ``pages/`` directory with a root layout and page.
-3. Generates a pre-configured ``main.go``.
-4. Runs ``stew install``, ``templ generate``, and ``stew generate`` to make the project compilable immediately.
-
-3. Run Development Server
-
-```Bash
-stew run dev
-```
+3. **Run Development Server**
+   ```bash
+   stew run dev
+   ```
 
 ---
 
-## 📂 File-Based Routing Convention
+## 📂 Router Architecture
 
-Routes are defined by the folder structure inside the ``pages/`` directory. Each folder is a separate Go package. To avoid conflicts with Go's build tool, all special Stew files use the ``stew.`` prefix.
+Stew 2.0 uses a strict file-naming convention to avoid conflicts with Go's standard build tools. All special files in `pages/` are prefixed with `@` or `stew.`.
 
-### Special Files
-
-| File | Purpose | Function Signature |
+| File | Purpose | Logic Context |
 | --- | --- | --- |
-| ``stew.page.templ`` | Defines the UI for the route. | ``templ Page(data stew.PageData)`` |
-| ``stew.server.go`` | Defines API handlers (GET, POST, etc.). | ``func Method(w http.ResponseWriter, r *http.Request)`` |
-| ``stew.layout.templ`` | Wraps all child pages/layouts. | ``templ Layout(contents templ.Component, data stew.PageData)`` |
-| ``stew.middleware.go`` | Intercepts requests for the branch. | ``func Middleware(next http.Handler) http.Handler`` |
+| **`@page.stew`** | UI of the route (HTML + Go expressions). | Server & Client (Wasm) |
+| **`@layout.stew`** | Wraps all child pages/layouts via `<slot />`. | Server & Client (Wasm) |
+| **`stew.server.go`** | Server-only Handlers (GET, POST, API). | Server |
+| **`stew.middleware.go`**| Cascading Go middlewares. | Server |
 
-### Route Mapping Examples
-
-- ``pages/stew.page.templ`` → ``GET /``
-- ``pages/about/stew.page.templ`` → ``GET /about``
-- ``pages/api/login/stew.server.go`` (with ``func Post``) → ``POST /api/login``
-- ``pages/users/_id_/stew.page.templ`` → ``GET /users/{id}`` (Standard Go 1.22+ wildcards)
-- ``pages/files/_path..._/stew.page.templ`` → ``GET /files/{path...}`` (Catch-all routes)
+### Example Mapping:
+- `pages/@page.stew` → `GET /`
+- `pages/api/login/stew.server.go` (func `Post`) → `POST /api/login`
+- `pages/users/{id}/@page.stew` → `GET /users/{id}` (Go 1.22+ wildcard support)
 
 ---
 
-## 🏗️ The Cascade System
+## 🐹 The `.stew` Syntax
 
-Stew 2.0 uses a recursive nesting logic for both UI and Logic. When a route is accessed, Stew crawls from the root pages/ directory down to the target folder.
+Stew files combine the simplicity of HTML with the power of Go.
 
-1. Layout Nesting
+```html
+<goscript>
+    // Server-side logic
+    var name = data.URL
+    type User struct { Name string }
+</goscript>
 
-    Layouts are nested like Russian dolls. A page at ``/admin/settings`` will be rendered as:
+<goscript client>
+    // Isomorphic Wasm logic (TinyGo)
+    import "github.com/ZiplEix/stew/sdk/wasm"
 
-    ``RootLayout( AdminLayout( SettingsPage() ) )``
+    func HandleClick() {
+        wasm.Alert("Clicked from Go/Wasm!")
+    }
+</goscript>
 
-2. Middleware Onion
-
-    Middlewares are chained from the root downwards.
-
-    ``RootMiddleware -> AdminMiddleware -> SettingsHandler``
+<div class="card">
+    <h1>Hello, {{ name }}</h1>
+    
+    {{ if name == "/secret" }}
+        <p>This is a secret page!</p>
+    {{ end }}
+    
+    <button on:click="HandleClick">Click Me</button>
+</div>
+```
 
 ---
 
-## 🛠️ Detailed File Specifications
-
-### ``stew.page.templ``
-
-Defines the UI for the route.
-
-```templ
-package pages
-
-import "github.com/ZiplEix/stew/sdk/stew"
-
-templ Page(data stew.PageData) {
-    <h1>Hello, World!</h1>
-}
-```
-
-### ``stew.server.go``
-
-Expose standard HTTP methods as functions. Stew automatically detects these via AST parsing:
-
-```Go
-package hello
-
-import "net/http"
-
-func Get(w http.ResponseWriter, r *http.Request) { /* ... */ }
-func Post(w http.ResponseWriter, r *http.Request) { /* ... */ }
-```
-
-> Note: If a ``stew.page.templ`` exists in the same folder, it takes priority for GET requests.
-
-### ``stew.middleware.go``
-
-Must return a valid ``http.Handler``.
-
-```Go
-package admin
-
-import "net/http"
-
-func Middleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // Auth logic here
-        next.ServeHTTP(w, r)
-    })
-}
-```
-
-### ``stew.layout.templ``
-
-Must accept ``templ.Component`` to allow nesting.
-
-```templ
-package pages
-
-import "github.com/ZiplEix/stew/sdk/stew"
-
-templ Layout(contents templ.Component, data stew.PageData) {
-    <html>
-        <body>
-            <nav>Navbar</nav>
-            @contents
-        </body>
-    </html>
-}
-```
-
-## CLI Reference
+## 🛠️ CLI Commands
 
 | Command | Description |
 | --- | --- |
-| ``stew init [module]`` | Scaffolds a complete Meta-Framework project. |
-| ``stew generate`` | Scans ``pages/`` and writes ``stew_router_gen.go.`` |
-| ``stew run dev`` | Runs the full dev stack (Router + Templ + Air) with Hot Morphing. |
-| ``stew install`` | Installs required binaries (``templ``, ``air``) defined in ``.stew.yaml``. |
-| ``stew clean`` | Recursively removes build artifacts (e.g., ``**/*.stew.*_templ.go``). |
+| `stew init [module]` | Scaffolds a complete Stew-Lang project. |
+| `stew compile` | Compiles each `.stew` into Go code and Wasm binaries. |
+| `stew generate` | Scans `pages/` and writes the optimized router `stew_router_gen.go`. |
+| `stew run dev` | Runs the full dev stack (Watchers + Hot Morphing). |
+| `stew run build` | Production build (Compile → Generate → Go Build). |
+| `stew clean` | Recursively removes all generated artifacts and tracking files. |
+
+---
 
 ## 🧪 Requirements
 
-- Go: 1.22+ (Uses the new ``http.ServeMux`` routing features)
-- Templ: Latest
-- HTMX & Idiomorph: For Hot Morphing (Injected automatically via ``stew init``)
+- **Go 1.22+**: Uses the new `http.ServeMux` features.
+- **TinyGo**: Required for Wasm compilation (isomorphic features).
+- **HTMX & Idiomorph**: For Hot Morphing (injected automatically).
 
 ---
 
-📝 License
+📝 **License**
 
-Distributed under the MIT License. See ``LICENSE`` for more information.
+Distributed under the MIT License. See `LICENSE` for more information.
 
----
-
-Handcrafted with ❤️ by ZiplEix for the Go community.
+Handcrafted with ❤️ by **ZiplEix** for the Go community.
