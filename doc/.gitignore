@@ -1,0 +1,11 @@
+# Stew compiler cache
+.stew/
+
+# Stew specific
+stew_router_gen.go
+stew.layout.go
+stew.page.go
+
+# Go build artifacts
+bin/
+*.exe

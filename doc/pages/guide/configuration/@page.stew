@@ -1,0 +1,97 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 02</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Configuration</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le fichier <code>.stew.yaml</code> est le centre de contrôle de ton projet. Il définit les commandes, les variables d'environnement, les dépendances et les règles de nettoyage.
+        </p>
+    </header>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Structure de <code>.stew.yaml</code></h2>
+        <pre><code>commands:
+  dev:
+    parallel: true       # Exécution en parallèle
+    scripts:
+      - name: compile
+        run: stew compile --watch
+      - name: generate
+        run: stew generate --watch
+      - name: app
+        run: air          # Hot-reload du serveur Go
+
+  build:
+    parallel: false      # Exécution séquentielle
+    scripts:
+      - name: compile
+        run: stew compile
+      - name: generate
+        run: stew generate
+      - name: go
+        run: go build -o ./bin/app .
+
+env_files:
+  - .env
+  - .env.local           # Chargés automatiquement dans l'env
+
+colors:                  # Couleurs pour les préfixes de log
+  - '\033[32m'           # Green (premier script)
+  - '\033[34m'           # Blue (deuxième script)
+  - '\033[35m'           # Magenta (troisième script)
+
+requires:                # Dépendances installées via `stew install`
+  - name: air
+    package: github.com/air-verse/air@latest
+
+clean:                   # Patterns nettoyés par `stew clean`
+  - bin/
+  - tmp/</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">La section <code>commands</code></h2>
+        <p class="text-sm text-stone-600">Chaque clé de <code>commands</code> définit un alias appelable via <code>stew run &lt;name&gt;</code>.</p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
+                <thead class="bg-stone-50">
+                    <tr>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Champ</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Type</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="p-3 font-mono border-b border-stone-100">parallel</td><td class="p-3 border-b border-stone-100">bool</td><td class="p-3 border-b border-stone-100">Si <code>true</code>, tous les scripts sont lancés simultanément. Si <code>false</code>, exécution séquentielle.</td></tr>
+                    <tr><td class="p-3 font-mono border-b border-stone-100">scripts[].name</td><td class="p-3 border-b border-stone-100">string</td><td class="p-3 border-b border-stone-100">Préfixe affiché dans les logs colorés (ex: <code>[compile]</code>).</td></tr>
+                    <tr><td class="p-3 font-mono border-b border-stone-100">scripts[].run</td><td class="p-3 border-b border-stone-100">string</td><td class="p-3 border-b border-stone-100">Commande shell à exécuter. Les variables d'<code>env_files</code> sont disponibles.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Variables d'environnement</h2>
+        <p class="text-sm text-stone-600">Les fichiers listés dans <code>env_files</code> sont chargés automatiquement au lancement de toutes les commandes <code>stew</code>. Consulter les variables chargées :</p>
+        <pre><code>stew env</code></pre>
+        <p class="text-sm text-stone-600">Exécuter une commande ponctuelle avec l'env :</p>
+        <pre><code>stew exec -- go run .</code></pre>
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+            <strong class="text-amber-900">Variable réservée :</strong> <span class="text-amber-800"><code>STEW_DEV=true</code> est injecté automatiquement lors de <code>stew run dev</code>. Il active le Hot Morphing dans le layout et le middleware de live-reload.</span>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">La section <code>clean</code></h2>
+        <p class="text-sm text-stone-600">Les patterns ici complètent (mais ne remplacent pas) le système de tracking automatique de Stew. La commande <code>stew clean</code> effectue deux phases :</p>
+        <ol class="list-decimal list-inside space-y-2 text-stone-700 text-sm">
+            <li><strong>Phase 1 (automatique)</strong> : Lit <code>.stew/compiled.json</code> et supprime tous les fichiers trackés (Go générés + binaires Wasm).</li>
+            <li><strong>Phase 2 (manuel)</strong> : Applique les patterns définis dans <code>clean:</code> de <code>.stew.yaml</code>.</li>
+        </ol>
+        <p class="text-sm text-stone-500">Le pattern <code>**/*suffix</code> est un pattern récursif. Exemple : <code>**/*.tmp</code> supprime tous les fichiers <code>.tmp</code> de l'arborescence.</p>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/installation" class="text-stone-400 hover:text-stone-600 transition">← Installation</a>
+        <a href="/guide/syntax" class="text-amber-600 font-bold hover:underline">Suivant : Syntaxe .stew →</a>
+    </footer>
+</div>

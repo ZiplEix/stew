@@ -1,0 +1,93 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 13 — Wasm Isomorphique</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">SDK Wasm</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le package <code>github.com/ZiplEix/stew/sdk/wasm</code> est automatiquement importé dans chaque bundle Wasm client. Il fournit toutes les primitives de réactivité et d'interactivité DOM.
+        </p>
+    </header>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">API complète</h2>
+
+        <div class="space-y-6">
+
+            <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
+                <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.BindContent(id string, ptr *string)</h3>
+                <p class="text-stone-600 text-sm mb-3">Liaison <strong>unidirectionnelle Go → DOM</strong>. Surveille le pointeur <code>ptr</code> et met à jour l'<code>innerHTML</code> de l'élément <code>id</code> à chaque mutation.</p>
+                <pre><code>count := "0"
+wasm.BindContent("counter-display", &count)
+<span class="text-stone-400">// Maintenant si count = "42", le DOM affiche "42" automatiquement</span></code></pre>
+            </div>
+
+            <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
+                <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.BindInput(id string, ptr *string)</h3>
+                <p class="text-stone-600 text-sm mb-3">Liaison <strong>bidirectionnelle Go ↔ DOM</strong>. Synchronise la valeur HTML d'un <code>&lt;input&gt;</code> avec la variable Go, dans les deux sens (saisie ↔ programme).</p>
+                <pre><code>name := "World"
+wasm.BindInput("name-input", &name)
+<span class="text-stone-400">// name est mis à jour à chaque frappe dans l'input</span></code></pre>
+            </div>
+
+            <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
+                <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.OnUpdate(cb func())</h3>
+                <p class="text-stone-600 text-sm mb-3">Enregistre un callback <strong>exécuté à chaque frame</strong> (requestAnimationFrame) avant le dirty-checking DOM. Idéal pour recalculer des valeurs dérivées.</p>
+                <pre><code>count := 0
+countStr := "0"
+
+wasm.OnUpdate(func() {
+    countStr = strconv.Itoa(count)  <span class="text-stone-400">// Recalculé ~60x/sec</span>
+})</code></pre>
+            </div>
+
+            <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
+                <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.OnClick(id string, handler func())</h3>
+                <p class="text-stone-600 text-sm mb-3">Raccourci pour attacher un listener click sur un élément par son ID. Équivalent à <code>OnEvent(id, "click", handler)</code>.</p>
+                <pre><code>wasm.OnClick("my-button", func() {
+    count++
+})</code></pre>
+            </div>
+
+            <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
+                <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.OnEvent(id string, eventName string, handler func())</h3>
+                <p class="text-stone-600 text-sm mb-3">Attache un listener pour n'importe quel événement DOM sur un élément par son ID. L'élément doit exister au moment de l'appel.</p>
+                <pre><code>wasm.OnEvent("search-input", "input", func() {
+    <span class="text-stone-400">// Déclenché à chaque frappe dans l'input</span>
+})
+
+wasm.OnEvent("form", "submit", func() {
+    <span class="text-stone-400">// Intercepter la soumission du formulaire</span>
+})</code></pre>
+            </div>
+
+            <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
+                <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.GetPageDataJSON() string</h3>
+                <p class="text-stone-600 text-sm mb-3">Récupère le JSON de <code>stew.PageData</code> injecté par le serveur dans <code>&lt;script id="stew-pagedata"&gt;</code>. Retourne <code>"{}"</code> si absent.</p>
+                <pre><code>rawJSON := wasm.GetPageDataJSON()
+var state map[string]interface{}
+json.Unmarshal([]byte(rawJSON), &state)</code></pre>
+            </div>
+
+            <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
+                <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.StartReactivityLoop()</h3>
+                <p class="text-stone-600 text-sm mb-3"><strong>Appelé automatiquement</strong> par le compilateur à la fin de chaque bundle Wasm. Démarre la boucle <code>requestAnimationFrame</code> et bloque le thread principal Wasm (via <code>select {}</code>). Ne pas appeler manuellement.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Boucle de réactivité — Fonctionnement interne</h2>
+        <p class="text-sm text-stone-600">La boucle <code>StartReactivityLoop</code> fonctionne en 3 étapes à chaque frame :</p>
+        <ol class="list-decimal list-inside space-y-2 text-stone-700 text-sm">
+            <li><strong>Hooks <code>OnUpdate</code></strong> : Tous les callbacks enregistrés sont exécutés en séquence. C'est là que se font les calculs dérivés.</li>
+            <li><strong>Dirty-checking <code>BindInput</code></strong> : Compare <code>*ptr</code> avec la dernière valeur connue. Si différent, met à jour le DOM (<code>el.value</code>).</li>
+            <li><strong>Dirty-checking <code>BindContent</code></strong> : Compare <code>*ptr</code> avec la dernière valeur connue. Si différent, met à jour le DOM (<code>el.innerHTML</code>).</li>
+        </ol>
+        <p class="text-sm text-stone-500">Ce cycle s'auto-planifie via <code>requestAnimationFrame</code> → performances optimales car synchronisé avec le vsync du navigateur.</p>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/wasm-bindings" class="text-stone-400 hover:text-stone-600 transition">← Bindings DOM</a>
+        <a href="/guide/cli" class="text-amber-600 font-bold hover:underline">Suivant : CLI →</a>
+    </footer>
+</div>

@@ -2,17 +2,17 @@
 package main
 
 import (
+	"github.com/ZiplEix/stew/sdk/stew"
 	"net/http"
 
-	"github.com/ZiplEix/stew/sdk/stew"
-	"github.com/a-h/templ"
-
-	stew_pages_root "github.com/ZiplEix/stew/stew-demo/pages"
+	stew_pages_root "github.com/ZiplEix/test-stew/pages"
 )
 
 func RegisterStewRoutes(mux *http.ServeMux) {
+	// Serve static assets (like CSS, Wasm binaries, etc)
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	// --- Route: / ---
-	mux.Handle("GET /", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("GET /", stew_pages_root.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := stew.PageData{
 			URL:     r.URL.Path,
 			Query:   r.URL.Query(),
@@ -21,7 +21,9 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			Store:   make(map[string]any),
 		}
 
-		component := stew_pages_root.Layout(stew_pages_root.Page(data))
-		templ.Handler(component).ServeHTTP(w, r)
-	}))
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_pages_root.Page(w, data)
+		})
+	})))
 }

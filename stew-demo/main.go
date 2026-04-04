@@ -10,7 +10,6 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
-	// Register generated routes from /pages
 	RegisterStewRoutes(mux)
 
 	var handler http.Handler = mux

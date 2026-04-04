@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ZiplEix/stew/internal/tracker"
 	"github.com/ZiplEix/stew/internal/utils"
 	"github.com/spf13/cobra"
 )
@@ -16,18 +17,18 @@ var cleanCmd = &cobra.Command{
 	Short: "Remove build artifacts and generated files recursivelly",
 	Long:  `Scans the project based on patterns defined in .stew.yaml and removes files and directories. Supports recursive file matching with "**/*" pattern.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("🧹 Cleaning up project...")
+
+		// Phase 1: always clean stew-tracked compiler artifacts
+		t := tracker.NewTracker()
+		t.CleanAll()
+
+		// Phase 2: clean patterns from .stew.yaml (optional)
 		cfg, err := utils.LoadConfig(".stew.yaml")
 		if err != nil {
 			fmt.Printf("%s[ERROR]%s Could not load configuration: %v\n", errorColor, resetColor, err)
 			os.Exit(1)
 		}
-
-		if len(cfg.Clean) == 0 {
-			fmt.Println("✨ Nothing to clean defined in .stew.yaml")
-			return
-		}
-
-		fmt.Println("🧹 Cleaning up project...")
 
 		for _, pattern := range cfg.Clean {
 			if strings.HasPrefix(pattern, "**/*") {

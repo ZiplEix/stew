@@ -2,11 +2,11 @@ package generator
 
 // file specifier for stew 2.0
 const (
-	PageFile       = "stew.page.templ"
+	PageFile       = "stew.page.go"
+	LayoutFile     = "stew.layout.go"
 	ServerFile     = "stew.server.go"
-	LayoutFile     = "stew.layout.templ"
 	MiddlewareFile = "stew.middleware.go"
-	ErrorFile      = "stew.error.templ"
+	ErrorFile      = "stew.error.go"
 )
 
 // RouteNode represents a URL segment and a Go package

@@ -1,0 +1,95 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 15 — CLI</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Hot Morphing</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le Hot Morphing est le système de rechargement à chaud intégré à Stew. Il met à jour le navigateur instantanément lorsque le code change, <strong>sans recharger la page</strong> et sans perdre l'état de l'UI.
+        </p>
+    </header>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Comment ça fonctionne</h2>
+        <ol class="list-decimal list-inside space-y-3 text-stone-700 text-sm">
+            <li><strong>Watcher côté CLI</strong> : <code>stew run dev</code> surveille les fichiers du projet. Quand un fichier change, il envoie un signal de reload via un canal partagé.</li>
+            <li><strong>Middleware SSE</strong> : <code>sdk/live</code> injecte un endpoint <code>GET /_stew/live</code> dans le serveur Go. Le navigateur maintient une connexion Server-Sent Events ouverte sur cet endpoint.</li>
+            <li><strong>Script client</strong> : <code>live.InjectScript()</code> injecte un <code>&lt;script&gt;</code> dans le HTML qui écoute les SSE et déclenche un morph-reload.</li>
+            <li><strong>Morphing idiomorph</strong> : Plutôt qu'un rechargement complet, idiomorph fait un diff intelligent entre le DOM actuel et le nouveau HTML reçu, préservant scroll, focus et état des inputs.</li>
+        </ol>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Configurer un layout pour Hot Morphing</h2>
+        <p class="text-sm text-stone-600">Dans le layout racine <code>pages/@layout.stew</code> :</p>
+        <pre><code>&lt;goscript&gt;
+    import "os"
+    import "github.com/ZiplEix/stew/sdk/live"
+&lt;/goscript&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+    &lt;head&gt;
+        &lt;!-- idiomorph est requis pour le morphing--&gt;
+        &lt;script src="https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js"&gt;&lt;/script&gt;
+        &lt;script src="https://unpkg.com/htmx.org@1.9.10"&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body hx-ext="morph"&gt;
+
+        &lt;slot /&gt;
+
+        &lt;!-- Script live injecté uniquement en mode dev --&gt;
+        &#123;&#123; if os.Getenv("STEW_DEV") == "true" &#125;&#125;
+            &#123;&#123; raw(live.InjectScript()) &#125;&#125;
+        &#123;&#123; end &#125;&#125;
+
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Configurer le serveur</h2>
+        <p class="text-sm text-stone-600">Dans <code>main.go</code>, envelopper le routeur avec le middleware live :</p>
+        <pre><code>package main
+
+import (
+    "net/http"
+    "os"
+    "github.com/ZiplEix/stew/sdk/live"
+)
+
+func main() {
+    mux := http.NewServeMux()
+    RegisterStewRoutes(mux)
+
+    var handler http.Handler = mux
+    if os.Getenv("STEW_DEV") == "true" {
+        handler = live.Middleware(mux)
+    }
+
+    http.ListenAndServe(":8080", handler)
+}</code></pre>
+        <p class="text-sm text-stone-500">Le middleware <code>live.Middleware</code> ajoute la route SSE <code>/_stew/live</code> et gère le canal de signal de reload.</p>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Variables d'environnement automatiques</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
+                <thead class="bg-stone-50">
+                    <tr>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Variable</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Valeur en dev</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Rôle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="p-3 font-mono">STEW_DEV</td><td class="p-3 font-mono">true</td><td class="p-3">Active le Hot Morphing et les logs de développement</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/cli" class="text-stone-400 hover:text-stone-600 transition">← CLI</a>
+        <a href="/guide/internals" class="text-amber-600 font-bold hover:underline">Suivant : Fonctionnement interne →</a>
+    </footer>
+</div>

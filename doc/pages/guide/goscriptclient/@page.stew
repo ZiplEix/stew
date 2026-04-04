@@ -1,0 +1,130 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 11 — Wasm Isomorphique</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">goscript client</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le bloc <code>&lt;goscript client&gt;</code> contient de la logique Go compilée en <strong>WebAssembly via TinyGo</strong>. Il s'exécute dans le navigateur, sans aucune requête serveur.
+        </p>
+    </header>
+
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-sm mb-12">
+        <h3 class="font-bold text-amber-900 mb-2 flex items-center gap-2">
+            ⚠️ Note sur la performance de compilation
+        </h3>
+        <p class="text-amber-800 leading-relaxed">
+            Contrairement au code serveur qui est compilé quasi-instantanément, la compilation du WebAssembly par <strong>TinyGo</strong> peut prendre entre <strong>1 et 5 secondes</strong> selon la complexité de vos scripts et de vos imports.
+        </p>
+        <p class="text-amber-800 mt-2">
+            En mode développement (<code>stew run dev</code>), il est normal de constater un léger délai entre la sauvegarde de votre fichier et l'application effective des changements dans le navigateur. Si vos modifications ne semblent pas prises en compte immédiatement, attendez quelques secondes que le binaire Wasm soit prêt.
+        </p>
+    </div>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Syntaxe de base</h2>
+        <pre><code>&lt;goscript client&gt;
+    import "strconv"   <span class="text-stone-400">← Importé dans le bundle Wasm</span>
+
+    <span class="text-stone-400">// Variables réactives — mutables côté client</span>
+    count := 0
+    countStr := "0"
+
+    <span class="text-stone-400">// Computed : recalculé à chaque frame de la boucle de réactivité</span>
+    wasm.OnUpdate(func() {
+        countStr = strconv.Itoa(count)
+    })
+&lt;/goscript&gt;
+
+&lt;div bind&#58;content=&#123;&#123; countStr &#125;&#125;&gt;0&lt;/div&gt;
+&lt;button on&#58;click=&#123;&#123; count++ &#125;&#125;&gt;+&lt;/button&gt;
+&lt;button on&#58;click=&#123;&#123; count-- &#125;&#125;&gt;-&lt;/button&gt;</code></pre>
+        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl text-sm">
+            <strong class="text-indigo-900">Note :</strong> <span class="text-indigo-800"><code>wasm.*</code> est importé automatiquement dans chaque bloc client. Pas besoin de l'importer manuellement.</span>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Ce que génère le compilateur</h2>
+        <p class="text-sm text-stone-600">À partir de la page ci-dessus, Stew génère un fichier temporaire <code>/tmp/stew_main_wasm_pages_page.go</code> :</p>
+        <pre><code>package main
+
+import (
+    "github.com/ZiplEix/stew/sdk/wasm"
+    "strconv"
+)
+
+func main() {
+    <span class="text-stone-400">// Code du bloc &lt;goscript client&gt;</span>
+    count := 0
+    countStr := "0"
+
+    wasm.OnUpdate(func() {
+        countStr = strconv.Itoa(count)
+    })
+
+    <span class="text-stone-400">// Bindings générés automatiquement depuis bind: et on:</span>
+    wasm.BindContent("stew-bind-page-0", &countStr)
+    wasm.OnEvent("stew-bind-page-1", "click", func() { count++ })
+    wasm.OnEvent("stew-bind-page-2", "click", func() { count-- })
+
+    wasm.StartReactivityLoop()
+}</code></pre>
+        <p class="text-sm text-stone-500">Ce fichier est ensuite compilé avec :</p>
+        <pre><code>tinygo build -target wasm -no-debug -o ./static/wasm/pages_page.wasm ...</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Naming du binaire Wasm</h2>
+        <p class="text-sm text-stone-600">Le fichier <code>.wasm</code> est nommé d'après le chemin relatif du fichier <code>.stew</code> source pour éviter les collisions :</p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
+                <thead class="bg-stone-50">
+                    <tr>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Fichier source</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Binaire Wasm généré</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">pages/@page.stew</td><td class="p-3 font-mono">static/wasm/pages_page.wasm</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">pages/blog/@page.stew</td><td class="p-3 font-mono">static/wasm/pages_blog_page.wasm</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">pages/users/{id}/@page.stew</td><td class="p-3 font-mono">static/wasm/pages_users_{id}_page.wasm</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Récupérer les données serveur</h2>
+        <p class="text-sm text-stone-600">Le serveur injecte automatiquement les données de la page en JSON dans le HTML. Côté client :</p>
+        <pre><code>&lt;goscript client&gt;
+    import "encoding/json"
+
+    rawJSON := wasm.GetPageDataJSON()
+    var state map[string]interface{}
+    json.Unmarshal([]byte(rawJSON), &state)
+
+    title := ""
+    if store, ok := state["Store"].(map[string]interface{}); ok {
+        if t, ok := store["Title"].(string); ok {
+            title = t
+        }
+    }
+&lt;/goscript&gt;</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Isolation stricte des contextes</h2>
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-5 text-sm">
+            <h3 class="font-bold text-rose-900 mb-2">❌ Interdit — Partage direct de variable</h3>
+            <p class="text-rose-800">Il est <strong>impossible</strong> d'accéder directement à une variable déclarée dans <code>&lt;goscript server&gt;</code> depuis un bloc <code>&lt;goscript client&gt;</code>. La raison : serveur et client sont deux binaires distincts (l'un est natif, l'autre est Wasm). Une variable serveur n'a aucune existence en mémoire côté client.</p>
+        </div>
+        <div class="bg-green-50 border border-green-200 rounded-xl p-5 text-sm">
+            <h3 class="font-bold text-green-900 mb-2">✅ Correct — Communication par sérialisation</h3>
+            <p class="text-green-800">Utiliser <code>data.Store["key"] = value</code> côté serveur et <code>wasm.GetPageDataJSON()</code> côté client pour transférer des données (uniquement si exportables en JSON).</p>
+        </div>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/middleware" class="text-stone-400 hover:text-stone-600 transition">← Middleware</a>
+        <a href="/guide/wasm-bindings" class="text-amber-600 font-bold hover:underline">Suivant : Bindings DOM →</a>
+    </footer>
+</div>

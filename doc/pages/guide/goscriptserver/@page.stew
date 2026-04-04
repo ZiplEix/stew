@@ -1,0 +1,87 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 08 — Logique Go</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">goscript server</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le bloc <code>&lt;goscript&gt;</code> (ou <code>&lt;goscript server&gt;</code>) contient de la logique Go exécutée <strong>uniquement sur le serveur</strong> lors du rendu HTTP de la page.
+        </p>
+    </header>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Syntaxe de base</h2>
+        <pre><code>&lt;goscript&gt;
+    import "database/sql"
+    import "fmt"
+
+    <span class="text-stone-400">// Code Go standard — accès DB, sessions, calculs, etc.</span>
+    db, _ := sql.Open("sqlite3", "./data.db")
+    rows, _ := db.Query("SELECT name FROM users LIMIT 10")
+    defer rows.Close()
+
+    var users []string
+    for rows.Next() {
+        var name string
+        rows.Scan(&name)
+        users = append(users, name)
+    }
+
+    title := fmt.Sprintf("%d utilisateurs", len(users))
+&lt;/goscript&gt;
+
+&lt;h1&gt;&#123;&#123; title &#125;&#125;&lt;/h1&gt;
+
+&#123;&#123; each users as name, i &#125;&#125;
+    &lt;p&gt;&#123;&#123; i &#125;&#125;. &#123;&#123; name &#125;&#125;&lt;/p&gt;
+&#123;&#123; end &#125;&#125;</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Règles et comportements</h2>
+        <div class="space-y-3">
+            <div class="p-4 border border-stone-200 rounded-xl text-sm">
+                <strong class="block mb-1">📦 Imports</strong>
+                <p class="text-stone-600">Chaque ligne <code>import "pkg"</code> est extraite par le compilateur et ajoutée en haut du fichier Go généré. Le compilateur ne lie que les packages réellement utilisés dans le code généré.</p>
+            </div>
+            <div class="p-4 border border-stone-200 rounded-xl text-sm">
+                <strong class="block mb-1">🔤 Variables</strong>
+                <p class="text-stone-600">Les variables déclarées avec <code>:=</code> sont disponibles dans tout le template de la page (dans les expressions <code>&#123;&#123; &#125;&#125;</code> et les blocs <code>&#123;&#123; if &#125;&#125;</code>/<code>&#123;&#123; each &#125;&#125;</code>).</p>
+            </div>
+            <div class="p-4 border border-stone-200 rounded-xl text-sm">
+                <strong class="block mb-1">🏗 Types struct</strong>
+                <p class="text-stone-600">Les déclarations <code>type Xxx struct {}</code> sont extraites au niveau du <em>package</em> (hors de la fonction de rendu), ce qui est requis par Go.</p>
+            </div>
+            <div class="p-4 border border-stone-200 rounded-xl text-sm">
+                <strong class="block mb-1">🚫 Isolation</strong>
+                <p class="text-stone-600">Le code server n'est <strong>jamais</strong> accessible côté client. Il n'y a aucune fuite de logique serveur dans le Wasm. La communication se fait uniquement par sérialisation JSON.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Importer des composants Stew</h2>
+        <p class="text-sm text-stone-600">Pour utiliser un composant dans une page, l'importer dans le bloc <code>&lt;goscript&gt;</code> avec le chemin relatif vers le fichier <code>.stew</code> :</p>
+        <pre><code>&lt;goscript&gt;
+    import "./component/Card.stew"
+    import "../shared/Avatar.stew"
+&lt;/goscript&gt;
+
+&lt;Card Title="Hello" Description="World" /&gt;</code></pre>
+        <p class="text-sm text-stone-500">Le compilateur résout le chemin en un import de package Go correspondant au dossier.</p>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Partager des données via <code>data.Store</code></h2>
+        <p class="text-sm text-stone-600">Le champ <code>data.Store</code> est une map <code>map[string]any</code> libre. Elle peut être peuplée en server et sérialisée automatiquement pour le client Wasm :</p>
+        <pre><code>&lt;goscript&gt;
+    <span class="text-stone-400">// Côté serveur : alimenter le Store</span>
+    data.Store["Title"] = "Mon App"
+    data.Store["Version"] = "2.0"
+&lt;/goscript&gt;</code></pre>
+        <p class="text-sm text-stone-500">Ces données sont injectées en JSON dans le HTML sous la forme <code>&lt;script id="stew-pagedata"&gt;{...}&lt;/script&gt;</code> et récupérables côté Wasm avec <code>wasm.GetPageDataJSON()</code>.</p>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/assets" class="text-stone-400 hover:text-stone-600 transition">← Assets & Tailwind</a>
+        <a href="/guide/pagedata" class="text-amber-600 font-bold hover:underline">Suivant : PageData →</a>
+    </footer>
+</div>
