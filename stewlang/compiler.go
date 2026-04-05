@@ -15,9 +15,10 @@ import (
 var attrRegex = regexp.MustCompile(`([a-zA-Z0-9_-]+)(?:=(?:"([^"]*)"|'([^']*)'|{{([^}]+)}}))?`)
 
 type WasmOptions struct {
-	UsesData bool
-	UsesIO   bool
-	UsesNav  bool
+	UsesData    bool
+	UsesIO      bool
+	UsesNav     bool
+	UsesStorage bool
 }
 
 func buildWasm(name string, nodes []Node, bindings string, clientImports []string, opts WasmOptions) (string, error) {
@@ -42,6 +43,10 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 			wasmBuf.WriteString("\t\"github.com/ZiplEix/stew/sdk/wasm/nav\"\n")
 			continue
 		}
+		if trimmedImp == "stew/storage" {
+			wasmBuf.WriteString("\t\"github.com/ZiplEix/stew/sdk/wasm/storage\"\n")
+			continue
+		}
 		wasmBuf.WriteString("\t" + imp + "\n")
 	}
 	wasmBuf.WriteString(")\n\n")
@@ -64,6 +69,9 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	}
 	if opts.UsesNav {
 		wasmBuf.WriteString("\tnav := nav.Instance\n")
+	}
+	if opts.UsesStorage {
+		wasmBuf.WriteString("\tstorage := storage.Instance\n")
 	}
 
 	// Add client goscripts (excluding parsed imports and types)
@@ -401,6 +409,11 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 						*clientImports = append(*clientImports, "\""+importStr+"\"")
 						continue
 					}
+					if importStr == "stew/storage" {
+						opts.UsesStorage = true
+						*clientImports = append(*clientImports, "\""+importStr+"\"")
+						continue
+					}
 
 					if gs.Context == "client" {
 						*clientImports = append(*clientImports, "\""+importStr+"\"")
@@ -436,34 +449,32 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 		} else if b, ok := n.(NodeIf); ok {
 			res1 := extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
 			res2 := extractImports(b.ElseBody, userImports, stewImports, clientImports, moduleBase, relFilePath)
-			if res1.UsesData || res2.UsesData {
-				opts.UsesData = true
-			}
-			if res1.UsesIO || res2.UsesIO {
-				opts.UsesIO = true
-			}
-			if res1.UsesNav || res2.UsesNav {
-				opts.UsesNav = true
-			}
+			opts.merge(res1)
+			opts.merge(res2)
 		} else if b, ok := n.(NodeEach); ok {
 			res := extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
-			if res.UsesData {
-				opts.UsesData = true
-			}
-			if res.UsesIO {
-				opts.UsesIO = true
-			}
+			opts.merge(res)
 		} else if b, ok := n.(NodeComponent); ok {
 			res := extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
-			if res.UsesData {
-				opts.UsesData = true
-			}
-			if res.UsesIO {
-				opts.UsesIO = true
-			}
+			opts.merge(res)
 		}
 	}
 	return opts
+}
+
+func (o *WasmOptions) merge(other WasmOptions) {
+	if other.UsesData {
+		o.UsesData = true
+	}
+	if other.UsesIO {
+		o.UsesIO = true
+	}
+	if other.UsesNav {
+		o.UsesNav = true
+	}
+	if other.UsesStorage {
+		o.UsesStorage = true
+	}
 }
 
 type typesBuilder struct {

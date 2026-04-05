@@ -27,6 +27,7 @@ import (
 	stew_guide_troubleshooting "github.com/ZiplEix/stew/doc/pages/guide/troubleshooting"
 	stew_guide_wasmbindings "github.com/ZiplEix/stew/doc/pages/guide/wasmbindings"
 	stew_guide_wasmsdk "github.com/ZiplEix/stew/doc/pages/guide/wasmsdk"
+	stew_test "github.com/ZiplEix/stew/doc/pages/test"
 	stew_test_id "github.com/ZiplEix/stew/doc/pages/test/__id__"
 )
 
@@ -403,6 +404,21 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 			stew_guide.Layout(w, data, func() {
 				stew_guide_wasmsdk.Page(w, data)
 			})
+		})
+	}))
+	// --- Route: /test ---
+	mux.Handle("GET /test", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_test.Page(w, data)
 		})
 	}))
 	// --- Route: /test/{id} ---
