@@ -38,6 +38,7 @@
                         <li><strong>Build Wasm</strong> : Si des blocs client existent, génère le fichier Go temporaire et le compile avec TinyGo.</li>
                         <li><strong>Émission Go serveur</strong> : Génère la fonction de rendu Go avec les <code>w.Write([]byte(...))</code> et les expressions formatées.</li>
                         <li><strong>Gestion des imports dynamiques</strong> : N'inclut que les imports réellement utilisés dans le code généré (évite les erreurs <code>imported and not used</code>).</li>
+                        <li><strong>Analyse AST & DX</strong> : Scanne les scripts clients pour détecter les déclarations de variables/constantes et génère automatiquement le boilerplate <code>_ = name</code> pour éviter les erreurs de variables inutilisées.</li>
                         <li><strong>Formatage</strong> : Appelle <code>go/format</code> pour formater le code généré.</li>
                     </ul>
                 </div>
@@ -60,6 +61,23 @@ tinygo build -target wasm -no-debug -o ./static/wasm/pages_page.wasm /tmp/...
       │
       ▼
 static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pre>
+    </section>
+    
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Optimisation DX : Variables inutilisées</h2>
+        <p class="text-sm text-stone-600 italic">"Go est strict, Stew est flexible."</p>
+        <p class="text-sm text-stone-600 leading-relaxed">
+            Parce que les scripts client sont injectés dans une fonction <code>main()</code> unique, toute variable déclarée mais non utilisée dans le script lui-même provoquerait une erreur de compilation Go. 
+            Le compilateur Stew résout ce problème automatiquement :
+        </p>
+        <ul class="list-disc list-inside space-y-2 text-sm text-stone-700">
+            <li><strong>Analyse AST</strong> : Le compilateur utilise les packages <code>go/parser</code> et <code>go/ast</code> pour parcourir vos scripts <code>&lt;goscript client&gt;</code>.</li>
+            <li><strong>Détection</strong> : Il identifie toutes les déclarations de type <code>:=</code>, <code>var</code>, et <code>const</code> situées à la racine de vos blocs de script.</li>
+            <li><strong>Injection</strong> : Il génère automatiquement une ligne <code>_ = maVariable</code> à la fin de la fonction <code>main()</code>.</li>
+        </ul>
+        <p class="text-xs text-amber-600 bg-amber-50 p-4 rounded-xl border border-amber-100">
+            <strong>Note :</strong> Cette automatisation ne s'applique qu'au niveau "racine" du script. Les variables déclarées à l'intérieur d'un bloc (boucle <code>for</code>, condition <code>if</code>, ou sous-fonction) suivent les règles standard de Go et doivent être utilisées dans leur portée respective.
+        </p>
     </section>
 
     <section class="space-y-4">

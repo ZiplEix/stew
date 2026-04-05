@@ -3,7 +3,10 @@ package stewlang
 import (
 	"bytes"
 	"fmt"
+	"go/ast"
 	"go/format"
+	"go/parser"
+	"go/token"
 	"os"
 	"os/exec"
 	"path"
@@ -76,15 +79,32 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 
 	// Add client goscripts (excluding parsed imports and types)
 	hasClientCode := false
+	var allDeclaredNames []string
 	for _, n := range nodes {
 		if gs, ok := n.(NodeGoScript); ok && gs.Context == "client" {
 			lines := strings.Split(gs.Content, "\n")
+			cleaned := ""
 			for _, line := range lines {
 				if !strings.HasPrefix(strings.TrimSpace(line), "import ") {
 					wasmBuf.WriteString("\t" + line + "\n")
+					cleaned += line + "\n"
 				}
 			}
+			// Collect declared names for automatic "touching"
+			allDeclaredNames = append(allDeclaredNames, extractDeclaredNames(cleaned)...)
 			hasClientCode = true
+		}
+	}
+
+	// Automatically "touch" declared variables to avoid "unused" errors
+	if len(allDeclaredNames) > 0 {
+		wasmBuf.WriteString("\n\t// Automatically touch variables to avoid unused errors\n")
+		seen := make(map[string]bool)
+		for _, name := range allDeclaredNames {
+			if !seen[name] {
+				wasmBuf.WriteString(fmt.Sprintf("\t_ = %s\n", name))
+				seen[name] = true
+			}
 		}
 	}
 
@@ -716,4 +736,48 @@ func parseAttributes(tagContent string) map[string]string {
 	}
 
 	return props
+}
+
+func extractDeclaredNames(content string) []string {
+	fset := token.NewFileSet()
+	// Wrap in a function to allow statements and local declarations
+	// We use a unique function name to find it easily
+	wrapped := "package main\nfunc _stew_dummy_() {\n" + content + "\n}"
+	f, err := parser.ParseFile(fset, "", wrapped, 0)
+	if err != nil {
+		return nil
+	}
+
+	var names []string
+	for _, decl := range f.Decls {
+		if fn, ok := decl.(*ast.FuncDecl); ok && fn.Name.Name == "_stew_dummy_" {
+			for _, stmt := range fn.Body.List {
+				switch s := stmt.(type) {
+				case *ast.AssignStmt:
+					if s.Tok == token.DEFINE {
+						for _, lhs := range s.Lhs {
+							if id, ok := lhs.(*ast.Ident); ok && id.Name != "_" {
+								names = append(names, id.Name)
+							}
+						}
+					}
+				case *ast.DeclStmt:
+					if gd, ok := s.Decl.(*ast.GenDecl); ok {
+						if gd.Tok == token.VAR || gd.Tok == token.CONST {
+							for _, spec := range gd.Specs {
+								if vs, ok := spec.(*ast.ValueSpec); ok {
+									for _, id := range vs.Names {
+										if id.Name != "_" {
+											names = append(names, id.Name)
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return names
 }

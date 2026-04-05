@@ -28,11 +28,6 @@
         storage.Session.Clear()
         userName = "Nettoyé"
     }
-
-    _ = userName
-    _ = sessionData
-    _ = incrementSession
-    _ = clearAll
 </goscript>
 
 <div class="p-10 max-w-2xl mx-auto">
