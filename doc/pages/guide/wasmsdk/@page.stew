@@ -79,6 +79,42 @@
 &lt;/goscript&gt;</code></pre>
         </div>
 
+        <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-6">
+            <h3 class="font-mono font-bold text-indigo-800 mb-2">import "stew/nav"</h3>
+            <p class="text-stone-700 text-sm mb-4">Gère la navigation programmatique et l'accès à l'état de l'URL côté client.</p>
+            
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-white p-3 rounded-lg border border-indigo-100 text-xs text-stone-900">
+                    <div class="font-bold text-indigo-700 mb-1">nav.URL string</div>
+                    <div class="text-stone-500">L'URL actuelle (pathname).</div>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-indigo-100 text-xs text-stone-900">
+                    <div class="font-bold text-indigo-700 mb-1">nav.Query url.Values</div>
+                    <div class="text-stone-500">Accès aux paramètres de recherche.</div>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-indigo-100 text-xs text-stone-900">
+                    <div class="font-bold text-indigo-700 mb-1">nav.To(url)</div>
+                    <div class="text-stone-500">Redirection standard (rechargement complet).</div>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-indigo-100 text-xs text-stone-900">
+                    <div class="font-bold text-indigo-700 mb-1">nav.Morph(url)</div>
+                    <div class="text-stone-500">Navigation fluide via Idiomorph (recommandé).</div>
+                </div>
+            </div>
+
+            <pre><code>&lt;goscript client&gt;
+    import "stew/nav"
+
+    onLogin := func() {
+        nav.Morph("/dashboard") // Navigation fluide sans rechargement
+    }
+
+    onLogout := func() {
+        nav.To("/") // Redirection complète avec nettoyage de l'état
+    }
+&lt;/goscript&gt;</code></pre>
+        </div>
+
         <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-center justify-between">
             <div>
                 <h3 class="font-mono font-bold text-amber-800 mb-1">🆘 Un problème ?</h3>

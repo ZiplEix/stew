@@ -17,6 +17,7 @@ var attrRegex = regexp.MustCompile(`([a-zA-Z0-9_-]+)(?:=(?:"([^"]*)"|'([^']*)'|{
 type WasmOptions struct {
 	UsesData bool
 	UsesIO   bool
+	UsesNav  bool
 }
 
 func buildWasm(name string, nodes []Node, bindings string, clientImports []string, opts WasmOptions) (string, error) {
@@ -28,12 +29,17 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	wasmBuf.WriteString("package main\n\n")
 	wasmBuf.WriteString("import (\n\t\"github.com/ZiplEix/stew/sdk/wasm\"\n")
 	for _, imp := range clientImports {
-		if imp == "\"stew/data\"" {
+		trimmedImp := strings.Trim(imp, "\"")
+		if trimmedImp == "stew/data" {
 			wasmBuf.WriteString("\t\"github.com/ZiplEix/stew/sdk/wasm/data\"\n")
 			continue
 		}
-		if imp == "\"stew/io\"" {
+		if trimmedImp == "stew/io" {
 			wasmBuf.WriteString("\t\"github.com/ZiplEix/stew/sdk/wasm/io\"\n")
+			continue
+		}
+		if trimmedImp == "stew/nav" {
+			wasmBuf.WriteString("\t\"github.com/ZiplEix/stew/sdk/wasm/nav\"\n")
 			continue
 		}
 		wasmBuf.WriteString("\t" + imp + "\n")
@@ -55,6 +61,9 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 		wasmBuf.WriteString("\talert := io.Alert\n")
 		wasmBuf.WriteString("\tprompt := io.Prompt\n")
 		wasmBuf.WriteString("\tconfirm := io.Confirm\n")
+	}
+	if opts.UsesNav {
+		wasmBuf.WriteString("\tnav := nav.Instance\n")
 	}
 
 	// Add client goscripts (excluding parsed imports and types)
@@ -331,9 +340,18 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 
 					if importStr == "stew/data" {
 						opts.UsesData = true
+						*clientImports = append(*clientImports, "\""+importStr+"\"")
+						continue
 					}
 					if importStr == "stew/io" {
 						opts.UsesIO = true
+						*clientImports = append(*clientImports, "\""+importStr+"\"")
+						continue
+					}
+					if importStr == "stew/nav" {
+						opts.UsesNav = true
+						*clientImports = append(*clientImports, "\""+importStr+"\"")
+						continue
 					}
 
 					if gs.Context == "client" {
@@ -375,6 +393,9 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 			}
 			if res1.UsesIO || res2.UsesIO {
 				opts.UsesIO = true
+			}
+			if res1.UsesNav || res2.UsesNav {
+				opts.UsesNav = true
 			}
 		} else if b, ok := n.(NodeEach); ok {
 			res := extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
