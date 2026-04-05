@@ -94,7 +94,7 @@ func main() {
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Récupérer les données serveur</h2>
-        <p class="text-sm text-stone-600">Le serveur injecte automatiquement les données de la page en JSON dans le HTML. Côté client :</p>
+        <p class="text-sm text-stone-600">Le serveur injecte automatiquement les données de la page en JSON dans le HTML. Côté client, vous pouvez les récupérer au démarrage de votre script :</p>
         <pre><code>&lt;goscript client&gt;
     import "encoding/json"
 
@@ -103,12 +103,26 @@ func main() {
     json.Unmarshal([]byte(rawJSON), &state)
 
     title := ""
-    if store, ok := state["Store"].(map[string]interface{}); ok {
-        if t, ok := store["Title"].(string); ok {
+    if store, ok := state["store"].(map[string]interface{}); ok {
+        if t, ok := store["title"].(string); ok {
             title = t
         }
     }
 &lt;/goscript&gt;</code></pre>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Performance et Réactivité</h2>
+        <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-xl text-sm">
+            <h3 class="font-bold text-rose-900 mb-1">⚠️ Ne mettez jamais d'opérations lourdes dans OnUpdate</h3>
+            <p class="text-rose-800 leading-relaxed">
+                La fonction <code>wasm.OnUpdate(func() { ... })</code> est exécutée à **chaque frame** (environ 60 fois par seconde) par la boucle de réactivité de Stew. 
+            </p>
+            <ul class="list-disc list-inside mt-2 text-rose-800 space-y-1">
+                <li><strong>Mauvaise pratique :</strong> Parser du JSON (<code>json.Unmarshal</code>) ou manipuler directement le DOM via JS inside <code>OnUpdate</code>. Cela ralentira considérablement votre interface.</li>
+                <li><strong>Bonne pratique :</strong> Utilisez <code>OnUpdate</code> uniquement pour des calculs simples de variables réactives ou des synchronisations d'état.</li>
+            </ul>
+        </div>
     </section>
 
     <section class="space-y-4">

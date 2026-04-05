@@ -1,0 +1,75 @@
+<goscript client>
+    import "encoding/json"
+    import "syscall/js"
+
+    // Récupération de l'ID via le Wasm
+    wasmId := "Initialisation..."
+    console := js.Global().Get("console")
+
+    // 1. On récupère la donnée UNE SEULE FOIS au démarrage
+    rawJSON := wasm.GetPageDataJSON()
+    console.Call("log", "Wasm: JSON reçu", rawJSON)
+
+    var state map[string]interface{}
+    err := json.Unmarshal([]byte(rawJSON), &state)
+    
+    if err != nil {
+        console.Call("error", "Wasm: Erreur Unmarshal", err.Error())
+        wasmId = "Erreur Wasm JSON"
+    } else {
+        if params, ok := state["params"].(map[string]interface{}); ok {
+            val := params["id"].(string)
+            wasmId = val + " (via Wasm Client)"
+            console.Call("log", "Wasm: ID trouvé", val)
+        } else {
+            console.Call("warn", "Wasm: Params non trouvés dans l'état")
+            wasmId = "Params introuvables"
+        }
+    }
+
+    // La boucle de réactivité mettra à jour le DOM si wasmId change
+    wasm.OnUpdate(func() {
+        // Optionnel : on pourrait faire d'autres calculs ici
+    })
+</goscript>
+
+<div class="p-12 space-y-12">
+    <header>
+        <h1 class="text-4xl font-black tracking-tighter">Test de Paramètre Dynamique</h1>
+        <p class="text-stone-500 text-lg">
+            Cette page démontre le fonctionnement de la nouvelle convention <code>__slug__</code>.
+        </p>
+    </header>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Rendu Serveur -->
+        <div class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-8 shadow-xl">
+            <p class="text-stone-600 font-medium mb-2 uppercase tracking-widest text-xs">Côté Serveur (SSR) :</p>
+            <h2 class="text-4xl font-black text-amber-600">
+                {{ data.Params["id"] }}
+            </h2>
+        </div>
+
+        <!-- Rendu Client (Wasm) -->
+        <div class="bg-indigo-50 border-2 border-indigo-200 rounded-3xl p-8 shadow-xl">
+            <p class="text-indigo-600 font-medium mb-2 uppercase tracking-widest text-xs">Côté Client (Wasm) :</p>
+            <h2 class="text-4xl font-black text-indigo-600" bind:content={{ wasmId }}>
+                Chargement...
+            </h2>
+        </div>
+    </div>
+
+    <div class="bg-stone-900 rounded-2xl p-6 text-stone-300 font-mono text-sm">
+        <p class="mb-4 text-stone-500">// Code de récupération Wasm :</p>
+        <pre><code>&lt;goscript client&gt;
+    rawJSON := wasm.GetPageDataJSON()
+    var state map[string]interface{}
+    json.Unmarshal([]byte(rawJSON), &amp;state)
+    userId := state["params"].(map[string]interface{})["id"].(string)
+&lt;/goscript&gt;</code></pre>
+    </div>
+
+    <footer class="pt-8">
+        <a href="/" class="text-amber-600 font-bold hover:underline">← Retour à l'accueil</a>
+    </footer>
+</div>

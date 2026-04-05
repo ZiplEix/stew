@@ -6,9 +6,9 @@ import (
 )
 
 type PageData struct {
-	URL     string
-	Params  map[string]string
-	Query   url.Values
-	Request *http.Request
-	Store   map[string]any
+	URL     string            `json:"url"`
+	Params  map[string]string `json:"params"`
+	Query   url.Values        `json:"query"`
+	Request *http.Request     `json:"-"`
+	Store   map[string]any    `json:"store"`
 }
