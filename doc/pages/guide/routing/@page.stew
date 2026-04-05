@@ -17,7 +17,7 @@
 ├── blog/
 │   ├── @layout.stew       → Layout imbriqué pour /blog/*
 │   ├── @page.stew         → GET /blog
-│   └── {slug}/
+│   └── __slug__/
 │       └── @page.stew     → GET /blog/{slug}
 └── api/
     └── users/
@@ -26,8 +26,8 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Paramètres d'URL</h2>
-        <p class="text-sm text-stone-600">Un dossier nommé <code>{param}</code> crée un paramètre dynamique dans l'URL. Accessible via <code>data.Params["param"]</code> :</p>
-        <pre><code>&lt;!-- pages/users/{id}/@page.stew --&gt;
+        <p class="text-sm text-stone-600">Un dossier nommé <code>__param__</code> crée un paramètre dynamique dans l'URL. Accessible via <code>data.Params["param"]</code> :</p>
+        <pre><code>&lt;!-- pages/users/__id__/@page.stew --&gt;
 &lt;p&gt;Profil de l'utilisateur : &#123;&#123; data.Params["id"] &#125;&#125;&lt;/p&gt;</code></pre>
         <p class="text-sm text-stone-500">Génère la route : <code>GET /users/{id}</code></p>
     </section>

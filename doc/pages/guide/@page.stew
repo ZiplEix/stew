@@ -57,7 +57,7 @@
 │   └── users/
 │       ├── @layout.stew   ← Layout imbriqué (optionnel)
 │       ├── @page.stew     ← Route /users
-│       └── {id}/
+│       └── __id__/
 │           └── @page.stew ← Route /users/{id} (paramètres URL)
 ├── component/
 │   └── Card.stew          ← Composant réutilisable

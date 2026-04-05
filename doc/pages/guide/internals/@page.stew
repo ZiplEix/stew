@@ -70,7 +70,7 @@ static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pr
     HasPage:      true
     HasLayout:    true (parent)
     HasMiddleware: true (parent)
-    ImportPath:   "github.com/.../pages/users/{id}"
+    ImportPath:   "github.com/.../pages/users/__id__"
     PackageAlias: "stew_pages_users_id"
     Children: [...]
 }</code></pre>

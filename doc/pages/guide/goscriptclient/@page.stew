@@ -86,7 +86,7 @@ func main() {
                 <tbody>
                     <tr class="border-b border-stone-100"><td class="p-3 font-mono">pages/@page.stew</td><td class="p-3 font-mono">static/wasm/pages_page.wasm</td></tr>
                     <tr class="border-b border-stone-100"><td class="p-3 font-mono">pages/blog/@page.stew</td><td class="p-3 font-mono">static/wasm/pages_blog_page.wasm</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">pages/users/{id}/@page.stew</td><td class="p-3 font-mono">static/wasm/pages_users_{id}_page.wasm</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">pages/users/__id__/@page.stew</td><td class="p-3 font-mono">static/wasm/pages_users___id___page.wasm</td></tr>
                 </tbody>
             </table>
         </div>
