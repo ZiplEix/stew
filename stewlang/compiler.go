@@ -14,7 +14,7 @@ import (
 
 var attrRegex = regexp.MustCompile(`([a-zA-Z0-9_-]+)(?:=(?:"([^"]*)"|'([^']*)'|{{([^}]+)}}))?`)
 
-func buildWasm(name string, nodes []Node, bindings string, clientImports []string) (string, error) {
+func buildWasm(name string, nodes []Node, bindings string, clientImports []string, usesStewData bool) (string, error) {
 	if _, err := exec.LookPath("tinygo"); err != nil {
 		return "", fmt.Errorf("tinygo is not installed. Please install TinyGo to compile WebAssembly bindings: https://tinygo.org/getting-started/")
 	}
@@ -23,10 +23,14 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	wasmBuf.WriteString("package main\n\n")
 	wasmBuf.WriteString("import (\n\t\"github.com/ZiplEix/stew/sdk/wasm\"\n")
 	for _, imp := range clientImports {
+		if imp == "\"stew/data\"" {
+			wasmBuf.WriteString("\t\"github.com/ZiplEix/stew/sdk/wasm/data\"\n")
+			continue
+		}
 		wasmBuf.WriteString("\t" + imp + "\n")
 	}
 	wasmBuf.WriteString(")\n\n")
-	
+
 	var structDefinitions typesBuilder
 	nodes = extractTypes(nodes, &structDefinitions, "client")
 	if structDefinitions.Len() > 0 {
@@ -34,7 +38,10 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	}
 
 	wasmBuf.WriteString("\nfunc main() {\n")
-	
+	if usesStewData {
+		wasmBuf.WriteString("\tdata := data.Data\n")
+	}
+
 	// Add client goscripts (excluding parsed imports and types)
 	hasClientCode := false
 	for _, n := range nodes {
@@ -48,7 +55,7 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 			hasClientCode = true
 		}
 	}
-	
+
 	// If there's no actual client code and no bindings, just skip
 	if !hasClientCode && bindings == "" {
 		return "", nil
@@ -58,15 +65,15 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	wasmBuf.WriteString(bindings)
 	wasmBuf.WriteString("\n\twasm.StartReactivityLoop()\n")
 	wasmBuf.WriteString("}\n")
-	
+
 	tmpPath := filepath.Join(os.TempDir(), fmt.Sprintf("stew_main_wasm_%s.go", name))
 	if err := os.WriteFile(tmpPath, wasmBuf.Bytes(), 0644); err != nil {
 		return "", err
 	}
-	
+
 	outWasm := filepath.Join(".", "static", "wasm", name+".wasm")
 	os.MkdirAll(filepath.Dir(outWasm), 0755)
-	
+
 	cmd := exec.Command("tinygo", "build", "-target", "wasm", "-no-debug", "-o", outWasm, tmpPath)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
@@ -74,7 +81,7 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 		fmt.Printf("⚠️  TinyGo build warning: %v. Is your Go version supported?\n", err)
 		return "", nil // Non-fatal, we still track
 	}
-	
+
 	return outWasm, nil
 }
 
@@ -92,7 +99,7 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 	var userImports []string
 	var stewImports []string
 	var clientImports []string
-	extractImports(nodes, &userImports, &stewImports, &clientImports, moduleBase, relFilePath)
+	usesStewData := extractImports(nodes, &userImports, &stewImports, &clientImports, moduleBase, relFilePath)
 
 	isComponent := false
 	if regexp.MustCompile(`^[A-Z][a-zA-Z0-9]*$`).MatchString(name) && !strings.HasSuffix(name, "Page") && name != "Layout" {
@@ -113,11 +120,11 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 				if prevHTML, isHTML := modifiedNodes[len(modifiedNodes)-1].(NodeHTML); isHTML {
 					bindID := fmt.Sprintf("stew-bind-%s-%d", strings.ToLower(name), bindCounter)
 					bindCounter++
-					
+
 					// Naïve injection at the end of the HTML string pre-parsing
 					prevHTML.Content += fmt.Sprintf(`id="%s" `, bindID)
 					modifiedNodes[len(modifiedNodes)-1] = prevHTML
-					
+
 					if bindNode.IsEvent {
 						clientBindings.WriteString(fmt.Sprintf("\twasm.OnEvent(\"%s\", \"%s\", func() { %s })\n", bindID, bindNode.BindType, bindNode.BindVar))
 					} else {
@@ -157,9 +164,9 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 	// Build WebAssembly if client code is present
 	var generatedArtifacts []string
 	if hasClientCode {
-		wasmPath, err := buildWasm(wasmName, nodes, clientBindings.String(), clientImports)
+		wasmPath, err := buildWasm(wasmName, nodes, clientBindings.String(), clientImports, usesStewData)
 		if err != nil {
-			fmt.Printf("⚠️  TinyGo build warning: %v. Is your Go version supported?\n", err)
+			fmt.Printf("⚠️  TinyGo build warning: %v.\n", err)
 		} else if wasmPath != "" {
 			generatedArtifacts = append(generatedArtifacts, wasmPath)
 		}
@@ -210,7 +217,7 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 		bodyBuf.WriteString("\tw.Write([]byte(`<script type=\"application/json\" id=\"stew-pagedata\">`))\n")
 		bodyBuf.WriteString("\tw.Write(dataJSON)\n")
 		bodyBuf.WriteString("\tw.Write([]byte(`</script>`))\n")
-		
+
 		wasmPath := fmt.Sprintf("/static/wasm/%s.wasm", wasmName)
 		bootstrap := fmt.Sprintf(`<script src="/static/wasm/wasm_exec.js"></script><script>const go = new Go(); WebAssembly.instantiateStreaming(fetch("%s"), go.importObject).then((result) => { go.run(result.instance); });</script>`, wasmPath)
 		bodyBuf.WriteString(fmt.Sprintf("\tw.Write([]byte(`%s`))\n", bootstrap))
@@ -296,7 +303,8 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 	return string(formatted), generatedArtifacts, nil
 }
 
-func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, clientImports *[]string, moduleBase string, relFilePath string) {
+func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, clientImports *[]string, moduleBase string, relFilePath string) bool {
+	usesStewData := false
 	for _, n := range nodes {
 		if gs, ok := n.(NodeGoScript); ok {
 			lines := strings.Split(gs.Content, "\n")
@@ -305,12 +313,16 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 				if strings.HasPrefix(line, "import ") {
 					importStr := strings.TrimSpace(strings.TrimPrefix(line, "import "))
 					importStr = strings.Trim(importStr, "\"'")
-					
+
+					if importStr == "stew/data" {
+						usesStewData = true
+					}
+
 					if gs.Context == "client" {
 						*clientImports = append(*clientImports, "\""+importStr+"\"")
 						continue
 					}
-					
+
 					if strings.HasSuffix(importStr, ".stew") {
 						dir := importStr
 						lastSlash := strings.LastIndex(dir, "/")
@@ -338,14 +350,23 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 				}
 			}
 		} else if b, ok := n.(NodeIf); ok {
-			extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
-			extractImports(b.ElseBody, userImports, stewImports, clientImports, moduleBase, relFilePath)
+			if extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath) {
+				usesStewData = true
+			}
+			if extractImports(b.ElseBody, userImports, stewImports, clientImports, moduleBase, relFilePath) {
+				usesStewData = true
+			}
 		} else if b, ok := n.(NodeEach); ok {
-			extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
+			if extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath) {
+				usesStewData = true
+			}
 		} else if b, ok := n.(NodeComponent); ok {
-			extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
+			if extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath) {
+				usesStewData = true
+			}
 		}
 	}
+	return usesStewData
 }
 
 type typesBuilder struct {
@@ -361,14 +382,14 @@ func extractTypes(nodes []Node, pkgLevel *typesBuilder, targetContext string) []
 				out = append(out, node)
 				continue
 			}
-			
+
 			lines := strings.Split(node.Content, "\n")
 			var remainingLines []string
-			
+
 			inTypeBlock := false
 			braceCount := 0
 			var typeBlock strings.Builder
-			
+
 			for _, line := range lines {
 				trimmed := strings.TrimSpace(line)
 				if !inTypeBlock {
@@ -396,7 +417,7 @@ func extractTypes(nodes []Node, pkgLevel *typesBuilder, targetContext string) []
 			}
 			node.Content = strings.Join(remainingLines, "\n")
 			out = append(out, node)
-			
+
 		case NodeIf:
 			node.Body = extractTypes(node.Body, pkgLevel, targetContext)
 			node.ElseBody = extractTypes(node.ElseBody, pkgLevel, targetContext)
@@ -448,7 +469,7 @@ func emitNodes(buf *bytes.Buffer, nodes []Node, validComps map[string]string) er
 			}
 			slice := strings.TrimSpace(parts[0])
 			vars := strings.Split(parts[1], ",")
-			
+
 			varName := "item"
 			idxName := "_"
 			if len(vars) == 1 {
@@ -463,14 +484,14 @@ func emitNodes(buf *bytes.Buffer, nodes []Node, validComps map[string]string) er
 				return err
 			}
 			buf.WriteString("\t}\n")
-			
+
 		case NodeComponent:
 			// parse pros
 			props := parseAttributes(node.TagContent)
-			
+
 			// struct initialization
 			var structValues []string
-			
+
 			for k, v := range props {
 				fieldName := k
 				if len(fieldName) > 0 {
@@ -478,11 +499,11 @@ func emitNodes(buf *bytes.Buffer, nodes []Node, validComps map[string]string) er
 				}
 				structValues = append(structValues, fmt.Sprintf("%s: %s", fieldName, v))
 			}
-			
+
 			structInit := fmt.Sprintf("%sProps{%s}", node.TagName, strings.Join(structValues, ", "))
-			
+
 			alias := validComps[node.TagName]
-			
+
 			// write component call
 			if node.SelfClosing || len(node.Body) == 0 {
 				buf.WriteString(fmt.Sprintf("\t%s%s(w, data, %s%s, nil)\n", alias, node.TagName, alias, structInit))
@@ -493,7 +514,7 @@ func emitNodes(buf *bytes.Buffer, nodes []Node, validComps map[string]string) er
 				}
 				buf.WriteString("\t})\n")
 			}
-			
+
 		case NodeSlot:
 			buf.WriteString("\tif slot != nil {\n\t\tslot()\n\t}\n")
 		}
@@ -535,14 +556,14 @@ func emitHTML(buf *bytes.Buffer, content string) {
 
 func emitExpression(buf *bytes.Buffer, expr string) {
 	expr = strings.TrimSpace(expr)
-	
+
 	// handle raw()
 	if strings.HasPrefix(expr, "raw(") && strings.HasSuffix(expr, ")") {
 		inner := expr[4 : len(expr)-1]
 		buf.WriteString(fmt.Sprintf("\tw.Write([]byte(fmt.Sprint(%s)))\n", inner))
 		return
 	}
-	
+
 	buf.WriteString(fmt.Sprintf("\tw.Write([]byte(html.EscapeString(fmt.Sprint(%s))))\n", expr))
 }
 
@@ -552,18 +573,18 @@ func parseAttributes(tagContent string) map[string]string {
 	tagContent = strings.TrimPrefix(tagContent, "<")
 	tagContent = strings.TrimSuffix(tagContent, "/>")
 	tagContent = strings.TrimSuffix(tagContent, ">")
-	
+
 	// strip tag name
 	idx := strings.IndexAny(tagContent, " \t\n\r")
 	if idx == -1 {
 		return nil
 	}
-	
+
 	attrStr := tagContent[idx+1:]
 	matches := attrRegex.FindAllStringSubmatch(attrStr, -1)
-	
+
 	props := make(map[string]string)
-	
+
 	for _, m := range matches {
 		if len(m) == 0 {
 			continue
@@ -572,9 +593,9 @@ func parseAttributes(tagContent string) map[string]string {
 		if key == "" || strings.HasPrefix(key, "bind:") {
 			continue
 		}
-		
+
 		val := "true" // boolean prop like `disabled`
-		
+
 		if m[2] != "" {
 			val = "\"" + m[2] + "\"" // string like "hello"
 		} else if m[3] != "" {
@@ -582,9 +603,9 @@ func parseAttributes(tagContent string) map[string]string {
 		} else if m[4] != "" {
 			val = m[4] // expression like data.Count
 		}
-		
+
 		props[key] = val
 	}
-	
+
 	return props
 }

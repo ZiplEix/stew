@@ -1,36 +1,8 @@
 <goscript client>
-    import "encoding/json"
-    import "syscall/js"
+    import "stew/data"
 
-    // Récupération de l'ID via le Wasm
-    wasmId := "Initialisation..."
-    console := js.Global().Get("console")
-
-    // 1. On récupère la donnée UNE SEULE FOIS au démarrage
-    rawJSON := wasm.GetPageDataJSON()
-    console.Call("log", "Wasm: JSON reçu", rawJSON)
-
-    var state map[string]interface{}
-    err := json.Unmarshal([]byte(rawJSON), &state)
-    
-    if err != nil {
-        console.Call("error", "Wasm: Erreur Unmarshal", err.Error())
-        wasmId = "Erreur Wasm JSON"
-    } else {
-        if params, ok := state["params"].(map[string]interface{}); ok {
-            val := params["id"].(string)
-            wasmId = val + " (via Wasm Client)"
-            console.Call("log", "Wasm: ID trouvé", val)
-        } else {
-            console.Call("warn", "Wasm: Params non trouvés dans l'état")
-            wasmId = "Params introuvables"
-        }
-    }
-
-    // La boucle de réactivité mettra à jour le DOM si wasmId change
-    wasm.OnUpdate(func() {
-        // Optionnel : on pourrait faire d'autres calculs ici
-    })
+    // La variable 'data' est injectée automatiquement via l'import
+    wasmId := data.Params["id"] + " (via stew/data)"
 </goscript>
 
 <div class="p-12 space-y-12">
@@ -60,13 +32,16 @@
     </div>
 
     <div class="bg-stone-900 rounded-2xl p-6 text-stone-300 font-mono text-sm">
-        <p class="mb-4 text-stone-500">// Code de récupération Wasm :</p>
-        <pre><code>&lt;goscript client&gt;
-    rawJSON := wasm.GetPageDataJSON()
-    var state map[string]interface{}
-    json.Unmarshal([]byte(rawJSON), &amp;state)
-    userId := state["params"].(map[string]interface{})["id"].(string)
-&lt;/goscript&gt;</code></pre>
+        <p class="mb-4 text-stone-500">// Roadmap & Status :</p>
+        <ul class="space-y-2">
+            <li>- [x] Framework: Update `PageData` JSON tags (`Request`, `Query`)</li>
+            <li>- [x] Wasm SDK: Create `sdk/wasm/data` package</li>
+            <li>- [x] Compiler: Implement `stew/data` rewrite and `data` injection</li>
+            <li>- [x] Documentation: Create Wasm SDK reference page</li>
+            <li>- [x] Documentation: Update goscript client guide with new syntax link</li>
+            <li>- [x] Verification: Test `import "stew/data"` on `/test/__id__` page</li>
+            <li>- [x] Verification: Confirm binary size vs performance tradeoff</li>
+        </ul>
     </div>
 
     <footer class="pt-8">

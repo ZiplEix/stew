@@ -93,22 +93,17 @@ func main() {
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Récupérer les données serveur</h2>
-        <p class="text-sm text-stone-600">Le serveur injecte automatiquement les données de la page en JSON dans le HTML. Côté client, vous pouvez les récupérer au démarrage de votre script :</p>
+        <h2 class="text-2xl font-bold">Récupérer les données serveur (DX)</h2>
+        <p class="text-sm text-stone-600">Pour éviter le boilerplate de désérialisation JSON, Stew propose un import virtuel <code>stew/data</code> qui expose automatiquement une variable globale <code>data</code>.</p>
         <pre><code>&lt;goscript client&gt;
-    import "encoding/json"
+    import "stew/data"
 
-    rawJSON := wasm.GetPageDataJSON()
-    var state map[string]interface{}
-    json.Unmarshal([]byte(rawJSON), &state)
-
-    title := ""
-    if store, ok := state["store"].(map[string]interface{}); ok {
-        if t, ok := store["title"].(string); ok {
-            title = t
-        }
-    }
+    console.Log("URL de la page :", data.URL)
+    userId := data.Params["id"]
 &lt;/goscript&gt;</code></pre>
+        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl text-sm">
+            <strong class="text-indigo-900">📚 Référence complète :</strong> <span class="text-indigo-800">Consultez le guide sur l'<strong><a href="/guide/wasmsdk" class="underline">SDK Wasm</a></strong> pour voir la liste complète des champs disponibles et l'impact sur le poids du binaire.</span>
+        </div>
     </section>
 
     <section class="space-y-4">
