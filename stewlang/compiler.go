@@ -140,22 +140,70 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 		n := nodes[i]
 		if bindNode, ok := n.(NodeBind); ok {
 			// Orphan bindings (without a client script) will be ignored later by buildWasm check
-			if i > 0 {
+			if i > 0 && len(modifiedNodes) > 0 {
 				if prevHTML, isHTML := modifiedNodes[len(modifiedNodes)-1].(NodeHTML); isHTML {
-					bindID := fmt.Sprintf("stew-bind-%s-%d", strings.ToLower(name), bindCounter)
-					bindCounter++
+					// Detect if we already injected an ID for this element (multiple bindings)
+					var bindID string
+					idMatch := regexp.MustCompile(`id="(stew-bind-[^"]+)"`).FindStringSubmatch(prevHTML.Content)
+					if len(idMatch) > 1 {
+						bindID = idMatch[1]
+					} else {
+						bindID = fmt.Sprintf("stew-bind-%s-%d", strings.ToLower(name), bindCounter)
+						bindCounter++
+						// Defense check: ensure we are not injecting into a closed tag or text node
+						trimmed := strings.TrimSpace(prevHTML.Content)
+						if !strings.HasSuffix(trimmed, ">") && strings.Contains(trimmed, "<") {
+							fmt.Printf("DEBUG: SUCCESS injecting into: [%s]\n", trimmed)
+							// Naïve injection at the end of the HTML string pre-parsing (assumes tag is open)
+							prevHTML.Content += fmt.Sprintf(` id="%s" `, bindID)
+						} else {
+							fmt.Printf("DEBUG: SKIP injection into: [%s] (ends with >: %v)\n", trimmed, strings.HasSuffix(trimmed, ">"))
+						}
+						modifiedNodes[len(modifiedNodes)-1] = prevHTML
+					}
 
-					// Naïve injection at the end of the HTML string pre-parsing
-					prevHTML.Content += fmt.Sprintf(`id="%s" `, bindID)
-					modifiedNodes[len(modifiedNodes)-1] = prevHTML
+					// Process binding variable: strip braces if they were passed (though Lexer handles it usually)
+					cleanVar := strings.TrimSpace(bindNode.BindVar)
+					isLiteral := strings.HasPrefix(cleanVar, "\"") && strings.HasSuffix(cleanVar, "\"")
 
 					if bindNode.IsEvent {
-						clientBindings.WriteString(fmt.Sprintf("\twasm.OnEvent(\"%s\", \"%s\", func() { %s })\n", bindID, bindNode.BindType, bindNode.BindVar))
+						// Smarter event handling heuristic:
+						// 1. If it's a function literal: func(...) { ... }, pass it directly.
+						// 2. If it's a simple identifier (no parens), assume it's a func name and pass it directly.
+						// 3. Otherwise (a call or expression), wrap it in a func() { ... }.
+						expr := cleanVar
+						if isLiteral {
+							expr = strings.Trim(expr, "\"")
+						}
+						
+						shouldWrap := true
+						trimmedExpr := strings.TrimSpace(expr)
+						if strings.HasPrefix(trimmedExpr, "func") {
+							shouldWrap = false
+						} else if !strings.Contains(trimmedExpr, "(") {
+							// Identifier or variable reference
+							shouldWrap = false
+						}
+						
+						if shouldWrap {
+							clientBindings.WriteString(fmt.Sprintf("\twasm.OnEvent(\"%s\", \"%s\", func() { %s })\n", bindID, bindNode.BindType, expr))
+						} else {
+							clientBindings.WriteString(fmt.Sprintf("\twasm.OnEvent(\"%s\", \"%s\", %s)\n", bindID, bindNode.BindType, expr))
+						}
 					} else {
 						if bindNode.BindType == "value" {
-							clientBindings.WriteString(fmt.Sprintf("\twasm.BindInput(\"%s\", &%s)\n", bindID, bindNode.BindVar))
+							// Literals for values don't make sense for BindInput (&pointer)
+							if !isLiteral {
+								clientBindings.WriteString(fmt.Sprintf("\twasm.BindInput(\"%s\", &%s)\n", bindID, cleanVar))
+							}
 						} else {
-							clientBindings.WriteString(fmt.Sprintf("\twasm.BindContent(\"%s\", &%s)\n", bindID, bindNode.BindVar))
+							if isLiteral {
+								// For BindContent, a literal just sets the content once?
+								// Wasm SDK expects a *string for BindContent usually.
+								// We'll just ignore literals for BindContent to avoid pointer-to-literal issues.
+							} else {
+								clientBindings.WriteString(fmt.Sprintf("\twasm.BindContent(\"%s\", &%s)\n", bindID, cleanVar))
+							}
 						}
 					}
 				}

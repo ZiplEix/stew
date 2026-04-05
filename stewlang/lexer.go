@@ -13,6 +13,7 @@ type Lexer struct {
 	ValidComponents map[string]string
 	moduleBase      string
 	relFilePath     string
+	insideTag       bool
 }
 
 func NewLexer(input string, moduleBase string, relFilePath string) *Lexer {
@@ -23,6 +24,7 @@ func NewLexer(input string, moduleBase string, relFilePath string) *Lexer {
 		ValidComponents: make(map[string]string),
 		moduleBase:      moduleBase,
 		relFilePath:     relFilePath,
+		insideTag:       false,
 	}
 
 	// First pass parsing for Component Imports
@@ -73,17 +75,27 @@ func (l *Lexer) Lex() []Token {
 			continue
 		}
 
-		if strings.HasPrefix(l.input[l.pos:], "bind:") || strings.HasPrefix(l.input[l.pos:], "on:") {
+		// Only match bindings inside a tag
+		if l.insideTag && (strings.HasPrefix(l.input[l.pos:], "bind:") || strings.HasPrefix(l.input[l.pos:], "on:")) {
 			tokens = append(tokens, l.lexBindAttribute())
 			continue
 		}
 
 		if l.isComponentStart() || l.isComponentClose() || l.isSlot() {
+			l.insideTag = true // Components start a tag context
 			tokens = append(tokens, l.lexComponentOrSlot())
+			// Component/Slot lexing consumes the whole tag including '>'
+			l.insideTag = false
 			continue
 		}
 
 		tokens = append(tokens, l.lexHTML())
+		
+		// After lexHTML returns, if the last consumed character was '>', set insideTag to false
+		// This handles standard HTML tags like <div>
+		if l.pos > 0 && l.input[l.pos-1] == '>' {
+			l.insideTag = false
+		}
 	}
 
 	tokens = append(tokens, Token{Type: TOKEN_EOF, Line: l.line})
@@ -192,25 +204,78 @@ func (l *Lexer) lexGoScript() Token {
 
 func (l *Lexer) lexBindAttribute() Token {
 	startLine := l.line
-	// matches "bind:type={{ var }}" or "on:event={{ var }}"
-	re := regexp.MustCompile(`^(bind|on):([a-zA-Z0-9_-]+)=\{\{\s*([^}]+)\s*\}\}`)
-	match := re.FindStringSubmatch(l.input[l.pos:])
-	if match != nil {
-		fullMatch := match[0]
-		prefix := match[1]
-		bindType := match[2]
-		bindVar := strings.TrimSpace(match[3])
-		l.advance(len(fullMatch))
-		return Token{Type: TOKEN_BIND, Value: fullMatch, BindType: bindType, BindVar: bindVar, IsEvent: prefix == "on", Line: startLine}
+	input := l.input[l.pos:]
+
+	prefix := ""
+	if strings.HasPrefix(input, "bind:") {
+		prefix = "bind"
+	} else if strings.HasPrefix(input, "on:") {
+		prefix = "on"
+	} else {
+		return l.lexHTML()
 	}
-	
-	// If it fails to match the strict regex, eat the prefix and let HTML lexing continue...
-	if strings.HasPrefix(l.input[l.pos:], "bind:") {
-		l.advance(4)
-		return Token{Type: TOKEN_HTML, Value: "bind", Line: startLine}
+
+	// Find the '=' after the prefix
+	eqIdx := strings.Index(input, "=")
+	if eqIdx == -1 {
+		l.advance(len(prefix) + 1)
+		return Token{Type: TOKEN_HTML, Value: prefix, Line: startLine}
 	}
-	l.advance(2)
-	return Token{Type: TOKEN_HTML, Value: "on", Line: startLine}
+
+	attrName := input[len(prefix)+1 : eqIdx]
+	l.advance(eqIdx + 1) // skip prefix:name=
+	input = l.input[l.pos:]
+
+	var bindVar string
+	var fullMatch string
+
+	if strings.HasPrefix(input, "{{") {
+		// Balanced braces parsing for {{ ... }}
+		l.advance(2)
+		braceCount := 1
+		startPos := l.pos
+		for l.pos < len(l.input)-1 && braceCount > 0 {
+			if l.input[l.pos] == '{' && l.input[l.pos+1] == '{' {
+				braceCount++
+				l.pos += 2
+			} else if l.input[l.pos] == '}' && l.input[l.pos+1] == '}' {
+				braceCount--
+				if braceCount > 0 {
+					l.pos += 2
+				}
+			} else {
+				l.pos++
+			}
+		}
+		if braceCount == 0 {
+			bindVar = strings.TrimSpace(l.input[startPos : l.pos])
+			l.advance(2) // skip closing }}
+			fullMatch = prefix + ":" + attrName + "={{" + bindVar + "}}"
+		}
+	} else if strings.HasPrefix(input, "\"") {
+		// Quoted string for literal binding
+		l.advance(1)
+		quoteEnd := strings.Index(l.input[l.pos:], "\"")
+		if quoteEnd != -1 {
+			bindVar = "\"" + l.input[l.pos:l.pos+quoteEnd] + "\""
+			l.advance(quoteEnd + 1)
+			fullMatch = prefix + ":" + attrName + "=" + bindVar
+		}
+	}
+
+	if fullMatch != "" {
+		return Token{
+			Type:     TOKEN_BIND,
+			Value:    fullMatch,
+			BindType: attrName,
+			BindVar:  bindVar,
+			IsEvent:  prefix == "on",
+			Line:     startLine,
+		}
+	}
+
+	// If it fails to match a valid binding pattern, treat the prefix as HTML
+	return Token{Type: TOKEN_HTML, Value: prefix, Line: startLine}
 }
 
 func (l *Lexer) lexComponentOrSlot() Token {
@@ -248,10 +313,39 @@ func (l *Lexer) lexHTML() Token {
 	startPos := l.pos
 	
 	for l.pos < len(l.input) {
+		// Break if we see something that needs special Lexing
 		if strings.HasPrefix(l.input[l.pos:], "{{") || 
 		   (strings.HasPrefix(l.input[l.pos:], "<goscript") && l.isTopLevel()) ||
-		   strings.HasPrefix(l.input[l.pos:], "bind:") || strings.HasPrefix(l.input[l.pos:], "on:") ||
+		   (l.insideTag && (strings.HasPrefix(l.input[l.pos:], "bind:") || strings.HasPrefix(l.input[l.pos:], "on:"))) ||
 		   l.isComponentStart() || l.isComponentClose() || l.isSlot() {
+			
+			// If it might be a binding, we enforce that it MUST be preceded by whitespace
+			// to avoid matching <code>bind:</code> or text like (bind:)
+			if l.insideTag && (strings.HasPrefix(l.input[l.pos:], "bind:") || strings.HasPrefix(l.input[l.pos:], "on:")) {
+				if l.pos > 0 && !unicode.IsSpace(rune(l.input[l.pos-1])) {
+					// Not preceded by space, just continue lexing as ordinary HTML
+				} else {
+					// Good match, break to let Lex() handle it
+					break
+				}
+			} else {
+				break
+			}
+		}
+		
+		if l.input[l.pos] == '<' && !strings.HasPrefix(l.input[l.pos:], "{{") {
+			// If we see a new '<' and we are already at l.pos > startPos, 
+			// we should probably break to let the main loop handle the new tag start.
+			if l.pos > startPos {
+				break
+			}
+			// Only set insideTag if it looks like a tag start (followed by a letter)
+			if l.pos+1 < len(l.input) && unicode.IsLetter(rune(l.input[l.pos+1])) {
+				l.insideTag = true
+			}
+		} else if l.input[l.pos] == '>' {
+			l.insideTag = false
+			l.pos++ // consume '>'
 			break
 		}
 		

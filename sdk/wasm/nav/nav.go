@@ -40,21 +40,21 @@ func updateState() {
 	}
 }
 
-// To performs a standard browser navigation (full page reload).
-func (n *Nav) To(target string) {
-	js.Global().Get("location").Set("href", target)
-}
-
-// Morph performs a smooth navigation using HTMX and Idiomorph if available.
+// To performs a smooth navigation using HTMX and Idiomorph if available.
 // It falls back to a standard navigation if HTMX is not present.
-func (n *Nav) Morph(target string) {
+func (n *Nav) To(target string) {
 	htmx := js.Global().Get("htmx")
 	if !htmx.IsUndefined() && !htmx.IsNull() {
 		// htmx.ajax(method, url, targetSelector)
 		htmx.Call("ajax", "GET", target, "body")
 	} else {
-		n.To(target)
+		n.StandardTo(target)
 	}
+}
+
+// StandardTo performs a standard browser navigation (full page reload).
+func (n *Nav) StandardTo(target string) {
+	js.Global().Get("location").Set("href", target)
 }
 
 // Replace replaces the current history entry with a new URL.

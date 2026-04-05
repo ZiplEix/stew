@@ -72,7 +72,9 @@ func getPackageNameSafe(sourcePath string) string {
 	if dir == "." {
 		return "main"
 	}
-	return filepath.Base(dir)
+	base := filepath.Base(dir)
+	// Sanitize package name: Go packages cannot contain hyphens
+	return strings.ReplaceAll(base, "-", "_")
 }
 
 func resolveOutputName(sourcePath string) string {
