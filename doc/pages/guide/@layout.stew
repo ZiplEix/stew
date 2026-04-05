@@ -79,6 +79,12 @@
                     <li><a href="/guide/deployment" class="{{ getLinkClass(data.URL, "/guide/deployment") }}">Déploiement & Docker</a></li>
                 </ul>
             </div>
+            <div>
+                <div class="text-xs font-bold uppercase tracking-widest text-rose-400 px-3 mb-2">Aide</div>
+                <ul class="flex flex-col gap-0.5">
+                    <li><a href="/guide/troubleshooting" class="{{ getLinkClass(data.URL, "/guide/troubleshooting") }}">Dépannage</a></li>
+                </ul>
+            </div>
         </nav>
     </aside>
 

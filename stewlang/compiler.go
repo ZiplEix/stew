@@ -14,7 +14,12 @@ import (
 
 var attrRegex = regexp.MustCompile(`([a-zA-Z0-9_-]+)(?:=(?:"([^"]*)"|'([^']*)'|{{([^}]+)}}))?`)
 
-func buildWasm(name string, nodes []Node, bindings string, clientImports []string, usesStewData bool) (string, error) {
+type WasmOptions struct {
+	UsesData bool
+	UsesIO   bool
+}
+
+func buildWasm(name string, nodes []Node, bindings string, clientImports []string, opts WasmOptions) (string, error) {
 	if _, err := exec.LookPath("tinygo"); err != nil {
 		return "", fmt.Errorf("tinygo is not installed. Please install TinyGo to compile WebAssembly bindings: https://tinygo.org/getting-started/")
 	}
@@ -25,6 +30,10 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	for _, imp := range clientImports {
 		if imp == "\"stew/data\"" {
 			wasmBuf.WriteString("\t\"github.com/ZiplEix/stew/sdk/wasm/data\"\n")
+			continue
+		}
+		if imp == "\"stew/io\"" {
+			wasmBuf.WriteString("\t\"github.com/ZiplEix/stew/sdk/wasm/io\"\n")
 			continue
 		}
 		wasmBuf.WriteString("\t" + imp + "\n")
@@ -38,8 +47,14 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	}
 
 	wasmBuf.WriteString("\nfunc main() {\n")
-	if usesStewData {
+	if opts.UsesData {
 		wasmBuf.WriteString("\tdata := data.Data\n")
+	}
+	if opts.UsesIO {
+		wasmBuf.WriteString("\tconsole := io.Console\n")
+		wasmBuf.WriteString("\talert := io.Alert\n")
+		wasmBuf.WriteString("\tprompt := io.Prompt\n")
+		wasmBuf.WriteString("\tconfirm := io.Confirm\n")
 	}
 
 	// Add client goscripts (excluding parsed imports and types)
@@ -99,7 +114,7 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 	var userImports []string
 	var stewImports []string
 	var clientImports []string
-	usesStewData := extractImports(nodes, &userImports, &stewImports, &clientImports, moduleBase, relFilePath)
+	wasmOpts := extractImports(nodes, &userImports, &stewImports, &clientImports, moduleBase, relFilePath)
 
 	isComponent := false
 	if regexp.MustCompile(`^[A-Z][a-zA-Z0-9]*$`).MatchString(name) && !strings.HasSuffix(name, "Page") && name != "Layout" {
@@ -164,7 +179,7 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 	// Build WebAssembly if client code is present
 	var generatedArtifacts []string
 	if hasClientCode {
-		wasmPath, err := buildWasm(wasmName, nodes, clientBindings.String(), clientImports, usesStewData)
+		wasmPath, err := buildWasm(wasmName, nodes, clientBindings.String(), clientImports, wasmOpts)
 		if err != nil {
 			fmt.Printf("⚠️  TinyGo build warning: %v.\n", err)
 		} else if wasmPath != "" {
@@ -303,8 +318,8 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 	return string(formatted), generatedArtifacts, nil
 }
 
-func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, clientImports *[]string, moduleBase string, relFilePath string) bool {
-	usesStewData := false
+func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, clientImports *[]string, moduleBase string, relFilePath string) WasmOptions {
+	var opts WasmOptions
 	for _, n := range nodes {
 		if gs, ok := n.(NodeGoScript); ok {
 			lines := strings.Split(gs.Content, "\n")
@@ -315,7 +330,10 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 					importStr = strings.Trim(importStr, "\"'")
 
 					if importStr == "stew/data" {
-						usesStewData = true
+						opts.UsesData = true
+					}
+					if importStr == "stew/io" {
+						opts.UsesIO = true
 					}
 
 					if gs.Context == "client" {
@@ -350,23 +368,33 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 				}
 			}
 		} else if b, ok := n.(NodeIf); ok {
-			if extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath) {
-				usesStewData = true
+			res1 := extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
+			res2 := extractImports(b.ElseBody, userImports, stewImports, clientImports, moduleBase, relFilePath)
+			if res1.UsesData || res2.UsesData {
+				opts.UsesData = true
 			}
-			if extractImports(b.ElseBody, userImports, stewImports, clientImports, moduleBase, relFilePath) {
-				usesStewData = true
+			if res1.UsesIO || res2.UsesIO {
+				opts.UsesIO = true
 			}
 		} else if b, ok := n.(NodeEach); ok {
-			if extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath) {
-				usesStewData = true
+			res := extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
+			if res.UsesData {
+				opts.UsesData = true
+			}
+			if res.UsesIO {
+				opts.UsesIO = true
 			}
 		} else if b, ok := n.(NodeComponent); ok {
-			if extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath) {
-				usesStewData = true
+			res := extractImports(b.Body, userImports, stewImports, clientImports, moduleBase, relFilePath)
+			if res.UsesData {
+				opts.UsesData = true
+			}
+			if res.UsesIO {
+				opts.UsesIO = true
 			}
 		}
 	}
-	return usesStewData
+	return opts
 }
 
 type typesBuilder struct {
