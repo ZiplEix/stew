@@ -1,0 +1,76 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-indigo-600 font-mono text-sm mb-2">Packages stew/* / 14.2</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">📟 stew/io</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le package <code>stew/io</code> fournit des méthodes simples et légères pour interagir avec l'utilisateur et le développeur sans avoir à manipuler le bridge JS manuellement.
+        </p>
+    </header>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold underline decoration-indigo-200 decoration-4">Console & Debug</h2>
+        <p class="text-sm text-stone-600">Ces méthodes s'affichent dans la console de développement du navigateur.</p>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
+                <code class="font-bold text-indigo-700">Console.Log(...args)</code>
+                <p class="text-xs text-stone-500 mt-1">Affiche un message standard.</p>
+            </div>
+            <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
+                <code class="font-bold text-indigo-700">Console.Warn(...args)</code>
+                <p class="text-xs text-stone-500 mt-1">Affiche un avertissement (jaune).</p>
+            </div>
+            <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
+                <code class="font-bold text-indigo-700">Console.Warning(...args)</code>
+                <p class="text-xs text-stone-500 mt-1">Alias pour <code>Warn</code>.</p>
+            </div>
+            <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
+                <code class="font-bold text-indigo-700">Console.Error(...args)</code>
+                <p class="text-xs text-stone-500 mt-1">Affiche une erreur (rouge).</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold underline decoration-indigo-200 decoration-4">Dialogues Navigateur</h2>
+        <p class="text-sm text-stone-600">Ces méthodes bloquent l'exécution du script (synchrone) jusqu'à interaction de l'utilisateur.</p>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
+                <code class="font-bold text-indigo-700">Alert(message)</code>
+                <p class="text-xs text-stone-500 mt-1">Affiche une boîte d'alerte avec un bouton OK.</p>
+            </div>
+            <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
+                <code class="font-bold text-indigo-700">Confirm(message) bool</code>
+                <p class="text-xs text-stone-500 mt-1">Demande une confirmation (OK/Annuler). Retourne true si OK.</p>
+            </div>
+            <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
+                <code class="font-bold text-indigo-700">Prompt(message) string</code>
+                <p class="text-xs text-stone-500 mt-1">Demande une saisie texte. Retourne la valeur ou une chaîne vide.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Exemple Complet</h2>
+        <pre><code>&lt;goscript client&gt;
+    import "stew/io"
+
+    onDelete := func() {
+        if Confirm("Êtes-vous certain de vouloir supprimer ?") {
+            Console.Log("Action confirmée")
+            // Logique de suppression...
+        } else {
+            Console.Warn("Action annulée")
+        }
+    }
+&lt;/goscript&gt;</code></pre>
+    </section>
+
+    <div class="bg-indigo-50 border-l-4 border-indigo-400 p-6 rounded-r-3xl text-sm italic">
+        <strong>⚡ Performance :</strong> Ce package est extrêmement léger car il utilise directement les fonctions natives du runtime Wasm Go.
+    </div>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/packages/data" class="text-stone-400 hover:text-stone-600 transition">← stew/data</a>
+        <a href="/guide/packages/nav" class="text-amber-600 font-bold hover:underline">Suivant : stew/nav →</a>
+    </footer>
+</div>

@@ -1,11 +1,147 @@
 <goscript>
+    import "strings"
+
     getLinkClass := func(current, target string) string {
         if current == target {
             return "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold text-amber-600 bg-amber-50"
         }
         return "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors"
     }
+
+    // État initial pour SSR
+    open := map[string]bool{
+        "start":   false,
+        "stew":    false,
+        "go":      false,
+        "wasm":    false,
+        "package": false,
+        "cli":     false,
+        "arch":    false,
+        "prod":    false,
+        "help":    false,
+    }
+
+    // Détermine quelle catégorie ouvrir au chargement selon l'URL (SSR)
+    url := data.URL
+    if strings.HasPrefix(url, "/guide/installation") || strings.HasPrefix(url, "/guide/configuration") {
+        open["start"] = true
+    } else if strings.HasPrefix(url, "/guide/syntax") || strings.HasPrefix(url, "/guide/components") || strings.HasPrefix(url, "/guide/routing") || strings.HasPrefix(url, "/guide/layouts") || strings.HasPrefix(url, "/guide/reservedfiles") || strings.HasPrefix(url, "/guide/assets") {
+        open["stew"] = true
+    } else if strings.HasPrefix(url, "/guide/goscriptserver") || strings.HasPrefix(url, "/guide/pagedata") || strings.HasPrefix(url, "/guide/middleware") || strings.HasPrefix(url, "/guide/serverhandlers") {
+        open["go"] = true
+    } else if strings.HasPrefix(url, "/guide/goscriptclient") || strings.HasPrefix(url, "/guide/wasmbindings") || strings.HasPrefix(url, "/guide/wasmsdk") {
+        open["wasm"] = true
+    } else if strings.HasPrefix(url, "/guide/packages") {
+        open["package"] = true
+    } else if strings.HasPrefix(url, "/guide/cli") {
+        open["cli"] = true
+    } else if strings.HasPrefix(url, "/guide/hotmorphing") || strings.HasPrefix(url, "/guide/internals") {
+        open["arch"] = true
+    } else if strings.HasPrefix(url, "/guide/deployment") {
+        open["prod"] = true
+    } else if strings.HasPrefix(url, "/guide/troubleshooting") {
+        open["help"] = true
+    } else if url == "/guide" {
+        open["start"] = true
+    }
 </goscript>
+
+<goscript client>
+    import "stew/nav"
+    import "strings"
+    import "syscall/js"
+
+    // État des catégories (ouvert/fermé)
+    open := map[string]bool{
+        "start":   false,
+        "stew":    false,
+        "go":      false,
+        "wasm":    false,
+        "package": false,
+        "cli":     false,
+        "arch":    false,
+        "prod":    false,
+        "help":    false,
+    }
+
+    document := js.Global().Get("document")
+
+    // Helper pour manipuler les classes
+    updateCategoryUI := func(name string) {
+        isOpen := open[name]
+        
+        // Contenu
+        content := document.Call("getElementById", "cat-content-"+name)
+        if !content.IsNull() {
+            if isOpen {
+                content.Get("classList").Call("add", "is-open")
+            } else {
+                content.Get("classList").Call("remove", "is-open")
+            }
+        }
+
+        // Chevron
+        chevron := document.Call("getElementById", "cat-chevron-"+name)
+        if !chevron.IsNull() {
+            if isOpen {
+                chevron.Get("classList").Call("add", "rotated", "text-amber-500")
+            } else {
+                chevron.Get("classList").Call("remove", "rotated", "text-amber-500")
+            }
+        }
+    }
+
+    toggle := func(name string) {
+        open[name] = !open[name]
+        updateCategoryUI(name)
+    }
+
+    // Détermine quelle catégorie ouvrir au chargement selon l'URL
+    url := nav.URL
+    if strings.HasPrefix(url, "/guide/installation") || strings.HasPrefix(url, "/guide/configuration") {
+        open["start"] = true
+    } else if strings.HasPrefix(url, "/guide/syntax") || strings.HasPrefix(url, "/guide/components") || strings.HasPrefix(url, "/guide/routing") || strings.HasPrefix(url, "/guide/layouts") || strings.HasPrefix(url, "/guide/reservedfiles") || strings.HasPrefix(url, "/guide/assets") {
+        open["stew"] = true
+    } else if strings.HasPrefix(url, "/guide/goscriptserver") || strings.HasPrefix(url, "/guide/pagedata") || strings.HasPrefix(url, "/guide/middleware") || strings.HasPrefix(url, "/guide/serverhandlers") {
+        open["go"] = true
+    } else if strings.HasPrefix(url, "/guide/goscriptclient") || strings.HasPrefix(url, "/guide/wasmbindings") || strings.HasPrefix(url, "/guide/wasmsdk") {
+        open["wasm"] = true
+    } else if strings.HasPrefix(url, "/guide/packages") {
+        open["package"] = true
+    } else if strings.HasPrefix(url, "/guide/cli") {
+        open["cli"] = true
+    } else if strings.HasPrefix(url, "/guide/hotmorphing") || strings.HasPrefix(url, "/guide/internals") {
+        open["arch"] = true
+    } else if strings.HasPrefix(url, "/guide/deployment") {
+        open["prod"] = true
+    } else if strings.HasPrefix(url, "/guide/troubleshooting") {
+        open["help"] = true
+    } else if url == "/guide" {
+        open["start"] = true
+    }
+</goscript>
+
+<style>
+    .sidebar-content {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+    }
+    .sidebar-content.is-open {
+        grid-template-rows: 1fr;
+        opacity: 1;
+    }
+    .sidebar-inner {
+        overflow: hidden;
+    }
+    .chevron {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .chevron.rotated {
+        transform: rotate(90deg);
+    }
+</style>
 
 <!-- Top Nav (Documentation Only) -->
 <nav class="fixed top-0 left-0 right-0 z-50 h-14 border-b border-stone-200 bg-white/90 backdrop-blur-md flex items-center px-6 gap-4">
@@ -23,67 +159,138 @@
 <div class="flex pt-14 min-h-screen">
     <!-- Sidebar -->
     <aside class="w-64 shrink-0 border-r border-stone-200 fixed top-14 bottom-0 overflow-y-auto py-8 px-4 hidden md:flex flex-col gap-6">
-        <nav class="flex flex-col gap-5">
-            <div>
-                <div class="text-xs font-bold uppercase tracking-widest text-stone-400 px-3 mb-2">Démarrage</div>
-                <ul class="flex flex-col gap-0.5">
-                    <li><a href="/guide" class="{{ getLinkClass(data.URL, "/guide") }}">Introduction</a></li>
-                    <li><a href="/guide/installation" class="{{ getLinkClass(data.URL, "/guide/installation") }}">Installation</a></li>
-                    <li><a href="/guide/configuration" class="{{ getLinkClass(data.URL, "/guide/configuration") }}">Configuration</a></li>
-                </ul>
+        <nav class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle("start")}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Démarrage</span>
+                    <svg id="cat-chevron-start" class='chevron w-3 h-3 {{ if open["start"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-start" class='sidebar-content {{ if open["start"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide" class="{{ getLinkClass(data.URL, "/guide") }}">Introduction</a></li>
+                        <li><a href="/guide/installation" class="{{ getLinkClass(data.URL, "/guide/installation") }}">Installation</a></li>
+                        <li><a href="/guide/configuration" class="{{ getLinkClass(data.URL, "/guide/configuration") }}">Configuration</a></li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <div class="text-xs font-bold uppercase tracking-widest text-stone-400 px-3 mb-2">Templates .stew</div>
-                <ul class="flex flex-col gap-0.5">
-                    <li><a href="/guide/syntax" class="{{ getLinkClass(data.URL, "/guide/syntax") }}">Syntaxe & Expressions</a></li>
-                    <li><a href="/guide/components" class="{{ getLinkClass(data.URL, "/guide/components") }}">Composants</a></li>
-                    <li><a href="/guide/routing" class="{{ getLinkClass(data.URL, "/guide/routing") }}">Routing fichier</a></li>
-                    <li><a href="/guide/layouts" class="{{ getLinkClass(data.URL, "/guide/layouts") }}">Layouts & Nesting</a></li>
-                    <li><a href="/guide/reservedfiles" class="{{ getLinkClass(data.URL, "/guide/reservedfiles") }}">Fichiers réservés</a></li>
-                    <li><a href="/guide/assets" class="{{ getLinkClass(data.URL, "/guide/assets") }}">Assets & Tailwind</a></li>
-                </ul>
+
+            <!-- Templates .stew -->
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle("stew")}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Templates .stew</span>
+                    <svg id="cat-chevron-stew" class='chevron w-3 h-3 {{ if open["stew"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-stew" class='sidebar-content {{ if open["stew"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide/syntax" class="{{ getLinkClass(data.URL, "/guide/syntax") }}">Syntaxe & Expressions</a></li>
+                        <li><a href="/guide/components" class="{{ getLinkClass(data.URL, "/guide/components") }}">Composants</a></li>
+                        <li><a href="/guide/routing" class="{{ getLinkClass(data.URL, "/guide/routing") }}">Routing fichier</a></li>
+                        <li><a href="/guide/layouts" class="{{ getLinkClass(data.URL, "/guide/layouts") }}">Layouts & Nesting</a></li>
+                        <li><a href="/guide/reservedfiles" class="{{ getLinkClass(data.URL, "/guide/reservedfiles") }}">Fichiers réservés</a></li>
+                        <li><a href="/guide/assets" class="{{ getLinkClass(data.URL, "/guide/assets") }}">Assets & Tailwind</a></li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <div class="text-xs font-bold uppercase tracking-widest text-stone-400 px-3 mb-2">Logique Go</div>
-                <ul class="flex flex-col gap-0.5">
-                    <li><a href="/guide/goscriptserver" class="{{ getLinkClass(data.URL, "/guide/goscriptserver") }}">goscript server</a></li>
-                    <li><a href="/guide/pagedata" class="{{ getLinkClass(data.URL, "/guide/pagedata") }}">PageData</a></li>
-                    <li><a href="/guide/middleware" class="{{ getLinkClass(data.URL, "/guide/middleware") }}">Middleware</a></li>
-                    <li><a href="/guide/serverhandlers" class="{{ getLinkClass(data.URL, "/guide/serverhandlers") }}">Handlers Serveur</a></li>
-                </ul>
+
+            <!-- Logique Go -->
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle("go")}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Logique Go</span>
+                    <svg id="cat-chevron-go" class='chevron w-3 h-3 {{ if open["go"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-go" class='sidebar-content {{ if open["go"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide/goscriptserver" class="{{ getLinkClass(data.URL, "/guide/goscriptserver") }}">goscript server</a></li>
+                        <li><a href="/guide/pagedata" class="{{ getLinkClass(data.URL, "/guide/pagedata") }}">PageData</a></li>
+                        <li><a href="/guide/middleware" class="{{ getLinkClass(data.URL, "/guide/middleware") }}">Middleware</a></li>
+                        <li><a href="/guide/serverhandlers" class="{{ getLinkClass(data.URL, "/guide/serverhandlers") }}">Handlers Serveur</a></li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <div class="text-xs font-bold uppercase tracking-widest text-stone-400 px-3 mb-2">Wasm Isomorphique</div>
-                <ul class="flex flex-col gap-0.5">
-                    <li><a href="/guide/goscriptclient" class="{{ getLinkClass(data.URL, "/guide/goscriptclient") }}">goscript client</a></li>
-                    <li><a href="/guide/wasmbindings" class="{{ getLinkClass(data.URL, "/guide/wasmbindings") }}">Bindings (bind: / on:)</a></li>
-                    <li><a href="/guide/wasmsdk" class="{{ getLinkClass(data.URL, "/guide/wasmsdk") }}">SDK Wasm</a></li>
-                </ul>
+
+            <!-- Wasm Isomorphique -->
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle("wasm")}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Wasm Isomorphique</span>
+                    <svg id="cat-chevron-wasm" class='chevron w-3 h-3 {{ if open["wasm"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-wasm" class='sidebar-content {{ if open["wasm"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide/goscriptclient" class="{{ getLinkClass(data.URL, "/guide/goscriptclient") }}">goscript client</a></li>
+                        <li><a href="/guide/wasmbindings" class="{{ getLinkClass(data.URL, "/guide/wasmbindings") }}">Bindings (bind: / on:)</a></li>
+                        <li><a href="/guide/wasmsdk" class="{{ getLinkClass(data.URL, "/guide/wasmsdk") }}">SDK Wasm</a></li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <div class="text-xs font-bold uppercase tracking-widest text-stone-400 px-3 mb-2">CLI</div>
-                <ul class="flex flex-col gap-0.5">
-                    <li><a href="/guide/cli" class="{{ getLinkClass(data.URL, "/guide/cli") }}">Référence des commandes</a></li>
-                </ul>
+
+            <!-- Packages stew/* -->
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle("package")}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Packages stew/*</span>
+                    <svg id="cat-chevron-package" class='chevron w-3 h-3 {{ if open["package"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-package" class='sidebar-content {{ if open["package"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide/packages" class="{{ getLinkClass(data.URL, "/guide/packages") }}">Vue d'ensemble</a></li>
+                        <li><a href="/guide/packages/data" class="{{ getLinkClass(data.URL, "/guide/packages/data") }}">stew/data</a></li>
+                        <li><a href="/guide/packages/io" class="{{ getLinkClass(data.URL, "/guide/packages/io") }}">stew/io</a></li>
+                        <li><a href="/guide/packages/nav" class="{{ getLinkClass(data.URL, "/guide/packages/nav") }}">stew/nav</a></li>
+                        <li><a href="/guide/packages/storage" class="{{ getLinkClass(data.URL, "/guide/packages/storage") }}">stew/storage</a></li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <div class="text-xs font-bold uppercase tracking-widest text-stone-400 px-3 mb-2">Architecture & Concepts</div>
-                <ul class="flex flex-col gap-0.5">
-                    <li><a href="/guide/hotmorphing" class="{{ getLinkClass(data.URL, "/guide/hotmorphing") }}">Hot Morphing</a></li>
-                    <li><a href="/guide/internals" class="{{ getLinkClass(data.URL, "/guide/internals") }}">Fonctionnement interne</a></li>
-                </ul>
+
+            <!-- CLI -->
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle("cli")}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">CLI</span>
+                    <svg id="cat-chevron-cli" class='chevron w-3 h-3 {{ if open["cli"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-cli" class='sidebar-content {{ if open["cli"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide/cli" class="{{ getLinkClass(data.URL, "/guide/cli") }}">Référence des commandes</a></li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <div class="text-xs font-bold uppercase tracking-widest text-stone-400 px-3 mb-2">Production</div>
-                <ul class="flex flex-col gap-0.5">
-                    <li><a href="/guide/deployment" class="{{ getLinkClass(data.URL, "/guide/deployment") }}">Déploiement & Docker</a></li>
-                </ul>
+
+            <!-- Architecture & Concepts -->
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle("arch")}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Architecture & Concepts</span>
+                    <svg id="cat-chevron-arch" class='chevron w-3 h-3 {{ if open["arch"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-arch" class='sidebar-content {{ if open["arch"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide/hotmorphing" class="{{ getLinkClass(data.URL, "/guide/hotmorphing") }}">Hot Morphing</a></li>
+                        <li><a href="/guide/internals" class="{{ getLinkClass(data.URL, "/guide/internals") }}">Fonctionnement interne</a></li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <div class="text-xs font-bold uppercase tracking-widest text-rose-400 px-3 mb-2">Aide</div>
-                <ul class="flex flex-col gap-0.5">
-                    <li><a href="/guide/troubleshooting" class="{{ getLinkClass(data.URL, "/guide/troubleshooting") }}">Dépannage</a></li>
-                </ul>
+
+            <!-- Production -->
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle("prod")}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Production</span>
+                    <svg id="cat-chevron-prod" class='chevron w-3 h-3 {{ if open["prod"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-prod" class='sidebar-content {{ if open["prod"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide/deployment" class="{{ getLinkClass(data.URL, "/guide/deployment") }}">Déploiement & Docker</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Aide -->
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle("help")}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Aide</span>
+                    <svg id="cat-chevron-help" class='chevron w-3 h-3 {{ if open["help"] }} rotated text-rose-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-help" class='sidebar-content {{ if open["help"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide/troubleshooting" class="{{ getLinkClass(data.URL, "/guide/troubleshooting") }}">Dépannage</a></li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </aside>

@@ -1,0 +1,61 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 14 — Packages stew/*</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Vue d'ensemble des Packages</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Stew-Lang fournit un ensemble de packages virtuels <code>stew/*</code> conçus pour offrir des fonctionnalités de haut niveau dans vos blocs <code>&lt;goscript client&gt;</code> tout en minimisant le poids du binaire TinyGo.
+        </p>
+    </header>
+
+    <div class="grid md:grid-cols-2 gap-6">
+        <a href="/guide/packages/data" class="group p-6 border border-stone-200 rounded-3xl hover:border-amber-500 hover:bg-amber-50/30 transition-all duration-300">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-amber-600 flex items-center gap-2">
+                📦 stew/data
+            </h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Accédez aux paramètres d'URL, à l'état de la route et aux données synchronisées par le serveur via le Store.</p>
+            <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">Voir les détails →</span>
+        </a>
+
+        <a href="/guide/packages/io" class="group p-6 border border-stone-200 rounded-3xl hover:border-indigo-500 hover:bg-indigo-50/30 transition-all duration-300">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 flex items-center gap-2">
+                📟 stew/io
+            </h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Interagissez avec l'utilisateur via des alertes, des prompts, des confirmations et la console de debug.</p>
+            <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Voir les détails →</span>
+        </a>
+
+        <a href="/guide/packages/nav" class="group p-6 border border-stone-200 rounded-3xl hover:border-indigo-500 hover:bg-indigo-50/30 transition-all duration-300">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 flex items-center gap-2">
+                🧭 stew/nav
+            </h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Gérez la navigation client, les changements d'URL sans rechargement (Morphing) et l'historique.</p>
+            <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Voir les détails →</span>
+        </a>
+
+        <a href="/guide/packages/storage" class="group p-6 border border-stone-200 rounded-3xl hover:border-emerald-500 hover:bg-emerald-50/30 transition-all duration-300">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-emerald-600 flex items-center gap-2">
+                💾 stew/storage
+            </h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Manipulez le LocalStorage et le SessionStorage de manière réactive avec synchronisation automatique.</p>
+            <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Voir les détails →</span>
+        </a>
+    </div>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold italic">"Importation Explicite, Binaire Léger"</h2>
+        <p class="text-sm text-stone-600 leading-relaxed">
+            Par défaut, un bundle Wasm Stew est extrêmement minimaliste. Aucun package n'est inclus s'il n'est pas utilisé. Cela vous permet de contrôler précisément le poids de vos pages.
+        </p>
+        <div class="bg-rose-50 border-l-4 border-rose-500 p-6 rounded-r-3xl">
+            <h4 class="text-rose-900 font-bold mb-2">⚖️ Impact sur la performance</h4>
+            <p class="text-rose-800 text-sm">
+                Certains packages (comme <code>stew/data</code> qui nécessite la gestion JSON) peuvent augmenter la taille du binaire Wasm de plusieurs centaines de Ko. Utilisez-les avec discernement.
+            </p>
+        </div>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/wasmsdk" class="text-stone-400 hover:text-stone-600 transition">← SDK Wasm</a>
+        <a href="/guide/packages/data" class="text-amber-600 font-bold hover:underline">Suivant : stew/data →</a>
+    </footer>
+</div>

@@ -19,6 +19,11 @@ import (
 	stew_guide_internals "github.com/ZiplEix/stew/doc/pages/guide/internals"
 	stew_guide_layouts "github.com/ZiplEix/stew/doc/pages/guide/layouts"
 	stew_guide_middleware "github.com/ZiplEix/stew/doc/pages/guide/middleware"
+	stew_guide_packages "github.com/ZiplEix/stew/doc/pages/guide/packages"
+	stew_guide_packages_data "github.com/ZiplEix/stew/doc/pages/guide/packages/data"
+	stew_guide_packages_io "github.com/ZiplEix/stew/doc/pages/guide/packages/io"
+	stew_guide_packages_nav "github.com/ZiplEix/stew/doc/pages/guide/packages/nav"
+	stew_guide_packages_storage "github.com/ZiplEix/stew/doc/pages/guide/packages/storage"
 	stew_guide_pagedata "github.com/ZiplEix/stew/doc/pages/guide/pagedata"
 	stew_guide_reservedfiles "github.com/ZiplEix/stew/doc/pages/guide/reservedfiles"
 	stew_guide_routing "github.com/ZiplEix/stew/doc/pages/guide/routing"
@@ -267,6 +272,91 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 		stew_pages_root.Layout(w, data, func() {
 			stew_guide.Layout(w, data, func() {
 				stew_guide_middleware.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/packages ---
+	mux.Handle("GET /guide/packages", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_packages.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/packages/data ---
+	mux.Handle("GET /guide/packages/data", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_packages_data.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/packages/io ---
+	mux.Handle("GET /guide/packages/io", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_packages_io.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/packages/nav ---
+	mux.Handle("GET /guide/packages/nav", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_packages_nav.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/packages/storage ---
+	mux.Handle("GET /guide/packages/storage", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_packages_storage.Page(w, data)
 			})
 		})
 	}))

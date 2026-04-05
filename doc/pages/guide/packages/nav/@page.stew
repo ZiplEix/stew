@@ -1,0 +1,93 @@
+<div class="space-y-12">
+    <header>
+        <div class="text-indigo-600 font-mono text-sm mb-2">Packages stew/* / 14.3</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">🧭 stew/nav</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le package <code>stew/nav</code> fournit les outils pour gérer la navigation programmatique et accéder à l'état de l'URL côté client dans vos bundles Wasm.
+        </p>
+    </header>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold">Accès à l'URL</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="p-6 bg-white border border-stone-200 rounded-3xl shadow-sm">
+                <div class="font-mono font-bold text-indigo-700 underline decoration-indigo-100 decoration-4 mb-2">nav.URL string</div>
+                <div class="text-stone-600 text-xs italic leading-relaxed">Retourne l'URL courante au moment de l'appel (élastique, suit les changements).</div>
+            </div>
+            <div class="p-6 bg-white border border-stone-200 rounded-3xl shadow-sm">
+                <div class="font-mono font-bold text-indigo-700 underline decoration-indigo-100 decoration-4 mb-2">nav.Query url.Values</div>
+                <div class="text-stone-600 text-xs italic leading-relaxed">Accès complet aux paramètres de recherche via le type standard de Go (<code>net/url</code>).</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold italic tracking-tight">🚀 Navigation Logic</h2>
+        <p class="text-sm text-stone-500">Stew propose plusieurs modes de navigation pour s'adapter à vos besoins de performance.</p>
+        
+        <div class="grid gap-4">
+            <div class="p-6 border border-amber-500/30 rounded-3xl bg-amber-50/30">
+                <div class="flex justify-between items-center mb-3">
+                    <code class="font-bold text-lg text-amber-900 leading-none">nav.To(url string)</code>
+                    <span class="text-[10px] font-black uppercase tracking-widest bg-amber-600 text-white px-2 py-0.5 rounded-full">Recommandé</span>
+                </div>
+                <p class="text-sm text-stone-700 leading-relaxed">Active le <strong>Hot Morphing</strong>. Stew tente une mise à jour partielle via HTMX et Idiomorph pour une transition instantanée sans perdre l'état Wasm. Si HTMX n'est pas disponible, bascule automatiquement sur <code>StandardTo</code>.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="p-6 border border-stone-200 rounded-3xl bg-white shadow-sm">
+                    <code class="font-bold text-indigo-700 block mb-2">nav.StandardTo(url string)</code>
+                    <p class="text-xs text-stone-500 leading-relaxed italic">Force un rechargement complet de la page et du bundle Wasm (standard browser behavior).</p>
+                </div>
+                <div class="p-6 border border-stone-200 rounded-3xl bg-white shadow-sm">
+                    <code class="font-bold text-indigo-700 block mb-2">nav.Replace(url string)</code>
+                    <p class="text-xs text-stone-500 leading-relaxed italic">Remplace l'entrée actuelle dans l'historique par la nouvelle URL sans créer de nouvelle étape.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold italic tracking-tight">⏪ Historique & Contrôle</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-100 flex flex-col items-center text-center">
+                <code class="font-bold text-stone-800 mb-1">nav.Back()</code>
+                <span class="text-[10px] text-stone-400 font-mono">history.back()</span>
+            </div>
+            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-100 flex flex-col items-center text-center">
+                <code class="font-bold text-stone-800 mb-1">nav.Forward()</code>
+                <span class="text-[10px] text-stone-400 font-mono">history.forward()</span>
+            </div>
+            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-100 flex flex-col items-center text-center">
+                <code class="font-bold text-stone-800 mb-1">nav.Reload()</code>
+                <span class="text-[10px] text-stone-400 font-mono">location.reload()</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold italic tracking-tight italic">Exemple Complet</h2>
+        <pre class="bg-stone-900 text-stone-100 p-6 rounded-3xl overflow-x-auto text-sm leading-relaxed shadow-xl"><code>&lt;goscript client&gt;
+    import "stew/nav"
+
+    onLogout := func() {
+        // Remplace l'URL actuelle par login sans pouvoir revenir en arrière
+        nav.Replace("/login")
+    }
+
+    onSuccess := func() {
+        // Navigation fluide vers le dashboard
+        nav.To("/dashboard")
+    }
+
+    onRefresh := func() {
+        nav.Reload()
+    }
+&lt;/goscript&gt;</code></pre>
+    </section>
+
+    <footer class="pt-8 border-t border-stone-100 flex justify-between">
+        <a href="/guide/packages/io" class="text-stone-400 hover:text-stone-600 transition">← stew/io</a>
+        <a href="/guide/packages/storage" class="text-amber-600 font-bold hover:underline">Suivant : stew/storage →</a>
+    </footer>
+</div>
