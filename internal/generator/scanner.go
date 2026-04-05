@@ -77,13 +77,10 @@ func (s *Scanner) Scan() (*RouteNode, error) {
 
 // createNode calculate URLPath and PackageAlias
 func (s *Scanner) createNode(relPath, name string) *RouteNode {
-	urlPath := "/" + relPath
-	urlPath = strings.ReplaceAll(urlPath, "_", "{")
-	urlPath = strings.ReplaceAll(urlPath, "__", "}")
+	urlPath := "/" + convertDynamicSegments(relPath)
 
-	alias := "stew_" + strings.ReplaceAll(strings.ReplaceAll(relPath, "/", "_"), "-", "_")
-	alias = strings.ReplaceAll(alias, "{", "")
-	alias = strings.ReplaceAll(alias, "}", "")
+	cleanedRel := strings.ReplaceAll(relPath, "__", "")
+	alias := "stew_" + strings.ReplaceAll(strings.ReplaceAll(cleanedRel, "/", "_"), "-", "_")
 
 	return &RouteNode{
 		Name:         name,
@@ -145,4 +142,20 @@ func isHTTPMethod(name string) bool {
 		"DELETE": true, "PATCH": true, "OPTIONS": true,
 	}
 	return valid[name]
+}
+
+// convertDynamicSegments transforms __slug__ folder names into {slug} URL parameters.
+// Examples:
+//
+//	"users/__id__"       → "users/{id}"
+//	"files/__path...__"  → "files/{path...}"
+func convertDynamicSegments(relPath string) string {
+	segments := strings.Split(relPath, "/")
+	for i, seg := range segments {
+		if strings.HasPrefix(seg, "__") && strings.HasSuffix(seg, "__") && len(seg) > 4 {
+			inner := seg[2 : len(seg)-2]
+			segments[i] = "{" + inner + "}"
+		}
+	}
+	return strings.Join(segments, "/")
 }

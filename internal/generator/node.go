@@ -11,8 +11,8 @@ const (
 
 // RouteNode represents a URL segment and a Go package
 type RouteNode struct {
-	Name         string // folder name (ex: "_id_")
-	RelativePath string // path from /pages (ex: "users/_id_")
+	Name         string // folder name (ex: "__id__")
+	RelativePath string // path from /pages (ex: "users/__id__")
 	URLPath      string // final path for the router (ex: "/users/{id}")
 	PackageAlias string // unique alias for import (ex: "stew_users_id")
 	ImportPath   string // full Go import path

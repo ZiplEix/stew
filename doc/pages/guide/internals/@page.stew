@@ -97,8 +97,8 @@ static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pr
         <p class="text-sm text-stone-600">Pour éviter les conflits de noms de packages, le compilateur utilise le chemin relatif du dossier comme alias :</p>
         <pre><code>pages/                    → package pages
 pages/users/              → package users (alias: stew_pages_users)
-pages/users/{id}/         → package stew_pages_users__id_
-pages/blog/{slug}/        → package stew_pages_blog__slug_</code></pre>
+pages/users/__id__/       → package stew_pages_users_id
+pages/blog/__slug__/      → package stew_pages_blog_slug</code></pre>
     </section>
 
     <section class="space-y-4">

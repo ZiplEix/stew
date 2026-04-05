@@ -50,7 +50,7 @@ Stew 2.0 uses a strict file-naming convention to avoid conflicts with Go's stand
 ### Example Mapping:
 - `pages/@page.stew` → `GET /`
 - `pages/api/login/stew.server.go` (func `Post`) → `POST /api/login`
-- `pages/users/{id}/@page.stew` → `GET /users/{id}` (Go 1.22+ wildcard support)
+- `pages/users/__id__/@page.stew` → `GET /users/{id}` (Go 1.22+ wildcard support)
 
 ---
 
