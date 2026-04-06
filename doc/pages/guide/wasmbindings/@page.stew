@@ -9,31 +9,33 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Directive <code>bind:content</code></h2>
-        <p class="text-sm text-stone-600">Liaison unidirectionnelle <strong>Go → DOM</strong>. Met à jour l'<code>innerHTML</code> d'un élément quand la variable Go mute :</p>
+        <p class="text-sm text-stone-600">Liaison unidirectionnelle <strong>Go → DOM</strong>. Met à jour l'<code>innerHTML</code> d'un élément quand le Signal mutera :</p>
         <pre><code>&lt;goscript client&gt;
-    message := "Bonjour !"
+    import "stew/state"
+    message := state.New("Bonjour !")
 &lt;/goscript&gt;
 
-&lt;h1 bind&#58;content=&#123;&#123; message &#125;&#125;&gt;Chargement...&lt;/h1&gt;</code></pre>
-        <p class="text-sm text-stone-500">Le compilateur injecte un <code>id</code> unique sur l'élément et génère un appel <code>wasm.BindContent("id", &message)</code>. Le contenu initial du HTML est remplacé immédiatement au démarrage du Wasm.</p>
+&lt;h1 bind&#58;content=&#123;&#123; message.Get() &#125;&#125;&gt;Chargement...&lt;/h1&gt;</code></pre>
+        <p class="text-sm text-stone-500">Le compilateur injecte un <code>id</code> unique sur l'élément et le contenu initial du HTML est remplacé et réagi automatiquement aux changements de la variable grâce à l'Auto-Tracking (Signaux).</p>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Directive <code>bind:value</code></h2>
         <p class="text-sm text-stone-600">Liaison bidirectionnelle sur les <code>&lt;input&gt;</code> : <strong>Go → DOM</strong> et <strong>DOM → Go</strong> en temps réel :</p>
         <pre><code>&lt;goscript client&gt;
-    name := "World"
+    import "stew/state"
+    name := "World" // Si unbindé par un signal
+    message := state.New("")
 
-    wasm.OnUpdate(func() {
-        message = "Hello " + name + " !"
-    })
-
-    message := ""
+    // Mettre à jour au clic ou autre événement
+    updateMessage := func(val string) {
+        message.Set("Hello " + val + " !")
+    }
 &lt;/goscript&gt;
 
-&lt;input type="text" bind&#58;value=&#123;&#123; name &#125;&#125; /&gt;
-&lt;p bind&#58;content=&#123;&#123; message &#125;&#125;&gt;&lt;/p&gt;</code></pre>
-        <p class="text-sm text-stone-500">Génère un listener <code>input</code> qui met à jour <code>name</code> à chaque frappe, et la boucle de dirty checking propage automatiquement <code>message</code> dans le DOM.</p>
+&lt;input type="text" on&#58;input=&#123;&#123; updateMessage(this.Get("value").String()) &#125;&#125; /&gt;
+&lt;p bind&#58;content=&#123;&#123; message.Get() &#125;&#125;&gt;&lt;/p&gt;</code></pre>
+        <p class="text-sm text-stone-500">Avec le système de Signaux, vous écoutez l'événement `input` et mettez à jour votre Signal interne, déclenchant automatiquement la mise à jour du DOM.</p>
     </section>
 
     <section class="space-y-4">
@@ -42,15 +44,24 @@
         <pre><code>&lt;button on&#58;click=&#123;&#123; count++ &#125;&#125;&gt;+&lt;/button&gt;</code></pre>
         
         <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl text-sm space-y-2">
-            <h3 class="font-bold text-blue-900 leading-tight">Heuristique de Wrapping</h3>
+            <h3 class="font-bold text-blue-900 leading-tight">Heuristique de Détection des Signaux</h3>
             <p class="text-blue-800">
-                Le compilateur Stew est intelligent. Il décide d'envelopper ou non votre expression <code>&#123;&#123; ... &#125;&#125;</code> dans une <code>func() { ... }</code> selon le contenu :
+                Le compilateur Stew détecte de manière transparente l'utilisation des Signaux. S'il repère l'appel <code>.Get()</code> dans une expression (ex: <code>count.Get()</code>), il enveloppera automatiquement le bloc HTML lié dans un système <code>state.Effect(func() { ... })</code>.
             </p>
             <ul class="list-disc list-inside text-blue-800 space-y-1">
-                <li><strong>Expression / Instruction</strong> : <code>count++</code> ou <code>nav.To("/")</code>. <br/>→ Génère : <code>func() { count++ }</code></li>
-                <li><strong>Référence de Fonction</strong> : <code>handleClick</code> (sans parenthèses). <br/>→ Génère : <code>handleClick</code> (utilisé directement)</li>
-                <li><strong>Littéral de Fonction</strong> : <code>func() &#123; ... &#125;</code>. <br/>→ Génère : <code>func() { ... }</code> (utilisé directement)</li>
+                <li>Génère un identifiant unique (<code>id="stew-bind-page-N"</code>) et lie l'élément ciblé par un <strong>diff sélectif asynchrone</strong> en cas de modification du signal associé.</li>
             </ul>
+        </div>
+        
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm space-y-2">
+            <h3 class="font-bold text-amber-900 leading-tight">⚠️ Limitation : Réactivité dans les attributs HTML</h3>
+            <p class="text-amber-800">
+                Les blocs <code>&#123;&#123; if &#125;&#125;</code> ou expressions insérés directement à l'intérieur des attributs HTML (ex: <code>class="... &#123;&#123; if ... &#125;&#125;"</code>) <strong>ne sont pas réactifs via Wasm</strong>. 
+                S'ils l'étaient, la création du conteneur réactif casserait gravement la validité syntaxique de l'attribut HTML. Ils conserveront toutefois leurs comportements lors du rendu applicatif Serveur initial (SSR).
+            </p>
+            <p class="text-amber-800">
+                Pour muter graphiquement une classe au clic, la recommandation officielle est d'accéder à <code>this</code> dans le handler d'événement, ou d'encapsuler la logique d'état complexe au sein d'un composant <code>.stew</code> distinct.
+            </p>
         </div>
     </section>
 
@@ -96,8 +107,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">bind:content=&#123;&#123; var &#125;&#125;</td><td class="p-3">Go → DOM</td><td class="p-3 font-mono text-xs">wasm.BindContent(id, &amp;var)</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">bind:value=&#123;&#123; var &#125;&#125;</td><td class="p-3">Go ↔ DOM</td><td class="p-3 font-mono text-xs">wasm.BindInput(id, &amp;var)</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">bind:content=&#123;&#123; var.Get() &#125;&#125;</td><td class="p-3">Signal → DOM</td><td class="p-3 font-mono text-xs">wasm.BindBlock(id, func(){...})</td></tr>
                     <tr class="border-b border-stone-100"><td class="p-3 font-mono">on:click=&#123;&#123; expr &#125;&#125;</td><td class="p-3">DOM → Go</td><td class="p-3 font-mono text-xs">wasm.OnEvent(id, "click", func(){expr})</td></tr>
                     <tr><td class="p-3 font-mono">on:&lt;event&gt;=&#123;&#123; expr &#125;&#125;</td><td class="p-3">DOM → Go</td><td class="p-3 font-mono text-xs">wasm.OnEvent(id, "event", func(){expr})</td></tr>
                 </tbody>

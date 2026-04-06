@@ -3,7 +3,7 @@ package storage
 
 import (
 	"syscall/js"
-	"github.com/ZiplEix/stew/sdk/wasm"
+	"github.com/ZiplEix/stew/sdk/wasm/state"
 )
 
 // Store represents a browser storage area (Local or Session).
@@ -35,22 +35,17 @@ func (s *Store) Clear() {
 	s.jsStore.Call("clear")
 }
 
-// Bind synchronizes a Go string pointer with a storage key.
-// It loads the initial value from storage and then monitors the pointer for changes.
-func (s *Store) Bind(ptr *string, key string) {
+// Bind synchronizes a Signal with a storage key.
+// It loads the initial value from storage and then monitors the signal for changes.
+func (s *Store) Bind(sig *state.Signal[string], key string) {
 	// Initial load
 	if val := s.Get(key); val != "" {
-		*ptr = val
+		sig.Set(val)
 	}
 
-	lastValue := *ptr
-
 	// Reactive sync Go -> Storage
-	wasm.OnUpdate(func() {
-		if *ptr != lastValue {
-			lastValue = *ptr
-			s.Set(key, *ptr)
-		}
+	state.Effect(func() {
+		s.Set(key, sig.Get())
 	})
 
 	// Optional: Storage -> Go sync (only for LocalStorage across tabs)
@@ -59,9 +54,8 @@ func (s *Store) Bind(ptr *string, key string) {
 			event := args[0]
 			if event.Get("key").String() == key {
 				newValue := event.Get("newValue").String()
-				if newValue != *ptr {
-					*ptr = newValue
-					lastValue = newValue
+				if newValue != sig.Get() {
+					sig.Set(newValue)
 				}
 			}
 			return nil

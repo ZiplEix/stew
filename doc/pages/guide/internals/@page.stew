@@ -62,6 +62,36 @@ tinygo build -target wasm -no-debug -o ./static/wasm/pages_page.wasm /tmp/...
       ▼
 static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pre>
     </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Modèle de Réactivité : Signaux & Auto-Tracking</h2>
+        <p class="text-sm text-stone-600 leading-relaxed">
+            Stew-Lang utilise un système de réactivité <strong>"Push-Based"</strong> inspiré de SolidJS. Contrairement au polling (Dirty Checking), le CPU est à 0% de charge tant qu'aucun état n'est modifié.
+        </p>
+        <div class="grid md:grid-cols-2 gap-6 mt-4">
+            <div class="p-5 border border-stone-200 rounded-2xl bg-stone-50/50">
+                <h3 class="font-bold text-sm mb-2 uppercase tracking-widest text-stone-400">1. Enregistrement (Get)</h3>
+                <p class="text-xs text-stone-600">
+                    Lorsqu'un effet (<code>state.Effect</code> ou <code>BindBlock</code>) s'exécute, il définit sa fonction comme "contexte courant". Tout appel à <code>signal.Get()</code> durant cette phase ajoute l'effet à la liste des abonnés du signal.
+                </p>
+            </div>
+            <div class="p-5 border border-stone-200 rounded-2xl bg-stone-50/50">
+                <h3 class="font-bold text-sm mb-2 uppercase tracking-widest text-stone-400">2. Notification (Set)</h3>
+                <p class="text-xs text-stone-600">
+                    Lors d'un <code>signal.Set(val)</code>, le signal parcourt sa liste d'abonnés et déclenche immédiatement leur ré-exécution. Le DOM est ainsi mis à jour de manière chirurgicale.
+                </p>
+            </div>
+        </div>
+        </div>
+        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl text-xs text-indigo-900 mt-4 space-y-2">
+            <p>
+                <strong>Heuristique du compilateur</strong> : Stew scanne vos expressions <code>&#123;&#123; ... &#125;&#125;</code>. S'il y trouve un appel <code>.Get()</code>, il transforme automatiquement le rendu HTML en un <code>wasm.BindBlock</code> réactif.
+            </p>
+            <p>
+                <strong>Sécurité HTML (inTag) et Idiomorph</strong> : Le compilateur suit intelligemment l'état d'ouverture des balises HTML. Si vous placez un Signal <i>à l'intérieur</i> d'un attribut (ex: <code>class=""</code>), Stew annulera la création de son wrapper invisible destructeur pour éviter le HTML invalide (désactivant la réactivité Wasm locale tout en conservant le SSR). Par ailleurs, le moteur <code>Idiomorph</code> de notre SDK Wasm a pour instruction de morpher via <code>innerHTML</code> exclusivement, permettant un maintien infini des cibles réactives DOM de Stew sans les surécrire.
+            </p>
+        </div>
+    </section>
     
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Optimisation DX : Variables inutilisées</h2>

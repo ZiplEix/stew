@@ -1,0 +1,41 @@
+<goscript>
+    var count = state.New(0)
+</goscript>
+
+<goscript client>
+    import "stew/io"
+    import "stew/state"
+    
+    var count = state.New(0)
+
+    increment := func() {
+        count.Set(count.Get() + 1)
+        Console.Log("Count est maintenant", count.Get())
+    }
+</goscript>
+
+<div class="p-8 gap-4 flex flex-col">
+    <h1 class="text-2xl font-bold">Test Réactivité If/Each (Signaux)</h1>
+    
+    <button on:click={{ increment() }} class="bg-amber-500 text-white px-4 py-2 rounded">
+        Incrémenter ({{ count.Get() }})
+    </button>
+    
+    <div class="border p-4 rounded">
+        <h2 class="font-bold">Test IF Structurel:</h2>
+        {{ if count.Get() % 2 == 0 }}
+            <div class="text-green-600 font-bold italic">Le compteur est PAIR</div>
+        {{ else }}
+            <div class="text-blue-600 font-bold italic">Le compteur est IMPAIR</div>
+        {{ end }}
+    </div>
+
+    <div class="border p-4 rounded">
+        <h2 class="font-bold">Test EACH Structurel:</h2>
+        <ul class="list-disc pl-5">
+            {{ each 1..count.Get() as i }}
+                <li>Élément n°{{ i }}</li>
+            {{ end }}
+        </ul>
+    </div>
+</div>

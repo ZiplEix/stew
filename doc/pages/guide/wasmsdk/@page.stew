@@ -30,6 +30,10 @@
                 <div class="font-bold text-sm mb-1 group-hover:text-emerald-700">💾 stew/storage</div>
                 <div class="text-[10px] text-stone-500">LocalStorage & SessionStorage réactifs.</div>
             </a>
+            <a href="/guide/packages/state" class="p-4 border border-stone-200 rounded-2xl hover:border-rose-500 hover:bg-rose-50/30 transition-all group">
+                <div class="font-bold text-sm mb-1 group-hover:text-rose-700">🚥 stew/state</div>
+                <div class="text-[10px] text-stone-500">Signaux réactifs et Auto-Tracking.</div>
+            </a>
         </div>
 
         <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-center justify-between">
@@ -63,13 +67,19 @@ wasm.BindInput("name-input", &name)
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
-                <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.OnUpdate(cb func())</h3>
-                <p class="text-stone-600 text-sm mb-3">Enregistre un callback <strong>exécuté à chaque frame</strong> (requestAnimationFrame) avant le dirty-checking DOM. Idéal pour recalculer des valeurs dérivées.</p>
-                <pre><code>count := 0
-countStr := "0"
+                <h3 class="font-mono font-bold text-indigo-800 mb-2">state.New[T any](initial T) *Signal[T]</h3>
+                <p class="text-stone-600 text-sm mb-3">Crée un nouveau <strong>Signal Réactif</strong> (dans `stew/state`). Permet de traquer précisément l'état de l'application cliente pour l'Auto-Tracking.</p>
+                <pre><code>count := state.New(0)
+username := state.New("Visiteur")</code></pre>
+            </div>
 
-wasm.OnUpdate(func() {
-    countStr = strconv.Itoa(count)  <span class="text-stone-400">// Recalculé ~60x/sec</span>
+            <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
+                <h3 class="font-mono font-bold text-indigo-800 mb-2">state.Effect(cb func())</h3>
+                <p class="text-stone-600 text-sm mb-3">Enregistre un effet secondaire (dans `stew/state`). Il s'exécute immédiatement, détecte quels `.Get()` sont appelés, et <strong>se ré-exécute automatiquement</strong> seulement lorsque l'un de ces Signaux mute.</p>
+                <pre><code>count := state.New(0)
+
+state.Effect(func() {
+    Console.Log("Compteur :", count.Get()) // Exécuté uniquement quand count change
 })</code></pre>
             </div>
 
@@ -103,21 +113,21 @@ json.Unmarshal([]byte(rawJSON), &state)</code></pre>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.StartReactivityLoop()</h3>
-                <p class="text-stone-600 text-sm mb-3"><strong>Appelé automatiquement</strong> par le compilateur à la fin de chaque bundle Wasm. Démarre la boucle <code>requestAnimationFrame</code> et bloque le thread principal Wasm (via <code>select {}</code>). Ne pas appeler manuellement.</p>
+                <p class="text-stone-600 text-sm mb-3"><strong>Appelé automatiquement</strong> par le compilateur à la fin de chaque bundle Wasm. Maintient le thread principal Wasm en vie indéfiniment (via <code>select {}</code>). N'appelez jamais manuellement.</p>
             </div>
 
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Boucle de réactivité — Fonctionnement interne</h2>
-        <p class="text-sm text-stone-600">La boucle <code>StartReactivityLoop</code> fonctionne en 3 étapes à chaque frame :</p>
+        <h2 class="text-2xl font-bold">Système d'Effets — Fonctionnement interne</h2>
+        <p class="text-sm text-stone-600">Le système de Signaux (Auto-Tracking) fonctionne en synchronisation de précision :</p>
         <ol class="list-decimal list-inside space-y-2 text-stone-700 text-sm">
-            <li><strong>Hooks <code>OnUpdate</code></strong> : Tous les callbacks enregistrés sont exécutés en séquence. C'est là que se font les calculs dérivés.</li>
-            <li><strong>Dirty-checking <code>BindInput</code></strong> : Compare <code>*ptr</code> avec la dernière valeur connue. Si différent, met à jour le DOM (<code>el.value</code>).</li>
-            <li><strong>Dirty-checking <code>BindContent</code></strong> : Compare <code>*ptr</code> avec la dernière valeur connue. Si différent, met à jour le DOM (<code>el.innerHTML</code>).</li>
+            <li><strong>Enregistrement</strong> : Lorsqu'un <code>state.Effect</code> s'exécute, il s'inscrit au thread global temporaire.</li>
+            <li><strong>Auto-Tracking</strong> : Si un <code>Signal.Get()</code> est appelé durant ce thread, le Signal ajoute l'effet à sa liste d'abonnés exclusifs.</li>
+            <li><strong>Propagation</strong> : Lorsqu'un <code>Signal.Set()</code> est déclenché, il notifie la liste d'abonnés de se ré-exécuter.</li>
         </ol>
-        <p class="text-sm text-stone-500">Ce cycle s'auto-planifie via <code>requestAnimationFrame</code> → performances optimales car synchronisé avec le vsync du navigateur.</p>
+        <p class="text-sm text-stone-500">Ce cycle garantit que votre application n'utilise strictement aucune ressource CPU lorsqu'aucune modification d'état (Set) n'est induite.</p>
     </section>
 
     <footer class="pt-8 border-t border-stone-100 flex justify-between">

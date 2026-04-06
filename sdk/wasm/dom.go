@@ -3,67 +3,72 @@
 package wasm
 
 import (
+	"encoding/json"
+	"github.com/ZiplEix/stew/sdk/wasm/state"
+	"github.com/ZiplEix/stew/sdk/stew"
 	"syscall/js"
 )
 
 var document = js.Global().Get("document")
 
-type valueBinding struct {
-	id        string
-	ptr       *string
-	lastValue string
+// isStarted tracks if the Wasm loop is running
+var isStarted bool
+// BindContent is maintained for legacy bindings that aren't reactive functions.
+// It uses Idiomorph to set the content initially and then does a basic reactive wrap.
+func BindContent(id string, ptr *string) {
+	state.Effect(func() {
+		el := document.Call("getElementById", id)
+		if !el.IsNull() && !el.IsUndefined() {
+			el.Set("innerHTML", *ptr)
+		}
+	})
 }
 
-type contentBinding struct {
-	id        string
-	ptr       *string
-	lastValue string
+// GetElement is a shorthand for document.getElementById(id)
+func GetElement(id string) js.Value {
+	return document.Call("getElementById", id)
 }
 
-var (
-	valBindings []valueBinding
-	cntBindings []contentBinding
-	updateHooks []func()
-	isStarted   bool
-)
-
-// OnUpdate registers a computed callback executed right before the DOM diffing every frame.
-func OnUpdate(cb func()) {
-	updateHooks = append(updateHooks, cb)
-}
-
-// BindInput binds a pointer to a string to an input element's value.
-// It sets up two-way data binding (DOM -> Go, and Go -> DOM via Dirty Checker).
+// BindInput binds an input element to a string pointer (legacy).
 func BindInput(id string, ptr *string) {
 	el := document.Call("getElementById", id)
 	if el.IsNull() || el.IsUndefined() {
 		return
 	}
 
-	// Update DOM to reflect initial Go value
-	el.Set("value", *ptr)
+	// Update DOM when ptr changes (requires manual trigger if not a signal, 
+	// but Effect helps in the generic reactivity loop context).
+	state.Effect(func() {
+		if el.Get("value").String() != *ptr {
+			el.Set("value", *ptr)
+		}
+	})
 
-	// DOM -> Go hook
+	// Update ptr when DOM changes
 	cb := js.FuncOf(func(this js.Value, args []js.Value) any {
 		*ptr = el.Get("value").String()
 		return nil
 	})
 	el.Call("addEventListener", "input", cb)
-
-	// Register for Go -> DOM dirty checking
-	valBindings = append(valBindings, valueBinding{id: id, ptr: ptr, lastValue: *ptr})
 }
 
-// BindContent binds a pointer to a string to an element's innerHTML.
-// It sets up one-way data binding (Go -> DOM via Dirty Checker).
-func BindContent(id string, ptr *string) {
-	el := document.Call("getElementById", id)
-	if el.IsNull() || el.IsUndefined() {
-		return
-	}
-
-	el.Set("innerHTML", *ptr)
-	cntBindings = append(cntBindings, contentBinding{id: id, ptr: ptr, lastValue: *ptr})
+// BindBlock binds a render function to a DOM element.
+// It uses Idiomorph to morph the element's content whenever signal dependencies change.
+func BindBlock(id string, render func() string) {
+	state.Effect(func() {
+		newHTML := render()
+		el := document.Call("getElementById", id)
+		if !el.IsNull() && !el.IsUndefined() {
+			idiomorph := js.Global().Get("Idiomorph")
+			if !idiomorph.IsUndefined() && !idiomorph.IsNull() {
+				opts := js.Global().Get("Object").New()
+				opts.Set("morphStyle", "innerHTML")
+				idiomorph.Call("morph", el, newHTML, opts)
+			} else {
+				el.Set("innerHTML", newHTML)
+			}
+		}
+	})
 }
 
 // OnEvent attaches an event listener to an element by its ID.
@@ -93,49 +98,20 @@ func GetPageDataJSON() string {
 	return script.Get("textContent").String()
 }
 
-// StartReactivityLoop initiates the requestAnimationFrame dirty checking loop.
+// GetPageData retrieves and unmarshals the page data injected by the server.
+func GetPageData() stew.PageData {
+	jsonStr := GetPageDataJSON()
+	var data stew.PageData
+	json.Unmarshal([]byte(jsonStr), &data)
+	return data
+}
+
+// StartReactivityLoop blocks the main Wasm thread so it doesn't exit.
 func StartReactivityLoop() {
 	if isStarted {
 		return
 	}
 	isStarted = true
-
-	var cb js.Func
-	cb = js.FuncOf(func(this js.Value, args []js.Value) any {
-		// Run user computed updates first
-		for _, hook := range updateHooks {
-			hook()
-		}
-
-		// Check value bindings (Go -> DOM diff)
-		for i := range valBindings {
-			if *valBindings[i].ptr != valBindings[i].lastValue {
-				valBindings[i].lastValue = *valBindings[i].ptr
-				el := document.Call("getElementById", valBindings[i].id)
-				if !el.IsNull() && !el.IsUndefined() {
-					// Avoid overwriting if user is currently typing to prevent cursor jump
-					// Simplification: just overwrite.
-					el.Set("value", *valBindings[i].ptr)
-				}
-			}
-		}
-
-		// Check content bindings (Go -> DOM diff)
-		for i := range cntBindings {
-			if *cntBindings[i].ptr != cntBindings[i].lastValue {
-				cntBindings[i].lastValue = *cntBindings[i].ptr
-				el := document.Call("getElementById", cntBindings[i].id)
-				if !el.IsNull() && !el.IsUndefined() {
-					el.Set("innerHTML", *cntBindings[i].ptr)
-				}
-			}
-		}
-
-		js.Global().Call("requestAnimationFrame", cb)
-		return nil
-	})
-	js.Global().Call("requestAnimationFrame", cb)
-
-	// Block main Wasm thread
+	// Block main Wasm thread forever since reactivity is now event/signal driven.
 	select {}
 }

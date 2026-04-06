@@ -27,6 +27,7 @@ type NodeIf struct {
 	Condition string
 	Body      []Node
 	ElseBody  []Node
+	BlockID   string // Generated for reactivity
 }
 
 func (n NodeIf) nodeType() string { return "IF" }
@@ -34,6 +35,7 @@ func (n NodeIf) nodeType() string { return "IF" }
 type NodeEach struct {
 	Iterator string
 	Body     []Node
+	BlockID  string // Generated for reactivity
 }
 
 func (n NodeEach) nodeType() string { return "EACH" }
