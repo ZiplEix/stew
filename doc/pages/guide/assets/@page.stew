@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 08 — Assets</div>
@@ -10,20 +15,20 @@
     <section class="space-y-4">
         <h2 class="text-2xl font-bold font-mono text-stone-900 italic">Dossier /static</h2>
         <p class="text-sm text-stone-600">Le dossier <code>static/</code> à la racine de votre projet est le point central pour tous vos assets (images, fonts, scripts). Le compilateur Stew y place aussi les binaires Wasm générés et le script <code>wasm_exec.js</code>.</p>
-        <pre><code>project/
+        <Code>project/
 ├── static/
 │   ├── images/
 │   │   └── logo.png  → /static/images/logo.png
 │   ├── wasm/
 │   │   ├── wasm_exec.js
 │   │   └── pages_page.wasm
-│   └── style.css     → /static/style.css</code></pre>
+│   └── style.css     → /static/style.css</Code>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold font-mono text-stone-900 border-b-2 border-stone-200 pb-2">Intégration Tailwind CSS</h2>
         <p class="text-sm text-stone-600">Puisque Stew utilise des fichiers <code>.stew</code>, vous devez indiquer à Tailwind de scanner ces fichiers pour extraire les classes utilitaires.</p>
-        <pre><code><span class="text-stone-400">// tailwind.config.js</span>
+        <Code><span class="text-stone-400">// tailwind.config.js</span>
 module.exports = {
   content: [
     "./pages/**/*.stew",     <span class="text-stone-400">// Scanner les pages et layouts</span>
@@ -34,22 +39,19 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-}</code></pre>
-        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl text-sm italic">
+}</Code>
+        <Alert Type="info">
             <strong>Pro Tip :</strong> Ajoutez la commande de build Tailwind (<code>tailwind -i ./src/input.css -o ./static/style.css --watch</code>) dans la section <code>commands: dev: scripts:</code> de votre <code>.stew.yaml</code> pour automatiser la compilation CSS.
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Performance & Cache</h2>
         <p class="text-sm text-stone-600">En production, nous recommandons d'ajouter un middleware pour définir les headers <code>Cache-Control</code> de vos routes <code>/static/</code> afin d'assurer une livraison ultra-rapide des assets.</p>
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm space-x-2">
+        <Alert Type="warning">
             <strong class="text-amber-900">🚀 Optimisation :</strong> <span class="text-amber-800">Si vous utilisez un CDN comme Cloudflare, les fichiers de <code>static/wasm/</code> seront mis en cache, réduisant drastiquement le temps de chargement pour vos utilisateurs.</span>
-        </div>
+        </Alert>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/reservedfiles" class="text-stone-400 hover:text-stone-600 transition">← Fichiers réservés</a>
-        <a href="/guide/goscriptserver" class="text-amber-600 font-bold hover:underline">Suivant : goscript server →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/reservedfiles" PrevName="Fichiers réservés" NextLink="/guide/goscriptserver" NextName="goscript server" />
 </div>

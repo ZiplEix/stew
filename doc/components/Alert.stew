@@ -1,0 +1,27 @@
+<goscript>
+    type AlertProps struct {
+        Type string // "info", "warning", "error"
+    }
+
+    bg := "bg-indigo-50"
+    border := "border-indigo-500"
+    text := "text-indigo-900"
+
+    if props.Type == "warning" {
+        bg = "bg-amber-50"
+        border = "border-amber-500"
+        text = "text-amber-900"
+    } else if props.Type == "error" {
+        bg = "bg-rose-50"
+        border = "border-rose-500"
+        text = "text-rose-900"
+    } else if props.Type == "info" {
+        bg = "bg-blue-50"
+        border = "border-blue-500"
+        text = "text-blue-900"
+    }
+</goscript>
+
+<div class="{{ bg }} border-l-4 {{ border }} p-4 rounded-r-xl text-sm space-y-2 {{ text }} mb-6">
+    <slot />
+</div>

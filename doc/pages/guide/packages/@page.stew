@@ -1,3 +1,7 @@
+<goscript>
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 14 — Packages stew/*</div>
@@ -39,6 +43,14 @@
             <p class="text-sm text-stone-600 mb-4 leading-relaxed">Manipulez le LocalStorage et le SessionStorage de manière réactive avec synchronisation automatique.</p>
             <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Voir les détails →</span>
         </a>
+
+        <a href="/guide/packages/state" class="group p-6 border border-stone-200 rounded-3xl hover:border-rose-500 hover:bg-rose-50/30 transition-all duration-300">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-rose-600 flex items-center gap-2">
+                🚥 stew/state
+            </h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Le cœur de la réactivité : Signaux, Effects et Auto-Tracking pour des interfaces vivantes.</p>
+            <span class="text-xs font-bold text-rose-500 uppercase tracking-wider">Voir les détails →</span>
+        </a>
     </div>
 
     <section class="space-y-4">
@@ -46,16 +58,13 @@
         <p class="text-sm text-stone-600 leading-relaxed">
             Par défaut, un bundle Wasm Stew est extrêmement minimaliste. Aucun package n'est inclus s'il n'est pas utilisé. Cela vous permet de contrôler précisément le poids de vos pages.
         </p>
-        <div class="bg-rose-50 border-l-4 border-rose-500 p-6 rounded-r-3xl">
+        <Alert Type="error">
             <h4 class="text-rose-900 font-bold mb-2">⚖️ Impact sur la performance</h4>
             <p class="text-rose-800 text-sm">
                 Certains packages (comme <code>stew/data</code> qui nécessite la gestion JSON) peuvent augmenter la taille du binaire Wasm de plusieurs centaines de Ko. Utilisez-les avec discernement.
             </p>
-        </div>
+        </Alert>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/wasmsdk" class="text-stone-400 hover:text-stone-600 transition">← SDK Wasm</a>
-        <a href="/guide/packages/data" class="text-amber-600 font-bold hover:underline">Suivant : stew/data →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/wasmsdk" PrevName="SDK Wasm" NextLink="/guide/packages/data" NextName="stew/data" />
 </div>

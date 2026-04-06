@@ -1,3 +1,7 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 15 — CLI</div>
@@ -20,7 +24,7 @@
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Configurer un layout pour Hot Morphing</h2>
         <p class="text-sm text-stone-600">Dans le layout racine <code>pages/@layout.stew</code> :</p>
-        <pre><code>&lt;goscript&gt;
+        <Code>&lt;goscript&gt;
     import "os"
     import "github.com/ZiplEix/stew/sdk/live"
 &lt;/goscript&gt;
@@ -42,13 +46,13 @@
         &#123;&#123; end &#125;&#125;
 
     &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+&lt;/html&gt;</Code>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Configurer le serveur</h2>
         <p class="text-sm text-stone-600">Dans <code>main.go</code>, envelopper le routeur avec le middleware live :</p>
-        <pre><code>package main
+        <Code>package main
 
 import (
     "net/http"
@@ -66,7 +70,7 @@ func main() {
     }
 
     http.ListenAndServe(":8080", handler)
-}</code></pre>
+}</Code>
         <p class="text-sm text-stone-500">Le middleware <code>live.Middleware</code> ajoute la route SSE <code>/_stew/live</code> et gère le canal de signal de reload.</p>
     </section>
 
@@ -88,8 +92,5 @@ func main() {
         </div>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/cli" class="text-stone-400 hover:text-stone-600 transition">← CLI</a>
-        <a href="/guide/internals" class="text-amber-600 font-bold hover:underline">Suivant : Fonctionnement interne →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/cli" PrevName="CLI" NextLink="/guide/internals" NextName="Fonctionnement interne" />
 </div>

@@ -1,3 +1,7 @@
+<goscript>
+    import "../../../../components/NavFooter.stew"
+    import "../../../../components/Code.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-indigo-600 font-mono text-sm mb-2">Packages stew/* / 14.3</div>
@@ -67,7 +71,7 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold italic tracking-tight italic">Exemple Complet</h2>
-        <pre class="bg-stone-900 text-stone-100 p-6 rounded-3xl overflow-x-auto text-sm leading-relaxed shadow-xl"><code>&lt;goscript client&gt;
+        <Code>&lt;goscript client&gt;
     import "stew/nav"
 
     onLogout := func() {
@@ -83,11 +87,8 @@
     onRefresh := func() {
         nav.Reload()
     }
-&lt;/goscript&gt;</code></pre>
+&lt;/goscript&gt;</Code>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/packages/io" class="text-stone-400 hover:text-stone-600 transition">← stew/io</a>
-        <a href="/guide/packages/storage" class="text-amber-600 font-bold hover:underline">Suivant : stew/storage →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/packages/io" PrevName="stew/io" NextLink="/guide/packages/storage" NextName="stew/storage" />
 </div>

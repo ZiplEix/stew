@@ -1,3 +1,6 @@
+<goscript>
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 14 — CLI</div>
@@ -116,8 +119,5 @@
         </div>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/wasm-sdk" class="text-stone-400 hover:text-stone-600 transition">← SDK Wasm</a>
-        <a href="/guide/hot-morphing" class="text-amber-600 font-bold hover:underline">Suivant : Hot Morphing →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/wasm-sdk" PrevName="SDK Wasm" NextLink="/guide/hot-morphing" NextName="Hot Morphing" />
 </div>

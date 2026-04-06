@@ -1,3 +1,7 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 08 — Logique Go</div>
@@ -9,7 +13,7 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Syntaxe de base</h2>
-        <pre><code>&lt;goscript&gt;
+        <Code>&lt;goscript&gt;
     import "database/sql"
     import "fmt"
 
@@ -32,7 +36,7 @@
 
 &#123;&#123; each users as name, i &#125;&#125;
     &lt;p&gt;&#123;&#123; i &#125;&#125;. &#123;&#123; name &#125;&#125;&lt;/p&gt;
-&#123;&#123; end &#125;&#125;</code></pre>
+&#123;&#123; end &#125;&#125;</Code>
     </section>
 
     <section class="space-y-4">
@@ -60,28 +64,25 @@
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Importer des composants Stew</h2>
         <p class="text-sm text-stone-600">Pour utiliser un composant dans une page, l'importer dans le bloc <code>&lt;goscript&gt;</code> avec le chemin relatif vers le fichier <code>.stew</code> :</p>
-        <pre><code>&lt;goscript&gt;
+        <Code>&lt;goscript&gt;
     import "./component/Card.stew"
     import "../shared/Avatar.stew"
 &lt;/goscript&gt;
 
-&lt;Card Title="Hello" Description="World" /&gt;</code></pre>
+&lt;Card Title="Hello" Description="World" /&gt;</Code>
         <p class="text-sm text-stone-500">Le compilateur résout le chemin en un import de package Go correspondant au dossier.</p>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Partager des données via <code>data.Store</code></h2>
         <p class="text-sm text-stone-600">Le champ <code>data.Store</code> est une map <code>map[string]any</code> libre. Elle peut être peuplée en server et sérialisée automatiquement pour le client Wasm :</p>
-        <pre><code>&lt;goscript&gt;
+        <Code>&lt;goscript&gt;
     <span class="text-stone-400">// Côté serveur : alimenter le Store</span>
     data.Store["Title"] = "Mon App"
     data.Store["Version"] = "2.0"
-&lt;/goscript&gt;</code></pre>
+&lt;/goscript&gt;</Code>
         <p class="text-sm text-stone-500">Ces données sont injectées en JSON dans le HTML sous la forme <code>&lt;script id="stew-pagedata"&gt;{...}&lt;/script&gt;</code> et récupérables côté Wasm avec <code>wasm.GetPageDataJSON()</code>.</p>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/assets" class="text-stone-400 hover:text-stone-600 transition">← Assets & Tailwind</a>
-        <a href="/guide/pagedata" class="text-amber-600 font-bold hover:underline">Suivant : PageData →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/assets" PrevName="Assets & Tailwind" NextLink="/guide/pagedata" NextName="PageData" />
 </div>

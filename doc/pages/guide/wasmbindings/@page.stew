@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 12 — Wasm Isomorphique</div>
@@ -10,19 +15,19 @@
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Directive <code>bind:content</code></h2>
         <p class="text-sm text-stone-600">Liaison unidirectionnelle <strong>Go → DOM</strong>. Met à jour l'<code>innerHTML</code> d'un élément quand le Signal mutera :</p>
-        <pre><code>&lt;goscript client&gt;
+        <Code>&lt;goscript client&gt;
     import "stew/state"
     message := state.New("Bonjour !")
 &lt;/goscript&gt;
 
-&lt;h1 bind&#58;content=&#123;&#123; message.Get() &#125;&#125;&gt;Chargement...&lt;/h1&gt;</code></pre>
+&lt;h1 bind&#58;content=&#123;&#123; message.Get() &#125;&#125;&gt;Chargement...&lt;/h1&gt;</Code>
         <p class="text-sm text-stone-500">Le compilateur injecte un <code>id</code> unique sur l'élément et le contenu initial du HTML est remplacé et réagi automatiquement aux changements de la variable grâce à l'Auto-Tracking (Signaux).</p>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Directive <code>bind:value</code></h2>
         <p class="text-sm text-stone-600">Liaison bidirectionnelle sur les <code>&lt;input&gt;</code> : <strong>Go → DOM</strong> et <strong>DOM → Go</strong> en temps réel :</p>
-        <pre><code>&lt;goscript client&gt;
+        <Code>&lt;goscript client&gt;
     import "stew/state"
     name := "World" // Si unbindé par un signal
     message := state.New("")
@@ -34,16 +39,16 @@
 &lt;/goscript&gt;
 
 &lt;input type="text" on&#58;input=&#123;&#123; updateMessage(this.Get("value").String()) &#125;&#125; /&gt;
-&lt;p bind&#58;content=&#123;&#123; message.Get() &#125;&#125;&gt;&lt;/p&gt;</code></pre>
+&lt;p bind&#58;content=&#123;&#123; message.Get() &#125;&#125;&gt;&lt;/p&gt;</Code>
         <p class="text-sm text-stone-500">Avec le système de Signaux, vous écoutez l'événement `input` et mettez à jour votre Signal interne, déclenchant automatiquement la mise à jour du DOM.</p>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Directive <code>on:click</code></h2>
         <p class="text-sm text-stone-600">Attache un handler de clic directement dans le HTML. L'expression est exécutée lors du clic :</p>
-        <pre><code>&lt;button on&#58;click=&#123;&#123; count++ &#125;&#125;&gt;+&lt;/button&gt;</code></pre>
+        <Code>&lt;button on&#58;click=&#123;&#123; count++ &#125;&#125;&gt;+&lt;/button&gt;</Code>
         
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl text-sm space-y-2">
+        <Alert Type="info">
             <h3 class="font-bold text-blue-900 leading-tight">Heuristique de Détection des Signaux</h3>
             <p class="text-blue-800">
                 Le compilateur Stew détecte de manière transparente l'utilisation des Signaux. S'il repère l'appel <code>.Get()</code> dans une expression (ex: <code>count.Get()</code>), il enveloppera automatiquement le bloc HTML lié dans un système <code>state.Effect(func() { ... })</code>.
@@ -51,9 +56,9 @@
             <ul class="list-disc list-inside text-blue-800 space-y-1">
                 <li>Génère un identifiant unique (<code>id="stew-bind-page-N"</code>) et lie l'élément ciblé par un <strong>diff sélectif asynchrone</strong> en cas de modification du signal associé.</li>
             </ul>
-        </div>
+        </Alert>
         
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm space-y-2">
+        <Alert Type="warning">
             <h3 class="font-bold text-amber-900 leading-tight">⚠️ Limitation : Réactivité dans les attributs HTML</h3>
             <p class="text-amber-800">
                 Les blocs <code>&#123;&#123; if &#125;&#125;</code> ou expressions insérés directement à l'intérieur des attributs HTML (ex: <code>class="... &#123;&#123; if ... &#125;&#125;"</code>) <strong>ne sont pas réactifs via Wasm</strong>. 
@@ -62,13 +67,13 @@
             <p class="text-amber-800">
                 Pour muter graphiquement une classe au clic, la recommandation officielle est d'accéder à <code>this</code> dans le handler d'événement, ou d'encapsuler la logique d'état complexe au sein d'un composant <code>.stew</code> distinct.
             </p>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Expressions Complexes</h2>
         <p class="text-sm text-stone-600">Grâce au support des accolades équilibrées, vous pouvez écrire du code Go complexe directement dans vos bindings :</p>
-        <pre><code><span class="text-stone-400">&lt;!-- Fonction anonyme inline --&gt;</span>
+        <Code><span class="text-stone-400">&lt;!-- Fonction anonyme inline --&gt;</span>
 &lt;button on&#58;click=&#123;&#123; func() &#123; 
     console.Log("Clic !")
     nav.To("/home")
@@ -77,14 +82,14 @@
 &lt;/button&gt;
 
 <span class="text-stone-400">&lt;!-- Instructions multiples (séparées par des ;) --&gt;</span>
-&lt;button on&#58;click=&#123;&#123; count++; console.Log("Incrémenté") &#125;&#125;&gt;+&lt;/button&gt;</code></pre>
+&lt;button on&#58;click=&#123;&#123; count++; console.Log("Incrémenté") &#125;&#125;&gt;+&lt;/button&gt;</Code>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Directive générique <code>on:&lt;event&gt;</code></h2>
         <p class="text-sm text-stone-600">N'importe quel événement DOM peut être ciblé avec la syntaxe <code>on:&lt;eventName&gt;</code> :</p>
-        <pre><code>&lt;input type="text" on&#58;focus=&#123;&#123; inputFocused = true &#125;&#125; /&gt;
-&lt;div on&#58;mouseover=&#123;&#123; hovered = true &#125;&#125; on&#58;mouseleave=&#123;&#123; hovered = false &#125;&#125;&gt;&lt;/div&gt;</code></pre>
+        <Code>&lt;input type="text" on&#58;focus=&#123;&#123; inputFocused = true &#125;&#125; /&gt;
+&lt;div on&#58;mouseover=&#123;&#123; hovered = true &#125;&#125; on&#58;mouseleave=&#123;&#123; hovered = false &#125;&#125;&gt;&lt;/div&gt;</Code>
         <p class="text-sm text-stone-500">Génère : <code>wasm.OnEvent("id", "focus", func() { inputFocused = true })</code></p>
     </section>
 
@@ -115,8 +120,5 @@
         </div>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/goscriptclient" class="text-stone-400 hover:text-stone-600 transition">← goscript client</a>
-        <a href="/guide/wasmsdk" class="text-amber-600 font-bold hover:underline">Suivant : SDK Wasm →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/goscriptclient" PrevName="goscript client" NextLink="/guide/wasmsdk" NextName="SDK Wasm" />
 </div>

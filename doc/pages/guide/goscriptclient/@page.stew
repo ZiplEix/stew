@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 11 — Wasm Isomorphique</div>
@@ -21,7 +26,7 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Syntaxe de base (Signaux)</h2>
-        <pre><code>&lt;goscript client&gt;
+        <Code>&lt;goscript client&gt;
     import "stew/state" // Import du package de Signaux
 
     <span class="text-stone-400">// Variables réactives (Signaux)</span>
@@ -35,16 +40,16 @@
 
 &lt;div bind&#58;content=&#123;&#123; count.Get() &#125;&#125;&gt;0&lt;/div&gt;
 &lt;button on&#58;click=&#123;&#123; count.Set(count.Get() + 1) &#125;&#125;&gt;+&lt;/button&gt;
-&lt;button on&#58;click=&#123;&#123; count.Set(count.Get() - 1) &#125;&#125;&gt;-&lt;/button&gt;</code></pre>
-        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl text-sm">
+&lt;button on&#58;click=&#123;&#123; count.Set(count.Get() - 1) &#125;&#125;&gt;-&lt;/button&gt;</Code>
+        <Alert Type="info">
             <strong class="text-indigo-900">Note :</strong> <span class="text-indigo-800">Grâce à <code>stew/state</code>, le DOM ne se rafraîchit que lorsqu'un Signal précis est mis à jour, optimisant grandement les performances CPU.</span>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Ce que génère le compilateur</h2>
         <p class="text-sm text-stone-600">À partir de la page ci-dessus, Stew génère un fichier temporaire <code>/tmp/stew_wasm/stew_main_wasm_pages_page.go</code> :</p>
-        <pre><code>package main
+        <Code>package main
 
 import (
     "github.com/ZiplEix/stew/sdk/wasm"
@@ -64,9 +69,11 @@ func main() {
     wasm.OnEvent("stew-bind-page-1", "click", func() { count.Set(count.Get() + 1) })
 
     wasm.StartReactivityLoop() <span class="text-stone-400">// Bloque le main thread Wasm ouvert</span>
-}</code></pre>
+
+    _ = count
+}</Code>
         <p class="text-sm text-stone-500">Ce fichier est ensuite compilé avec :</p>
-        <pre><code>tinygo build -target wasm -no-debug -o ./static/wasm/pages_page.wasm ...</code></pre>
+        <Code>tinygo build -target wasm -no-debug -o ./static/wasm/pages_page.wasm ...</Code>
     </section>
 
     <section class="space-y-4">
@@ -92,20 +99,20 @@ func main() {
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Récupérer les données serveur (DX)</h2>
         <p class="text-sm text-stone-600">Pour éviter le boilerplate de désérialisation JSON, Stew propose un import virtuel <code>stew/data</code> qui expose automatiquement une variable globale <code>data</code>.</p>
-        <pre><code>&lt;goscript client&gt;
+        <Code>&lt;goscript client&gt;
     import "stew/data"
 
     console.Log("URL de la page :", data.URL)
     userId := data.Params["id"]
-&lt;/goscript&gt;</code></pre>
-        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl text-sm">
+&lt;/goscript&gt;</Code>
+        <Alert Type="info">
             <strong class="text-indigo-900">📚 Référence complète :</strong> <span class="text-indigo-800">Consultez le guide sur l'<strong><a href="/guide/wasmsdk" class="underline">SDK Wasm</a></strong> pour voir la liste complète des champs disponibles et l'impact sur le poids du binaire.</span>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Performance et Réactivité</h2>
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl text-sm">
+        <Alert Type="info">
             <h3 class="font-bold text-blue-900 mb-1">Architecture Push-Based</h3>
             <p class="text-blue-800 leading-relaxed">
                 Contrairement à certains frameworks qui vérifient 60 fois par seconde si vos variables ont changé (Dirty Checking / Polling), le système de Signaux de Stew (<code>stew/state</code>) est complètement inerte et passif. 
@@ -115,7 +122,7 @@ func main() {
                 <li>Absolument 0% de CPU n'est gaspillé au repos.</li>
                 <li>Les appels de diff partiel (via l'intégration Idiomorph interne de Stew) sont granulaires et limités aux blocs impactés par un Signal précis.</li>
             </ul>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
@@ -165,8 +172,5 @@ func main() {
         </div>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/middleware" class="text-stone-400 hover:text-stone-600 transition">← Middleware</a>
-        <a href="/guide/wasm-bindings" class="text-amber-600 font-bold hover:underline">Suivant : Bindings DOM →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/middleware" PrevName="Middleware" NextLink="/guide/wasm-bindings" NextName="Bindings DOM" />
 </div>

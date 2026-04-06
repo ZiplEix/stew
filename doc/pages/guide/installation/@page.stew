@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 01</div>
@@ -14,23 +19,23 @@
             <li><strong>TinyGo 0.31+</strong> — <em>(Optionnel)</em> Pour compiler les blocs <code>&lt;goscript client&gt;</code> en WebAssembly. Sans TinyGo, le serveur fonctionne parfaitement mais sans Wasm côté client.</li>
             <li><code>$GOPATH/bin</code> doit être dans votre <code>$PATH</code>.</li>
         </ul>
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl text-sm">
+        <Alert Type="info">
             <strong class="text-blue-900">Note TinyGo :</strong> <span class="text-blue-800">TinyGo supporte Go 1.19 à 1.25. Si votre version de Go est supérieure, Stew émit un avertissement non-bloquant et continue la compilation serveur.</span>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">1. Installer le CLI Stew</h2>
-        <pre><code>go install github.com/ZiplEix/stew@latest</code></pre>
+        <Code>go install github.com/ZiplEix/stew@latest</Code>
         <p class="text-sm text-stone-500">Vérifier l'installation :</p>
-        <pre><code>stew version</code></pre>
+        <Code>stew version</Code>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">2. Initialiser un nouveau projet</h2>
-        <pre><code>mkdir my-app && cd my-app
-stew init github.com/username/my-app</code></pre>
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+        <Code>mkdir my-app && cd my-app
+stew init github.com/username/my-app</Code>
+        <Alert Type="warning">
             <strong class="text-amber-900">Que fait <code>stew init</code> ?</strong>
             <ul class="list-disc list-inside space-y-1 mt-2 text-amber-800">
                 <li>Exécute <code>go mod init</code> avec le module fourni</li>
@@ -41,19 +46,16 @@ stew init github.com/username/my-app</code></pre>
                 <li>Exécute <code>stew compile</code> puis <code>stew generate</code></li>
                 <li>Exécute <code>go mod tidy</code></li>
             </ul>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">3. Démarrer le serveur de développement</h2>
-        <pre><code>stew run dev</code></pre>
+        <Code>stew run dev</Code>
         <p class="text-sm text-stone-500">
             Lance en parallèle : <code>stew compile --watch</code>, <code>stew generate --watch</code> et <code>air</code>. Le serveur est accessible sur <strong>http://localhost:8080</strong> avec Hot Morphing activé.
         </p>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide" class="text-stone-400 hover:text-stone-600 transition">← Introduction</a>
-        <a href="/guide/configuration" class="text-amber-600 font-bold hover:underline">Suivant : Configuration →</a>
-    </footer>
+    <NavFooter PrevLink="/guide" PrevName="Introduction" NextLink="/guide/configuration" NextName="Configuration" />
 </div>

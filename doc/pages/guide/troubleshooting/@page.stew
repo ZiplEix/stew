@@ -1,4 +1,7 @@
 <div class="space-y-12">
+<goscript>
+    import "../../../components/NavFooter.stew"
+</goscript>
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 14 — Résolution de problèmes</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4 text-stone-900 text-6xl">Dépannage</h1>
@@ -57,8 +60,5 @@
         </div>
     </div>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/wasmsdk" class="text-stone-400 hover:text-stone-600 transition">← SDK Wasm</a>
-        <a href="/guide/cli" class="text-amber-600 font-bold hover:underline">Suivant : CLI →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/wasmsdk" PrevName="SDK Wasm" NextLink="/guide/cli" NextName="CLI" />
 </div>

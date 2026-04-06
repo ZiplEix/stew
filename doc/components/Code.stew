@@ -1,0 +1,5 @@
+<goscript>
+    type CodeProps struct {}
+</goscript>
+
+<pre class="bg-stone-900 text-stone-100 p-4 rounded-xl overflow-x-auto text-sm my-4 font-mono shadow-sm"><code class="block"><slot /></code></pre>

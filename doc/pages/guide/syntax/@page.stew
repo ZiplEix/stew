@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 03 — Templates</div>
@@ -10,45 +15,45 @@
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Expressions <code>&#123;&#123; &#125;&#125;</code></h2>
         <p class="text-sm text-stone-600">Les doubles accolades évaluent une expression Go et l'affichent dans le HTML. La valeur est automatiquement échappée (HTML-safe).</p>
-        <pre><code>&lt;!-- Valeur simple --&gt;
+        <Code>&lt;!-- Valeur simple --&gt;
 &lt;p&gt;&#123;&#123; data.Params["id"] &#125;&#125;&lt;/p&gt;
 
 &lt;!-- Expression Go inline --&gt;
 &lt;p&gt;&#123;&#123; strings.ToUpper(data.URL) &#125;&#125;&lt;/p&gt;
 
 &lt;!-- Variable déclarée dans goscript --&gt;
-&lt;h1&gt;&#123;&#123; title &#125;&#125;&lt;/h1&gt;</code></pre>
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+&lt;h1&gt;&#123;&#123; title &#125;&#125;&lt;/h1&gt;</Code>
+        <Alert Type="warning">
             <strong class="text-amber-900">HTML brut non-échappé :</strong> <span class="text-amber-800">Utiliser <code>&#123;&#123; raw(expr) &#125;&#125;</code> pour injecter du HTML brut (dangereux — usage réservé au SDK).</span>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Conditionnelle <code>&#123;&#123; if &#125;&#125;</code></h2>
-        <pre><code>&#123;&#123; if data.Store["user"] != nil &#125;&#125;
+        <Code>&#123;&#123; if data.Store["user"] != nil &#125;&#125;
     &lt;p&gt;Connecté en tant que &#123;&#123; data.Store["user"] &#125;&#125;&lt;/p&gt;
 &#123;&#123; else &#125;&#125;
     &lt;p&gt;&lt;a href="/login"&gt;Se connecter&lt;/a&gt;&lt;/p&gt;
-&#123;&#123; end &#125;&#125;</code></pre>
+&#123;&#123; end &#125;&#125;</Code>
         <p class="text-sm text-stone-500">L'expression après <code>if</code> est du Go pur. <code>&#123;&#123; else &#125;&#125;</code> est optionnel. Terminer avec <code>&#123;&#123; end &#125;&#125;</code>.</p>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Boucle <code>&#123;&#123; each &#125;&#125;</code></h2>
-        <pre><code>&lt;!-- Syntaxe : each &lt;slice&gt; as &lt;item&gt;, &lt;index&gt; --&gt;
+        <Code>&lt;!-- Syntaxe : each &lt;slice&gt; as &lt;item&gt;, &lt;index&gt; --&gt;
 &#123;&#123; each data.Users as user, i &#125;&#125;
     &lt;div&gt;
         &lt;span&gt;&#123;&#123; i &#125;&#125;.&lt;/span&gt;
         &lt;strong&gt;&#123;&#123; user.Name &#125;&#125;&lt;/strong&gt;
     &lt;/div&gt;
-&#123;&#123; end &#125;&#125;</code></pre>
+&#123;&#123; end &#125;&#125;</Code>
         <p class="text-sm text-stone-500">Génère un <code>for i, user := range data.Users</code> en Go. L'index est optionnel.</p>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Blocs <code>&lt;goscript&gt;</code></h2>
         <p class="text-sm text-stone-600">Les blocs <code>&lt;goscript&gt;</code> (sans attribut ou avec <code>server</code>) contiennent de la logique Go exécutée côté <strong>serveur</strong> lors du rendu de la page. Ils sont exclu du HTML final.</p>
-        <pre><code>&lt;goscript&gt;
+        <Code>&lt;goscript&gt;
     import "strconv"
     import "fmt"
 
@@ -60,7 +65,7 @@
 &lt;/goscript&gt;
 
 &lt;h1&gt;&#123;&#123; title &#125;&#125;&lt;/h1&gt;
-&lt;p&gt;Count: &#123;&#123; count &#125;&#125;&lt;/p&gt;</code></pre>
+&lt;p&gt;Count: &#123;&#123; count &#125;&#125;&lt;/p&gt;</Code>
         <div class="bg-stone-50 border border-stone-200 rounded-xl p-4 text-sm space-y-3">
             <div>
                 <p><strong>Imports automatiques</strong> : Le compilateur analyse votre code Go. S'il détecte l'utilisation de <code>fmt.</code> ou <code>html.</code>, il ajoute automatiquement les imports correspondants. Pour tout autre package (ex: <code>strings</code>, <code>os</code>), vous devez l'importer manuellement dans un bloc <code>&lt;goscript&gt;</code>.</p>
@@ -76,12 +81,9 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Commentaires HTML</h2>
-        <pre><code>&lt;!-- Ce commentaire est préservé tel quel dans le HTML --&gt;</code></pre>
+        <Code>&lt;!-- Ce commentaire est préservé tel quel dans le HTML --&gt;</Code>
         <p class="text-sm text-stone-500">Les commentaires HTML standard sont passés tels quels dans la sortie générée.</p>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/configuration" class="text-stone-400 hover:text-stone-600 transition">← Configuration</a>
-        <a href="/guide/components" class="text-amber-600 font-bold hover:underline">Suivant : Composants →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/configuration" PrevName="Configuration" NextLink="/guide/components" NextName="Composants" />
 </div>

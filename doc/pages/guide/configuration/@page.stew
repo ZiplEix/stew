@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 02</div>
@@ -9,7 +14,7 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Structure de <code>.stew.yaml</code></h2>
-        <pre><code>commands:
+        <Code>commands:
   dev:
     parallel: true       # Exécution en parallèle
     scripts:
@@ -45,7 +50,7 @@ requires:                # Dépendances installées via `stew install`
 
 clean:                   # Patterns nettoyés par `stew clean`
   - bin/
-  - tmp/</code></pre>
+  - tmp/</Code>
     </section>
 
     <section class="space-y-4">
@@ -72,12 +77,12 @@ clean:                   # Patterns nettoyés par `stew clean`
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Variables d'environnement</h2>
         <p class="text-sm text-stone-600">Les fichiers listés dans <code>env_files</code> sont chargés automatiquement au lancement de toutes les commandes <code>stew</code>. Consulter les variables chargées :</p>
-        <pre><code>stew env</code></pre>
+        <Code>stew env</Code>
         <p class="text-sm text-stone-600">Exécuter une commande ponctuelle avec l'env :</p>
-        <pre><code>stew exec -- go run .</code></pre>
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+        <Code>stew exec -- go run .</Code>
+        <Alert Type="warning">
             <strong class="text-amber-900">Variable réservée :</strong> <span class="text-amber-800"><code>STEW_DEV=true</code> est injecté automatiquement lors de <code>stew run dev</code>. Il active le Hot Morphing dans le layout et le middleware de live-reload.</span>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
@@ -90,8 +95,5 @@ clean:                   # Patterns nettoyés par `stew clean`
         <p class="text-sm text-stone-500">Le pattern <code>**/*suffix</code> est un pattern récursif. Exemple : <code>**/*.tmp</code> supprime tous les fichiers <code>.tmp</code> de l'arborescence.</p>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/installation" class="text-stone-400 hover:text-stone-600 transition">← Installation</a>
-        <a href="/guide/syntax" class="text-amber-600 font-bold hover:underline">Suivant : Syntaxe .stew →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/installation" PrevName="Installation" NextLink="/guide/syntax" NextName="Syntaxe .stew" />
 </div>

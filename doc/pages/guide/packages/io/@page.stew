@@ -1,3 +1,10 @@
+<goscript>
+    import "../../../../components/Code.stew"
+</goscript>
+<goscript>
+    import "../../../../components/Alert.stew"
+    import "../../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-indigo-600 font-mono text-sm mb-2">Packages stew/* / 14.2</div>
@@ -51,7 +58,7 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Exemple Complet</h2>
-        <pre><code>&lt;goscript client&gt;
+        <Code>&lt;goscript client&gt;
     import "stew/io"
 
     onDelete := func() {
@@ -62,15 +69,12 @@
             Console.Warn("Action annulée")
         }
     }
-&lt;/goscript&gt;</code></pre>
+&lt;/goscript&gt;</Code>
     </section>
 
-    <div class="bg-indigo-50 border-l-4 border-indigo-400 p-6 rounded-r-3xl text-sm italic">
+    <Alert Type="info">
         <strong>⚡ Performance :</strong> Ce package est extrêmement léger car il utilise directement les fonctions natives du runtime Wasm Go.
-    </div>
+    </Alert>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/packages/data" class="text-stone-400 hover:text-stone-600 transition">← stew/data</a>
-        <a href="/guide/packages/nav" class="text-amber-600 font-bold hover:underline">Suivant : stew/nav →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/packages/data" PrevName="stew/data" NextLink="/guide/packages/nav" NextName="stew/nav" />
 </div>

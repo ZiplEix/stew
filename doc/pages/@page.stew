@@ -1,3 +1,6 @@
+<goscript>
+    import "../components/Code.stew"
+</goscript>
 <div class="min-h-screen font-sans text-stone-900 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] bg-white">
 
     <header class="relative py-24 md:py-32 px-6 max-w-5xl mx-auto text-center">
@@ -103,7 +106,7 @@
                     <span class="w-2 h-2 rounded-full bg-stone-500"></span>
                     pages/@page.stew
                 </div>
-                <pre><code><span class="token-tag">&lt;goscript&gt;</span>
+                <Code><span class="token-tag">&lt;goscript&gt;</span>
     <span class="token-comment">// ← Exécuté sur le SERVEUR (Go natif)</span>
     title := "Hello"
     users := db.FindAll()
@@ -117,7 +120,7 @@
 
 &lt;span class="token-tag"&gt;&lt;h1&gt;&lt;/span&gt;&#123;&#123; title &#125;&#125;&lt;span class="token-tag"&gt;&lt;/h1&gt;&lt;/span&gt;
 &lt;span class="token-tag"&gt;&lt;div&lt;/span&gt; &lt;span class="text-amber-300"&gt;bind:content&lt;/span&gt;=&#123;&#123; count &#125;&#125;&lt;span class="token-tag"&gt;&gt;&lt;/span&gt;0&lt;span class="token-tag"&gt;&lt;/div&gt;&lt;/span&gt;
-&lt;span class="token-tag"&gt;&lt;button&lt;/span&gt; &lt;span class="text-indigo-300"&gt;on:click&lt;/span&gt;=&#123;&#123; count++ &#125;&#125;&lt;span class="token-tag"&gt;&gt;&lt;/span&gt;+&lt;span class="token-tag"&gt;&lt;/button&gt;&lt;/span&gt;</code></pre>
+&lt;span class="token-tag"&gt;&lt;button&lt;/span&gt; &lt;span class="text-indigo-300"&gt;on:click&lt;/span&gt;=&#123;&#123; count++ &#125;&#125;&lt;span class="token-tag"&gt;&gt;&lt;/span&gt;+&lt;span class="token-tag"&gt;&lt;/button&gt;&lt;/span&gt;</Code>
             </div>
             <div class="flex flex-col gap-4">
                 <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">

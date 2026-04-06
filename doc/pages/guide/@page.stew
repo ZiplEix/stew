@@ -1,3 +1,7 @@
+<goscript>
+    import "../../components/Code.stew"
+    import "../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 00</div>
@@ -50,7 +54,7 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Structure minimale d'un projet</h2>
-        <pre><code>my-app/
+        <Code>my-app/
 ├── pages/
 │   ├── @layout.stew       ← Layout racine (HTML shell)
 │   ├── @page.stew         ← Route /
@@ -66,10 +70,8 @@
 ├── .stew/                 ← Cache tracker (gitignore)
 ├── .stew.yaml             ← Configuration Stew
 ├── main.go                ← Point d'entrée du serveur
-└── stew_router_gen.go     ← Router généré automatiquement</code></pre>
+└── stew_router_gen.go     ← Router généré automatiquement</Code>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-end">
-        <a href="/guide/installation" class="text-amber-600 font-bold hover:underline">Suivant : Installation →</a>
-    </footer>
+    <NavFooter PrevLink="/" PrevName="Home" NextLink="/guide/installation" NextName="Installation" />
 </div>

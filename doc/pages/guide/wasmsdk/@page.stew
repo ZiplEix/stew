@@ -1,3 +1,7 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 13 — Wasm Isomorphique</div>
@@ -53,62 +57,62 @@
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.BindContent(id string, ptr *string)</h3>
                 <p class="text-stone-600 text-sm mb-3">Liaison <strong>unidirectionnelle Go → DOM</strong>. Surveille le pointeur <code>ptr</code> et met à jour l'<code>innerHTML</code> de l'élément <code>id</code> à chaque mutation.</p>
-                <pre><code>count := "0"
+                <Code>count := "0"
 wasm.BindContent("counter-display", &count)
-<span class="text-stone-400">// Maintenant si count = "42", le DOM affiche "42" automatiquement</span></code></pre>
+<span class="text-stone-400">// Maintenant si count = "42", le DOM affiche "42" automatiquement</span></Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.BindInput(id string, ptr *string)</h3>
                 <p class="text-stone-600 text-sm mb-3">Liaison <strong>bidirectionnelle Go ↔ DOM</strong>. Synchronise la valeur HTML d'un <code>&lt;input&gt;</code> avec la variable Go, dans les deux sens (saisie ↔ programme).</p>
-                <pre><code>name := "World"
+                <Code>name := "World"
 wasm.BindInput("name-input", &name)
-<span class="text-stone-400">// name est mis à jour à chaque frappe dans l'input</span></code></pre>
+<span class="text-stone-400">// name est mis à jour à chaque frappe dans l'input</span></Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">state.New[T any](initial T) *Signal[T]</h3>
                 <p class="text-stone-600 text-sm mb-3">Crée un nouveau <strong>Signal Réactif</strong> (dans `stew/state`). Permet de traquer précisément l'état de l'application cliente pour l'Auto-Tracking.</p>
-                <pre><code>count := state.New(0)
-username := state.New("Visiteur")</code></pre>
+                <Code>count := state.New(0)
+username := state.New("Visiteur")</Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">state.Effect(cb func())</h3>
                 <p class="text-stone-600 text-sm mb-3">Enregistre un effet secondaire (dans `stew/state`). Il s'exécute immédiatement, détecte quels `.Get()` sont appelés, et <strong>se ré-exécute automatiquement</strong> seulement lorsque l'un de ces Signaux mute.</p>
-                <pre><code>count := state.New(0)
+                <Code>count := state.New(0)
 
 state.Effect(func() {
     Console.Log("Compteur :", count.Get()) // Exécuté uniquement quand count change
-})</code></pre>
+})</Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.OnClick(id string, handler func())</h3>
                 <p class="text-stone-600 text-sm mb-3">Raccourci pour attacher un listener click sur un élément par son ID. Équivalent à <code>OnEvent(id, "click", handler)</code>.</p>
-                <pre><code>wasm.OnClick("my-button", func() {
+                <Code>wasm.OnClick("my-button", func() {
     count++
-})</code></pre>
+})</Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.OnEvent(id string, eventName string, handler func())</h3>
                 <p class="text-stone-600 text-sm mb-3">Attache un listener pour n'importe quel événement DOM sur un élément par son ID.</p>
-                <pre><code>wasm.OnEvent("search-input", "input", func() {
+                <Code>wasm.OnEvent("search-input", "input", func() {
     <span class="text-stone-400">// Déclenché à chaque frappe dans l'input</span>
 })
 
 wasm.OnEvent("form", "submit", func() {
     <span class="text-stone-400">// Intercepter la soumission du formulaire</span>
-})</code></pre>
+})</Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.GetPageDataJSON() string</h3>
                 <p class="text-stone-600 text-sm mb-3">Récupère le JSON de <code>stew.PageData</code> injecté par le serveur dans <code>&lt;script id="stew-pagedata"&gt;</code>. Retourne <code>"{}"</code> si absent.</p>
-                <pre><code>rawJSON := wasm.GetPageDataJSON()
+                <Code>rawJSON := wasm.GetPageDataJSON()
 var state map[string]interface{}
-json.Unmarshal([]byte(rawJSON), &state)</code></pre>
+json.Unmarshal([]byte(rawJSON), &state)</Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
@@ -130,8 +134,5 @@ json.Unmarshal([]byte(rawJSON), &state)</code></pre>
         <p class="text-sm text-stone-500">Ce cycle garantit que votre application n'utilise strictement aucune ressource CPU lorsqu'aucune modification d'état (Set) n'est induite.</p>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/wasm-bindings" class="text-stone-400 hover:text-stone-600 transition">← Bindings DOM</a>
-        <a href="/guide/cli" class="text-amber-600 font-bold hover:underline">Suivant : CLI →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/wasm-bindings" PrevName="Bindings DOM" NextLink="/guide/cli" NextName="CLI" />
 </div>

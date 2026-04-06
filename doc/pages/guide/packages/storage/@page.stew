@@ -1,3 +1,7 @@
+<goscript>
+    import "../../../../components/Code.stew"
+    import "../../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-emerald-600 font-mono text-sm mb-2">Packages stew/* / 14.4</div>
@@ -55,7 +59,7 @@
                 <li>Si vous liez la variable à un input HTML, la valeur persistera entre les rafraîchissements de page.</li>
             </ul>
 
-            <pre><code>&lt;goscript client&gt;
+            <Code>&lt;goscript client&gt;
     import "stew/storage"
 
     userName := "Visiteur"
@@ -64,12 +68,9 @@
 &lt;/goscript&gt;
 
 &lt;input type="text" bind:value=&#123;&#123;userName&#125;&#125; /&gt;
-&lt;p&gt;Nom persisté : &#123;&#123;userName&#125;&#125;&lt;/p&gt;</code></pre>
+&lt;p&gt;Nom persisté : &#123;&#123;userName&#125;&#125;&lt;/p&gt;</Code>
         </div>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/packages/nav" class="text-stone-400 hover:text-stone-600 transition">← stew/nav</a>
-        <a href="/guide/cli" class="text-amber-600 font-bold hover:underline">Suivant : CLI →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/packages/nav" PrevName="stew/nav" NextLink="/guide/packages/state" NextName="stew/state" />
 </div>

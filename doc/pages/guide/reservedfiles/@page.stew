@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 07</div>
@@ -21,13 +26,13 @@
                 <tbody>
                     <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-amber-700">@page.stew</td><td class="p-3">Page principale d'une route. Défini une fonction <code>Page(w, data)</code></td><td class="p-3 font-mono text-xs">stew.page.go</td></tr>
                     <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-amber-700">@layout.stew</td><td class="p-3">Layout enveloppant les pages d'un dossier. Défini une fonction <code>Layout(w, data, slot)</code></td><td class="p-3 font-mono text-xs">stew.layout.go</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-stone-700">XxxComponent.stew</td><td class="p-3">Composant (nom commence par majuscule). Défini <code>Xxx(w, data, props, slot)</code></td><td class="p-3 font-mono text-xs">XxxComponent.go</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-stone-700">Xxx.stew</td><td class="p-3">Composant (nom commence par majuscule). Défini <code>Xxx(w, data, props, slot)</code></td><td class="p-3 font-mono text-xs">Xxx.go</td></tr>
                 </tbody>
             </table>
         </div>
-        <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-xl text-sm">
+        <Alert Type="error">
             <strong class="text-rose-900">Règle critique :</strong> <span class="text-rose-800"><code>@</code> préfixe les fichiers réservés Stew (<code>@page</code>, <code>@layout</code>). Les fichiers de composants commencent par une <strong>majuscule</strong>. Tous les autres noms de fichiers <code>.stew</code> en minuscule seraient ignorés.</span>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
@@ -67,7 +72,7 @@
                     <tr class="border-b border-stone-100"><td class="p-3 font-mono">static/</td><td class="p-3">Assets statiques servis sous <code>/static/</code>. Créé automatiquement.</td></tr>
                     <tr class="border-b border-stone-100"><td class="p-3 font-mono">static/wasm/</td><td class="p-3">Binaires <code>.wasm</code> générés par <code>stew compile</code> + <code>wasm_exec.js</code></td></tr>
                     <tr class="border-b border-stone-100"><td class="p-3 font-mono">.stew/</td><td class="p-3">Cache interne du tracker de fichiers. Gitignored. Purgé par <code>stew clean</code>.</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">{nom}/</td><td class="p-3">Dossier entre accolades = paramètre d'URL dynamique.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">__nom__/</td><td class="p-3">Dossier entre double underscores = paramètre d'URL dynamique.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -76,7 +81,7 @@
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Fichier middleware <code>stew.middleware.go</code></h2>
         <p class="text-sm text-stone-600">Pour ajouter un middleware à une route, créer un fichier <code>stew.middleware.go</code> dans le dossier de la route avec une fonction <code>Middleware</code> :</p>
-        <pre><code>// pages/admin/stew.middleware.go
+        <Code>// pages/admin/stew.middleware.go
 package admin
 
 import "net/http"
@@ -89,12 +94,9 @@ func Middleware(next http.Handler) http.Handler {
         }
         next.ServeHTTP(w, r)
     })
-}</code></pre>
+}</Code>
         <p class="text-sm text-stone-500">Le routeur détecte automatiquement ce fichier et enchaîne le middleware dans <code>stew_router_gen.go</code>.</p>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/layouts" class="text-stone-400 hover:text-stone-600 transition">← Layouts</a>
-        <a href="/guide/assets" class="text-amber-600 font-bold hover:underline">Suivant : Assets & Tailwind →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/layouts" PrevName="Layouts" NextLink="/guide/assets" NextName="Assets & Tailwind" />
 </div>

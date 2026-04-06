@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 09 — Logique Go</div>
@@ -9,19 +14,19 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Structure</h2>
-        <pre><code><span class="text-stone-400">// sdk/stew/types.go</span>
+        <Code><span class="text-stone-400">// sdk/stew/types.go</span>
 type PageData struct {
     URL     string              // Chemin URL courant (ex: "/users/42")
     Params  map[string]string   // Paramètres d'URL ({id} → "42")
     Query   url.Values          // Paramètres de query (?page=2)
     Request *http.Request       // Requête HTTP brute
     Store   map[string]any      // Map libre pour stocker des données
-}</code></pre>
+}</Code>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Accès dans les templates</h2>
-        <pre><code>&lt;goscript&gt;
+        <Code>&lt;goscript&gt;
     import "strconv"
 
     // URL courante
@@ -42,25 +47,25 @@ type PageData struct {
 &lt;/goscript&gt;
 
 &lt;p&gt;URL : &#123;&#123; currentPath &#125;&#125;&lt;/p&gt;
-&lt;p&gt;Utilisateur #&#123;&#123; userId &#125;&#125;&lt;/p&gt;</code></pre>
+&lt;p&gt;Utilisateur #&#123;&#123; userId &#125;&#125;&lt;/p&gt;</Code>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Propagation à travers les layouts</h2>
         <p class="text-sm text-stone-600">Le même objet <code>PageData</code> est créé une fois par requête dans le routeur et transmis à <strong>toute</strong> la chaîne de rendu (layout racine → layouts imbriqués → page → composants). Les modifications apportées à <code>data.Store</code> dans un <code>&lt;goscript&gt;</code> sont visibles dans tout le rendu de la même requête.</p>
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+        <Alert Type="warning">
             <strong class="text-amber-900">Ordre d'exécution :</strong> <span class="text-amber-800">Le code <code>&lt;goscript&gt;</code> d'une <strong>page</strong> est exécuté <em>avant</em> le rendu HTML de cette page. Mais le layout est rendu <em>autour</em> : son HTML se génère donc avant et après le contenu de la page dans le flux.</span>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Sérialisation JSON pour le client Wasm</h2>
         <p class="text-sm text-stone-600">Lorsqu'une page contient un bloc <code>&lt;goscript client&gt;</code>, le compilateur injecte automatiquement :</p>
-        <pre><code>&lt;script type="application/json" id="stew-pagedata"&gt;
+        <Code>&lt;script type="application/json" id="stew-pagedata"&gt;
     {"URL":"/","Params":{},"Store":{"Title":"Mon App"},...}
-&lt;/script&gt;</code></pre>
+&lt;/script&gt;</Code>
         <p class="text-sm text-stone-600">Côté Wasm, pour récupérer cette donnée :</p>
-        <pre><code>&lt;goscript client&gt;
+        <Code>&lt;goscript client&gt;
     import "encoding/json"
 
     pageData := wasm.GetPageDataJSON()
@@ -73,14 +78,11 @@ type PageData struct {
             serverTitle = title.(string)
         }
     }
-&lt;/goscript&gt;</code></pre>
-        <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-xl text-sm">
+&lt;/goscript&gt;</Code>
+        <Alert Type="error">
             <strong class="text-rose-900">Contrainte sécurité :</strong> <span class="text-rose-800">Ne jamais mettre de données sensibles dans <code>data.Store</code> si elles ne doivent pas être exposées au client. Toutes les données du <code>Store</code> sont sérialisées en JSON et visibles dans le HTML source.</span>
-        </div>
+        </Alert>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/goscript-server" class="text-stone-400 hover:text-stone-600 transition">← goscript server</a>
-        <a href="/guide/middleware" class="text-amber-600 font-bold hover:underline">Suivant : Middleware →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/goscript-server" PrevName="goscript server" NextLink="/guide/middleware" NextName="Middleware" />
 </div>

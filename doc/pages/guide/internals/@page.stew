@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 16 — Internals</div>
@@ -48,7 +53,7 @@
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Pipeline de génération Wasm</h2>
-        <pre><code>pages/@page.stew
+        <Code>pages/@page.stew
       │
       ▼ (stew compile)
 stewlang/compiler.go
@@ -60,7 +65,7 @@ stewlang/compiler.go
 tinygo build -target wasm -no-debug -o ./static/wasm/pages_page.wasm /tmp/...
       │
       ▼
-static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pre>
+static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</Code>
     </section>
 
     <section class="space-y-4">
@@ -83,14 +88,14 @@ static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pr
             </div>
         </div>
         </div>
-        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl text-xs text-indigo-900 mt-4 space-y-2">
+        <Alert Type="info">
             <p>
                 <strong>Heuristique du compilateur</strong> : Stew scanne vos expressions <code>&#123;&#123; ... &#125;&#125;</code>. S'il y trouve un appel <code>.Get()</code>, il transforme automatiquement le rendu HTML en un <code>wasm.BindBlock</code> réactif.
             </p>
             <p>
                 <strong>Sécurité HTML (inTag) et Idiomorph</strong> : Le compilateur suit intelligemment l'état d'ouverture des balises HTML. Si vous placez un Signal <i>à l'intérieur</i> d'un attribut (ex: <code>class=""</code>), Stew annulera la création de son wrapper invisible destructeur pour éviter le HTML invalide (désactivant la réactivité Wasm locale tout en conservant le SSR). Par ailleurs, le moteur <code>Idiomorph</code> de notre SDK Wasm a pour instruction de morpher via <code>innerHTML</code> exclusivement, permettant un maintien infini des cibles réactives DOM de Stew sans les surécrire.
             </p>
-        </div>
+        </Alert>
     </section>
     
     <section class="space-y-4">
@@ -113,7 +118,7 @@ static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pr
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Générateur de routeur</h2>
         <p class="text-sm text-stone-600"><code>stew generate</code> parcourt <code>pages/</code> via <code>internal/generator/scanner.go</code> et construit un arbre de nœuds <code>RouteNode</code>. <code>internal/generator/writer.go</code> traduit cet arbre en Go via <code>text/template</code> :</p>
-        <pre><code>RouteNode{
+        <Code>RouteNode{
     URLPath:      "/users/{id}"
     HasPage:      true
     HasLayout:    true (parent)
@@ -121,14 +126,14 @@ static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pr
     ImportPath:   "github.com/.../pages/users/__id__"
     PackageAlias: "stew_pages_users_id"
     Children: [...]
-}</code></pre>
+}</Code>
         <p class="text-sm text-stone-500">La chaîne de middlewares et de layouts est construite en remontant l'arbre vers la racine.</p>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Tracker de fichiers (<code>.stew/compiled.json</code>)</h2>
         <p class="text-sm text-stone-600">Chaque appel à <code>stew compile</code> initialise un <code>Tracker</code> (<code>internal/tracker/tracker.go</code>) et enregistre tous les fichiers qu'il génère :</p>
-        <pre><code>{
+        <Code>{
   "tracked_files": [
     "pages/stew.layout.go",
     "pages/stew.page.go",
@@ -136,17 +141,17 @@ static/wasm/pages_page.wasm  ← Chargé par le HTML via wasm_exec.js</code></pr
     "static/wasm/pages_page.wasm",
     "static/wasm/pages_blog_page.wasm"
   ]
-}</code></pre>
+}</Code>
         <p class="text-sm text-stone-500">La commande <code>stew clean</code> lit ce fichier et supprime exactement ces fichiers, puis le dossier <code>.stew/</code> lui-même. Cela garantit un nettoyage précis même si des pages ont été renommées entre deux builds.</p>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Nommage de packages Go générés</h2>
         <p class="text-sm text-stone-600">Pour éviter les conflits de noms de packages, le compilateur utilise le chemin relatif du dossier comme alias :</p>
-        <pre><code>pages/                    → package pages
+        <Code>pages/                    → package pages
 pages/users/              → package users (alias: stew_pages_users)
 pages/users/__id__/       → package stew_pages_users_id
-pages/blog/__slug__/      → package stew_pages_blog_slug</code></pre>
+pages/blog/__slug__/      → package stew_pages_blog_slug</Code>
     </section>
 
     <section class="space-y-4">
@@ -185,13 +190,10 @@ pages/blog/__slug__/      → package stew_pages_blog_slug</code></pre>
                 <li><strong>Morph</strong> : Le nouveau HTML est comparé à l'ancien via <strong>Idiomorph</strong>. Seuls les nœuds modifiés sont mis à jour, préservant l'état (focus, scroll, inputs).</li>
             </ol>
         </div>
-        <pre><code><span class="text-stone-400">// Exemple de payload SSE envoyé par le serveur :</span>
+        <Code><span class="text-stone-400">// Exemple de payload SSE envoyé par le serveur :</span>
 event: message
-data: {"type": "reload", "path": "/guide/internals"}</code></pre>
+data: {"type": "reload", "path": "/guide/internals"}</Code>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/hotmorphing" class="text-stone-400 hover:text-stone-600 transition">← Hot Morphing</a>
-        <a href="/guide/deployment" class="text-amber-600 font-bold hover:underline">Suivant : Déploiement & Docker →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/hotmorphing" PrevName="Hot Morphing" NextLink="/guide/deployment" NextName="Déploiement & Docker" />
 </div>

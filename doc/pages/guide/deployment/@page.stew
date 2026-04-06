@@ -1,3 +1,7 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 17 — Production</div>
@@ -8,9 +12,16 @@
     </header>
 
     <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Dépendance : TinyGo</h2>
+        <p class="text-sm text-stone-600">Pour compiler les parties client (Wasm) de votre application, vous devez disposer de <strong>TinyGo</strong> installé sur votre machine de build ou dans votre conteneur CI/CD.</p>
+        <Code>wget https://github.com/tinygo-org/tinygo/releases/download/v0.40.1/tinygo_0.40.1_amd64.deb
+sudo dpkg -i tinygo_0.40.1_amd64.deb</Code>
+    </section>
+
+    <section class="space-y-4">
         <h2 class="text-2xl font-bold">Le processus de Build</h2>
         <p class="text-sm text-stone-600">Avant de déployer, vous devez exécuter la commande de build séquentielle. Cela garantit que le routeur est à jour et que tous les composants Stew sont compilés avant la création du binaire final.</p>
-        <pre><code>stew run build</code></pre>
+        <Code>stew run build</Code>
         <p class="text-xs text-stone-500 italic">Cette commande exécute séquentiellement : <code>stew compile</code> → <code>stew generate</code> → <code>go build</code>.</p>
     </section>
 
@@ -18,7 +29,7 @@
         <h2 class="text-2xl font-bold">Dockerfile Multi-Stage</h2>
         <p class="text-sm text-stone-600">La méthode la plus efficace pour déployer est un build Docker multi-stage. Nous utilisons une image lourde pour compiler et une image légère (<code>alpine</code> ou <code>scratch</code>) pour l'exécution.</p>
         
-        <pre><code># Stage 1: Build
+        <Code># Stage 1: Build
 FROM golang:1.22-alpine AS builder
 
 # Installer Stew
@@ -39,7 +50,7 @@ COPY --from=builder /app/bin/app .
 COPY --from=builder /app/static ./static
 
 EXPOSE 8080
-CMD ["./app"]</code></pre>
+CMD ["./app"]</Code>
     </section>
 
     <section class="space-y-4">
@@ -54,7 +65,7 @@ CMD ["./app"]</code></pre>
     <section class="space-y-4">
         <h2 class="text-2xl font-bold italic text-amber-700">📦 Assets Statiques & Embed</h2>
         <p class="text-sm text-stone-600">Pour garder votre application sous forme d'un **binaire unique**, nous recommandons d'utiliser le package <code>embed</code> de Go pour inclure vos fichiers statiques (images, CSS, Wasm) directement dans l'exécutable.</p>
-        <pre><code>// main.go
+        <Code>// main.go
 //go:embed static/*
 var staticFS embed.FS
 
@@ -62,10 +73,8 @@ func main() {
     // ...
     fs := http.FileServer(http.FS(staticFS))
     mux.Handle("GET /static/", fs)
-}</code></pre>
+}</Code>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-start">
-        <a href="/guide/internals" class="text-stone-400 hover:text-stone-600 transition">← Internals</a>
-    </footer>
+    <NavFooter PrevLink="/guide/internals" PrevName="Internals" NextLink="/guide" NextName="Getting Started" />
 </div>

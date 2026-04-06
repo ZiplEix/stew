@@ -1,0 +1,19 @@
+<goscript>
+    type NavFooterProps struct {
+        PrevLink string
+        PrevName string
+        NextLink string
+        NextName string
+    }
+</goscript>
+
+<footer class="pt-8 border-t border-stone-100 flex justify-between mt-12">
+    {{ if props.PrevLink != "" }}
+        <a href="{{ props.PrevLink }}" class="text-stone-400 hover:text-stone-600 transition">← {{ props.PrevName }}</a>
+    {{ else }}
+        <div></div>
+    {{ end }}
+    {{ if props.NextLink != "" }}
+        <a href="{{ props.NextLink }}" class="text-amber-600 font-bold hover:underline">Suivant : {{ props.NextName }} →</a>
+    {{ end }}
+</footer>

@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 06</div>
@@ -10,7 +15,7 @@
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Créer un layout</h2>
         <p class="text-sm text-stone-600">Le fichier <code>pages/@layout.stew</code> :</p>
-        <pre><code>&lt;goscript&gt;
+        <Code>&lt;goscript&gt;
     import "os"
     import "github.com/ZiplEix/stew/sdk/live"
 &lt;/goscript&gt;
@@ -30,32 +35,32 @@
             &#123;&#123; raw(live.InjectScript()) &#125;&#125;
         &#123;&#123; end &#125;&#125;
     &lt;/body&gt;
-&lt;/html&gt;</code></pre>
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+&lt;/html&gt;</Code>
+        <Alert Type="warning">
             <strong class="text-amber-900"><code>&lt;slot /&gt;</code></strong> : <span class="text-amber-800">La balise <code>&lt;slot /&gt;</code> est le point d'injection du contenu enfant. Sans elle, la page ne s'afficherait pas dans le layout.</span>
-        </div>
+        </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Layouts imbriqués</h2>
         <p class="text-sm text-stone-600">Chaque sous-dossier peut avoir son propre <code>@layout.stew</code>. Les layouts se chainent de la racine vers la feuille :</p>
-        <pre><code>Rendu de GET /guide/installation :
+        <Code>Rendu de GET /guide/installation :
 
 pages/@layout.stew       → HTML shell (DOCTYPE, head, body)
   └── pages/guide/@layout.stew → Sidebar de navigation
-        └── pages/guide/installation/@page.stew → Contenu</code></pre>
+        └── pages/guide/installation/@page.stew → Contenu</Code>
         <p class="text-sm text-stone-500">Le routeur généré crée automatiquement la chaîne de closures :</p>
-        <pre><code>pages.Layout(w, data, func() {
+        <Code>pages.Layout(w, data, func() {
     stew_pages_guide.Layout(w, data, func() {
         stew_pages_guide_installation.Page(w, data)
     })
-})</code></pre>
+})</Code>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Signature Go d'un layout</h2>
         <p class="text-sm text-stone-600">Le compilateur génère pour <code>@layout.stew</code> :</p>
-        <pre><code>func Layout(w io.Writer, data stew.PageData, slot func()) {
+        <Code>func Layout(w io.Writer, data stew.PageData, slot func()) {
     <span class="text-stone-400">// Rendu HTML avant le slot</span>
     w.Write([]byte(`...`))
 
@@ -66,13 +71,13 @@ pages/@layout.stew       → HTML shell (DOCTYPE, head, body)
 
     <span class="text-stone-400">// Rendu HTML après le slot</span>
     w.Write([]byte(`...`))
-}</code></pre>
+}</Code>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">PageData dans les layouts</h2>
         <p class="text-sm text-stone-600">Le layout reçoit le même objet <code>data stew.PageData</code> que la page. Il peut donc accéder à l'URL courante pour surligner le lien actif dans une navigation :</p>
-        <pre><code>&lt;goscript&gt;
+        <Code>&lt;goscript&gt;
     getLinkClass := func(target string) string {
         if data.URL == target {
             return "font-bold text-amber-600"
@@ -84,11 +89,8 @@ pages/@layout.stew       → HTML shell (DOCTYPE, head, body)
 &lt;nav&gt;
     &lt;a href="/" class="&#123;&#123; getLinkClass("/") &#125;&#125;"&gt;Accueil&lt;/a&gt;
     &lt;a href="/blog" class="&#123;&#123; getLinkClass("/blog") &#125;&#125;"&gt;Blog&lt;/a&gt;
-&lt;/nav&gt;</code></pre>
+&lt;/nav&gt;</Code>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/routing" class="text-stone-400 hover:text-stone-600 transition">← Routing</a>
-        <a href="/guide/reservedfiles" class="text-amber-600 font-bold hover:underline">Suivant : Fichiers réservés →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/routing" PrevName="Routing" NextLink="/guide/reservedfiles" NextName="Fichiers réservés" />
 </div>

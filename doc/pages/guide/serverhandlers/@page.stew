@@ -1,3 +1,8 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 11 — Logique Go</div>
@@ -10,7 +15,7 @@
     <section class="space-y-4">
         <h2 class="text-2xl font-bold font-mono text-stone-900 border-b-2 border-stone-200 pb-2">Fichier stew.server.go</h2>
         <p class="text-sm text-stone-600">Le scanneur de <code>stew generate</code> détecte automatiquement toutes les fonctions exportées dans <code>stew.server.go</code> dont le nom correspond à une méthode HTTP (<code>Get</code>, <code>Post</code>, <code>Put</code>, <code>Delete</code>, <code>Patch</code>). Elles sont automatiquement enregistrées dans le routeur pour le dossier courant.</p>
-        <pre><code><span class="text-stone-400">// pages/users/stew.server.go</span>
+        <Code><span class="text-stone-400">// pages/users/stew.server.go</span>
 package users
 
 import (
@@ -33,14 +38,14 @@ func Post(w http.ResponseWriter, r *http.Request) {
 func Delete(w http.ResponseWriter, r *http.Request) {
     id := r.PathValue("id")
     <span class="text-stone-400">// ... suppression ...</span>
-}</code></pre>
+}</Code>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Règles de priorité</h2>
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-sm">
+        <Alert Type="warning">
             <strong class="text-amber-900">⚠️ Conflit de route GET :</strong> <span class="text-amber-800">Si un fichier <code>@page.stew</code> (qui génère un <code>stew.page.go</code>) ET une fonction <code>Get</code> dans <code>stew.server.go</code> existent dans le même dossier, c'est <code>la page Stew</code> qui prend la priorité pour traiter la requête GET. La fonction <code>Get</code> du serveur sera ignorée.</span>
-        </div>
+        </Alert>
         <ul class="list-disc list-inside text-stone-600 text-sm space-y-2">
             <li><strong>Encapsulation</strong> : Séparez la logique de traitement des formulaires et des API du code d'affichage des templates <code>.stew</code>.</li>
             <li><strong>Isomorphisme</strong> : Le fichier <code>@page.stew</code> s'occupe de l'affichage (GET), tandis que <code>stew.server.go</code> s'occupe de la mutation (POST).</li>
@@ -51,15 +56,12 @@ func Delete(w http.ResponseWriter, r *http.Request) {
     <section class="space-y-4">
         <h2 class="text-2xl font-bold italic text-rose-700 underline">Redirection & HTMX</h2>
         <p class="text-sm text-stone-600">Lorsque vous utilisez HTMX pour soumettre un formulaire, vous pouvez utiliser les headers HTMX pour forcer des redirections côté client depuis une fonction <code>Post</code> :</p>
-        <pre><code>func Post(w http.ResponseWriter, r *http.Request) {
+        <Code>func Post(w http.ResponseWriter, r *http.Request) {
     // ...
     w.Header().Set("HX-Location", "/success-page")
     w.WriteHeader(http.StatusOK)
-}</code></pre>
+}</Code>
     </section>
 
-    <footer class="pt-8 border-t border-stone-100 flex justify-between">
-        <a href="/guide/middleware" class="text-stone-400 hover:text-stone-600 transition">← Middleware</a>
-        <a href="/guide/goscriptclient" class="text-amber-600 font-bold hover:underline">Suivant : goscript client (Wasm) →</a>
-    </footer>
+    <NavFooter PrevLink="/guide/middleware" PrevName="Middleware" NextLink="/guide/goscriptclient" NextName="goscript client (Wasm)" />
 </div>
