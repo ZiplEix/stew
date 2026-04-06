@@ -1,4 +1,4 @@
-module github.com/ZiplEix/test-stew
+module stew-demo
 
 go 1.25.0
 

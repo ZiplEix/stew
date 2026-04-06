@@ -52,7 +52,7 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	importMap := make(map[string]string)
 	importMap["github.com/ZiplEix/stew/sdk/wasm"] = ""
 
-	if hasAnyReactivity {
+	if hasAnyReactivity || bindings != "" {
 		importMap["strings"] = ""
 		if scan.hasExpressions || scan.hasRanges {
 			importMap["fmt"] = ""
@@ -174,7 +174,7 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 		}
 	}
 
-	if hasAnyReactivity || exprCounter > 0 {
+	if hasAnyReactivity || exprCounter > 0 || bindings != "" {
 		wasmBuf.WriteString("\t// Ensure packages are used\n")
 		// Prevent "imported and not used" errors
 		if _, ok := importMap["fmt"]; ok {
@@ -219,7 +219,7 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	// Append registrations to main
 	wasmBuf.Write(regBuf.Bytes())
 
-	if hasAnyReactivity || exprCounter > 0 {
+	if hasAnyReactivity || exprCounter > 0 || bindings != "" {
 		wasmBuf.WriteString("\n\t// Start the reactivity loop\n")
 		wasmBuf.WriteString("\twasm.StartReactivityLoop()\n")
 	}

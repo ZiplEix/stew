@@ -8,15 +8,9 @@
 </goscript>
 
 <goscript client>
-    import "strconv"
+    import "stew/state"
 
-    wasmCount := 0
-    wasmCountStr := "0"
-
-    // Computed reactivity
-    wasm.OnUpdate(func() {
-        wasmCountStr = strconv.Itoa(wasmCount)
-    })
+    wasmCount := state.New(0)
 </goscript>
 
 <div class="flex flex-col items-center justify-center min-h-[80vh] text-center font-sans p-6">
@@ -54,22 +48,22 @@
 
         <!-- Local Wasm Counter -->
         <h3 class="text-xl font-bold mb-2 text-indigo-700">Client Counter (Wasm + TinyGo)</h3>
-        <p class="text-stone-500 text-sm mb-4">Reacts instantaneously at 60FPS using Dirty Checking.</p>
+        <p class="text-stone-500 text-sm mb-4">Reacts instantaneously at 60FPS using Signals & Auto-Tracking.</p>
         <div class="flex items-center justify-center gap-6 mb-10 p-6 bg-indigo-50/50 rounded-3xl border border-indigo-100 shadow-inner">
             
             <button 
-                on:click={{ wasmCount-- }}
+                on:click={{ wasmCount.Set(wasmCount.Get() - 1) }}
                 class="w-14 h-14 flex items-center justify-center bg-white border border-indigo-200 rounded-2xl text-indigo-600 hover:bg-indigo-100 hover:-translate-y-0.5 active:translate-y-0 transition-all text-2xl font-bold shadow-sm"
             >
                 -
             </button>
             
-            <div class="text-5xl font-black w-24 text-center tabular-nums text-indigo-800 tracking-tight" bind:content={{ wasmCountStr }}>
+            <div class="text-5xl font-black w-24 text-center tabular-nums text-indigo-800 tracking-tight" bind:content={{ wasmCount.Get() }}>
                 0
             </div>
             
             <button 
-                on:click={{ wasmCount++ }}
+                on:click={{ wasmCount.Set(wasmCount.Get() + 1) }}
                 class="w-14 h-14 flex items-center justify-center bg-indigo-600 text-white rounded-2xl hover:bg-indigo-500 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all text-2xl font-bold"
             >
                 +

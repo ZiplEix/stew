@@ -1,0 +1,6 @@
+# Stew compiler cache
+.stew/
+
+# Go build artifacts
+bin/
+*.exe
