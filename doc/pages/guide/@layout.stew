@@ -186,6 +186,7 @@
                         <li><a href="/guide/packages/cookies" class="{{ getLinkClass(data.URL, "/guide/packages/cookies") }}">stew/cookies</a></li>
                         <li><a href="/guide/packages/anim" class="{{ getLinkClass(data.URL, "/guide/packages/anim") }}">stew/anim</a></li>
                         <li><a href="/guide/packages/js" class="{{ getLinkClass(data.URL, "/guide/packages/js") }}">stew/js</a></li>
+                        <li><a href="/guide/packages/net" class="{{ getLinkClass(data.URL, "/guide/packages/net") }}">stew/net</a></li>
                         <li><hr class="border-stone-100 my-2" /></li>
                         <li><a href="/guide/packages/reference" class="text-stone-400 hover:text-stone-900 transition-colors {{ getLinkClass(data.URL, "/guide/packages/reference") }}">📚 Récapitulatif API</a></li>
                     </ul>

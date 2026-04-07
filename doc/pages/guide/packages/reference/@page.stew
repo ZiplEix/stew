@@ -124,7 +124,29 @@
                 <li class="pl-2">.Bool() / .IsUndefined() / .IsNull()</li>
             </ul>
         </section>
+
+        <!-- net -->
+        <section class="p-6 bg-blue-50/30 border border-blue-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-blue-700 flex items-center gap-2">🌐 stew/net</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-blue-600">Get / Post / Put[T](url, body)</span></li>
+                <li><span class="text-blue-600">Patch / Delete[T](url, body)</span></li>
+                <li><span class="text-blue-600">Fetch(url, opts)</span> <span class="text-stone-400">-> (js.Value, err)</span></li>
+                <li><span class="text-blue-600">Watch[T](url, interval)</span> <span class="text-stone-400">-> *Signal[T]</span></li>
+                <li><span class="text-blue-600">IsLoading</span> <span class="text-stone-400">// *Signal[bool]</span></li>
+            </ul>
+        </section>
+
+        <!-- core -->
+        <section class="p-6 bg-stone-50 border border-stone-200 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-stone-700 flex items-center gap-2">🦴 stew (Core)</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-stone-600">OnClick(id, handler) / OnEvent</span></li>
+                <li><span class="text-stone-600">GetElement(id) / GetPageData()</span></li>
+                <li><span class="text-stone-600">BindContent / BindInput / BindBlock</span></li>
+            </ul>
+        </section>
     </div>
 
-    <NavFooter PrevLink="/guide/packages/js" PrevName="stew/js" NextLink="/guide/cli" NextName="CLI" />
+    <NavFooter PrevLink="/guide/packages/net" PrevName="stew/net" NextLink="/guide/cli" NextName="CLI" />
 </div>

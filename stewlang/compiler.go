@@ -27,6 +27,7 @@ type WasmOptions struct {
 	UsesCookies bool
 	UsesAnim    bool
 	UsesJS      bool
+	UsesNet     bool
 }
 
 func buildWasm(name string, nodes []Node, bindings string, clientImports []string, opts WasmOptions, clientVars map[string]bool) (string, error) {
@@ -118,6 +119,10 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 		}
 		if trimmedImp == "stew/js" {
 			importMap["github.com/ZiplEix/stew/sdk/wasm/js"] = ""
+			continue
+		}
+		if trimmedImp == "stew/net" {
+			importMap["github.com/ZiplEix/stew/sdk/wasm/net"] = ""
 			continue
 		}
 		importMap[trimmedImp] = ""
@@ -668,6 +673,11 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 						*clientImports = append(*clientImports, "\""+importStr+"\"")
 						continue
 					}
+					if importStr == "stew/net" {
+						opts.UsesNet = true
+						*clientImports = append(*clientImports, "\""+importStr+"\"")
+						continue
+					}
 
 					if gs.Context == "client" {
 						*clientImports = append(*clientImports, "\""+importStr+"\"")
@@ -728,6 +738,9 @@ func (o *WasmOptions) merge(other WasmOptions) {
 	}
 	if other.UsesStorage {
 		o.UsesStorage = true
+	}
+	if other.UsesNet {
+		o.UsesNet = true
 	}
 }
 

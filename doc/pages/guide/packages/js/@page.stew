@@ -86,5 +86,5 @@
         </p>
     </Alert>
 
-    <NavFooter PrevLink="/guide/packages/anim" PrevName="stew/anim" NextLink="/guide/packages/reference" NextName="Récapitulatif API" />
+    <NavFooter PrevLink="/guide/packages/anim" PrevName="stew/anim" NextLink="/guide/packages/net" NextName="stew/net" />
 </div>
