@@ -40,22 +40,30 @@
         <section class="p-6 bg-blue-50/30 border border-blue-100 rounded-3xl space-y-3">
             <h3 class="text-xl font-bold text-blue-700 flex items-center gap-2">✨ stew/ui</h3>
             <ul class="text-xs space-y-1 font-mono text-stone-700">
-                <li><span class="text-blue-600">Title(txt)</span></li>
-                <li><span class="text-blue-600">Focus(sel)</span></li>
+                <li><span class="text-blue-600">Title(txt) / Focus(sel)</span></li>
                 <li><span class="text-blue-600">ScrollTo(sel, smooth)</span></li>
-                <li><span class="text-blue-600">Add / Remove / ToggleClass(sel, cls)</span></li>
+                <li><span class="text-blue-600">Add / Remove / Toggle / HasClass()</span></li>
                 <li><span class="text-blue-600">Get / SetValue(sel, val)</span></li>
                 <li><span class="text-blue-600">SetStyle(sel, prop, val)</span></li>
             </ul>
         </section>
 
-        <!-- event -->
+        <!-- io -->
+        <section class="p-6 bg-stone-50/30 border border-stone-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-stone-700 flex items-center gap-2">📟 stew/io</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-stone-600">Alert / Confirm / Prompt</span></li>
+                <li><span class="text-stone-600">Console.Log / Warn / Error</span></li>
+                <li><span class="text-stone-600">Console.Warning <span class="text-stone-400">(alias)</span></span></li>
+            </ul>
+        </section>
+
+        <!-- event (shifted to new column) -->
         <section class="p-6 bg-indigo-50/30 border border-indigo-100 rounded-3xl space-y-3">
             <h3 class="text-xl font-bold text-indigo-700 flex items-center gap-2">⌨️ stew/event</h3>
             <ul class="text-xs space-y-1 font-mono text-stone-700">
                 <li><span class="text-indigo-600">OnKeyDown / OnKeyUp(key, cb)</span></li>
-                <li><span class="text-indigo-600">OnResize(cb func(w, h int))</span></li>
-                <li><span class="text-indigo-600">OnScroll(cb func(t, l int))</span></li>
+                <li><span class="text-indigo-600">OnResize(cb) / OnScroll(cb)</span></li>
                 <li><span class="text-indigo-600">OnOnline / OnOffline(cb)</span></li>
                 <li><span class="text-indigo-600">IsOnline() bool</span></li>
             </ul>
@@ -66,9 +74,8 @@
             <h3 class="text-xl font-bold text-purple-700 flex items-center gap-2">🎭 stew/anim</h3>
             <ul class="text-xs space-y-1 font-mono text-stone-700">
                 <li><span class="text-purple-600">FadeIn / FadeOut(sel, d)</span></li>
-                <li><span class="text-purple-600">SlideIn(sel, dir, d)</span></li>
-                <li><span class="text-purple-600">Shake / Pulse(sel, d)</span></li>
-                <li><span class="text-purple-600">Transition(sel, from, to, d)</span></li>
+                <li><span class="text-purple-600">SlideIn(sel, dir, d) / Pulse(sel, d)</span></li>
+                <li><span class="text-purple-600">Shake(sel, d) / Transition(sel, f, t, d)</span></li>
                 <li><span class="text-purple-600">Animate(sel, kf, opt)</span></li>
             </ul>
         </section>
@@ -77,10 +84,9 @@
         <section class="p-6 bg-emerald-50/30 border border-emerald-100 rounded-3xl space-y-3">
             <h3 class="text-xl font-bold text-emerald-700 flex items-center gap-2">🍪 stew/cookies</h3>
             <ul class="text-xs space-y-1 font-mono text-stone-700">
-                <li><span class="text-emerald-600">Get(name)</span> <span class="text-stone-400">-> string</span></li>
-                <li><span class="text-emerald-600">Set(name, val, opts)</span></li>
+                <li><span class="text-emerald-600">Get(name) / Set(name, val, opts)</span></li>
                 <li><span class="text-emerald-600">Delete(name) / Has(name)</span></li>
-                <li><span class="text-emerald-600">GetAll()</span> <span class="text-stone-400">-> map[string]string</span></li>
+                <li><span class="text-emerald-600">GetAll() -> map[string]string</span></li>
             </ul>
         </section>
 
@@ -88,8 +94,9 @@
         <section class="p-6 bg-emerald-50/30 border border-emerald-100 rounded-3xl space-y-3">
             <h3 class="text-xl font-bold text-emerald-700 flex items-center gap-2">💾 stew/storage</h3>
             <ul class="text-xs space-y-1 font-mono text-stone-700">
-                <li><span class="text-emerald-600">Local.Get / Set / Delete(key)</span></li>
-                <li><span class="text-emerald-600">Session.Get / Set / Delete(key)</span></li>
+                <li><span class="text-emerald-600">Local.Get / Set / Remove(key)</span></li>
+                <li><span class="text-emerald-600">Session.Get / Set / Remove(key)</span></li>
+                <li><span class="text-emerald-600">Clear() / Bind(signal, key)</span></li>
             </ul>
         </section>
 
@@ -97,10 +104,7 @@
         <section class="p-6 bg-amber-50/30 border border-amber-100 rounded-3xl space-y-3">
             <h3 class="text-xl font-bold text-amber-700 flex items-center gap-2">📦 stew/data</h3>
             <ul class="text-xs space-y-1 font-mono text-stone-700">
-                <li><span class="text-amber-600">URL</span> <span class="text-stone-400">// string</span></li>
-                <li><span class="text-amber-600">Query</span> <span class="text-stone-400">// url.Values</span></li>
-                <li><span class="text-amber-600">Params</span> <span class="text-stone-400">// map[string]string</span></li>
-                <li><span class="text-amber-600">Store</span> <span class="text-stone-400">// map[string]any</span></li>
+                <li><span class="text-amber-600">URL / Query / Params / Store</span></li>
             </ul>
         </section>
 
@@ -108,11 +112,16 @@
         <section class="p-6 bg-yellow-50/30 border border-yellow-100 rounded-3xl space-y-3">
             <h3 class="text-xl font-bold text-yellow-700 flex items-center gap-2">🔌 stew/js</h3>
             <ul class="text-xs space-y-1 font-mono text-stone-700">
-                <li><span class="text-yellow-600">Run(code)</span></li>
-                <li><span class="text-yellow-600">Eval[T](code)</span> <span class="text-stone-400">-> (T, err)</span></li>
-                <li><span class="text-yellow-600">Load(url, onLoad)</span></li>
-                <li><span class="text-yellow-600">Invoke(fn, args...)</span></li>
-                <li><span class="text-yellow-600">Set(name, val)</span></li>
+                <li><span class="text-yellow-600 underline">Bridge API :</span></li>
+                <li class="pl-2">Run(code) / Global(name)</li>
+                <li class="pl-2">Eval[T](code) / Invoke(fn, args...)</li>
+                <li class="pl-2">Load(url, onLoad) / Unload(url)</li>
+                <li class="pl-2">IsLoaded(url) / Set(name, val)</li>
+                <li><hr class="border-yellow-200 my-1" /></li>
+                <li><span class="text-yellow-600 underline">js.Value Methods :</span></li>
+                <li class="pl-2">.Get(k) / .Set(k, v) / .Call(m, args...)</li>
+                <li class="pl-2">.Invoke(args...) / .String() / .Int()</li>
+                <li class="pl-2">.Bool() / .IsUndefined() / .IsNull()</li>
             </ul>
         </section>
     </div>

@@ -61,14 +61,15 @@
 
             <Code>&lt;goscript client&gt;
     import "stew/storage"
+    import "stew/state"
 
-    userName := "Visiteur"
-    // Liaison instantanée
-    storage.Local.Bind(&userName, "cached_name")
+    userName := state.New("Visiteur")
+    // Liaison instantanée avec une clé du LocalStorage
+    storage.Local.Bind(userName, "cached_name")
 &lt;/goscript&gt;
 
-&lt;input type="text" bind:value=&#123;&#123;userName&#125;&#125; /&gt;
-&lt;p&gt;Nom persisté : &#123;&#123;userName&#125;&#125;&lt;/p&gt;</Code>
+&lt;input type="text" bind:value={{userName}} /&gt;
+&lt;p&gt;Nom persisté : {{userName}}&lt;/p&gt;</Code>
         </div>
     </section>
 

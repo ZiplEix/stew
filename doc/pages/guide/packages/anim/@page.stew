@@ -30,6 +30,11 @@
 
     warnUser := func() {
         anim.Shake("#login-form", 200*time.Millisecond)
+        anim.Pulse("#login-form", 500*time.Millisecond)
+    }
+
+    hideNotify := func() {
+        anim.FadeOut("#toast", 300*time.Millisecond)
     }
 &lt;/goscript&gt;</Code>
     </section>

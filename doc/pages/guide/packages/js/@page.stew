@@ -26,13 +26,16 @@
 
     // Évaluation type-safe (Génériques)
     width, _ := js.Eval[int]("window.innerWidth")
+
+    // Accès aux objets globaux
+    chartLib := js.Global("Chart")
 &lt;/goscript&gt;</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Chargement de Bibliothèques</h2>
+        <h2 class="text-2xl font-bold">Gestion Dynamique des Scripts</h2>
         <p class="text-sm text-stone-600">
-            Le package permet de charger des scripts externes (CDN) de manière asynchrone et d'exécuter un callback une fois le script prêt.
+            Le package permet de charger des scripts externes (CDN) de manière asynchrone, de vérifier leur présence ou de les décharger.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/js"
@@ -41,10 +44,18 @@
     loadConfetti := func() {
         url := "https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.js"
         
+        if js.IsLoaded(url) {
+            js.Invoke("confetti")
+            return
+        }
+
         js.Load(url, func() {
-            io.Console.Log("Confetti chargé !")
-            js.Invoke("confetti") // Appel de la fonction globale
+            js.Invoke("confetti")
         })
+    }
+
+    cleanup := func() {
+        js.Unload("https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.js")
     }
 &lt;/goscript&gt;</Code>
     </section>

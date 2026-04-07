@@ -49,7 +49,7 @@
         ui.SetStyle("#badge", "backgroundColor", "#fbbf24")
     }
 &lt;/goscript&gt;</Code>
-        <div class="grid md:grid-cols-2 gap-4 mt-4">
+        <div class="grid md:grid-cols-3 gap-4 mt-4">
             <div class="p-4 border border-stone-100 rounded-2xl bg-stone-50/50">
                 <code class="text-blue-700 font-bold text-xs">ui.AddClass(sel, class)</code>
                 <p class="text-[10px] text-stone-500 mt-1">Ajoute une classe sans doublons.</p>
@@ -57,6 +57,10 @@
             <div class="p-4 border border-stone-100 rounded-2xl bg-stone-50/50">
                 <code class="text-blue-700 font-bold text-xs">ui.ToggleClass(sel, class)</code>
                 <p class="text-[10px] text-stone-500 mt-1">Ajoute ou retire la classe.</p>
+            </div>
+            <div class="p-4 border border-stone-100 rounded-2xl bg-stone-50/50">
+                <code class="text-blue-700 font-bold text-xs">ui.HasClass(sel, class)</code>
+                <p class="text-[10px] text-stone-500 mt-1">Vérifie l'existence d'une classe.</p>
             </div>
         </div>
     </section>
