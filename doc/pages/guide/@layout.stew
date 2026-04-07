@@ -1,6 +1,6 @@
 <goscript>
     import "strings"
-    import "github.com/ZiplEix/stew/sdk/wasm/state"
+    import github.com/ZiplEix/stew/v2/sdk/wasm/state"
 
     getLinkClass := func(current, target string) string {
         if current == target {

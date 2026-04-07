@@ -52,8 +52,8 @@
         <Code>package main
 
 import (
-    "github.com/ZiplEix/stew/sdk/wasm"
-    "github.com/ZiplEix/stew/sdk/wasm/state"
+    github.com/ZiplEix/stew/v2/sdk/wasm"
+    github.com/ZiplEix/stew/v2/sdk/wasm/state"
 )
 
 func main() {

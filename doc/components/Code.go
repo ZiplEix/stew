@@ -2,8 +2,9 @@
 package components
 
 import (
-	"github.com/ZiplEix/stew/sdk/stew"
 	"io"
+
+	"github.com/ZiplEix/stew/v2/sdk/stew"
 )
 
 type CodeProps struct{}

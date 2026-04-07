@@ -67,7 +67,7 @@ Stew files combine the simplicity of HTML with the power of Go.
 
 <goscript client>
     // Isomorphic Wasm logic (TinyGo)
-    import "github.com/ZiplEix/stew/sdk/wasm"
+    import github.com/ZiplEix/stew/v2/sdk/wasm"
 
     func HandleClick() {
         wasm.Alert("Clicked from Go/Wasm!")

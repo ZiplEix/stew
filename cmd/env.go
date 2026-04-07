@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ZiplEix/stew/internal/utils"
+	"github.com/ZiplEix/stew/v2/internal/utils"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 )

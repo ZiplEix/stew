@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ZiplEix/stew/internal/tracker"
-	"github.com/ZiplEix/stew/stewlang"
+	"github.com/ZiplEix/stew/v2/internal/tracker"
+	"github.com/ZiplEix/stew/v2/stewlang"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 )

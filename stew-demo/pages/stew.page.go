@@ -4,10 +4,11 @@ package pages
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ZiplEix/stew/sdk/stew"
 	"html"
 	"io"
 	"strconv"
+
+	"github.com/ZiplEix/stew/v2/sdk/stew"
 )
 
 func Page(w io.Writer, data stew.PageData) {

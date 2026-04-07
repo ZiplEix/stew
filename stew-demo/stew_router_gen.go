@@ -2,8 +2,9 @@
 package main
 
 import (
-	"github.com/ZiplEix/stew/sdk/stew"
 	"net/http"
+
+	"github.com/ZiplEix/stew/v2/sdk/stew"
 
 	stew_pages_root "stew-demo/pages"
 )

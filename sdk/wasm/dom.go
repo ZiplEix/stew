@@ -4,15 +4,17 @@ package wasm
 
 import (
 	"encoding/json"
-	"github.com/ZiplEix/stew/sdk/wasm/state"
-	"github.com/ZiplEix/stew/sdk/stew"
 	"syscall/js"
+
+	"github.com/ZiplEix/stew/v2/sdk/stew"
+	"github.com/ZiplEix/stew/v2/sdk/wasm/state"
 )
 
 var document = js.Global().Get("document")
 
 // isStarted tracks if the Wasm loop is running
 var isStarted bool
+
 // BindContent is maintained for legacy bindings that aren't reactive functions.
 // It uses Idiomorph to set the content initially and then does a basic reactive wrap.
 func BindContent(id string, ptr *string) {
@@ -36,7 +38,7 @@ func BindInput(id string, ptr *string) {
 		return
 	}
 
-	// Update DOM when ptr changes (requires manual trigger if not a signal, 
+	// Update DOM when ptr changes (requires manual trigger if not a signal,
 	// but Effect helps in the generic reactivity loop context).
 	state.Effect(func() {
 		if el.Get("value").String() != *ptr {

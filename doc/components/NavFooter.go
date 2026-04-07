@@ -3,9 +3,10 @@ package components
 
 import (
 	"fmt"
-	"github.com/ZiplEix/stew/sdk/stew"
 	"html"
 	"io"
+
+	"github.com/ZiplEix/stew/v2/sdk/stew"
 )
 
 type NavFooterProps struct {

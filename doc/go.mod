@@ -1,4 +1,4 @@
-module github.com/ZiplEix/stew/doc
+module github.com/ZiplEix/stew/v2doc
 
 go 1.25.0
 

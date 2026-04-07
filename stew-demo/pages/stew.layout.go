@@ -3,10 +3,11 @@ package pages
 
 import (
 	"fmt"
-	"github.com/ZiplEix/stew/sdk/live"
-	"github.com/ZiplEix/stew/sdk/stew"
 	"io"
 	"os"
+
+	"github.com/ZiplEix/stew/v2/sdk/live"
+	"github.com/ZiplEix/stew/v2/sdk/stew"
 )
 
 func Layout(w io.Writer, data stew.PageData, slot func()) {

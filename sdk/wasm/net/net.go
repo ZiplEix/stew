@@ -8,7 +8,7 @@ import (
 	"syscall/js"
 	"time"
 
-	"github.com/ZiplEix/stew/sdk/wasm/state"
+	"github.com/ZiplEix/stew/v2/sdk/wasm/state"
 )
 
 // IsLoading is a global signal to track network activity.
@@ -103,7 +103,7 @@ func execRequest[T any](method string, url string, body any) (T, error) {
 
 	// Stringify and unmarshal into Go struct
 	jsonStr := js.Global().Get("JSON").Call("stringify", jsonVal).String()
-	
+
 	var result T
 	if err := json.Unmarshal([]byte(jsonStr), &result); err != nil {
 		return zero, fmt.Errorf("failed to unmarshal JSON into Go type: %w", err)

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ZiplEix/stew/internal/utils"
+	"github.com/ZiplEix/stew/v2/internal/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -64,7 +64,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"github.com/ZiplEix/stew/sdk/live"
+	"github.com/ZiplEix/stew/v2/sdk/live"
 )
 
 func main() {
@@ -89,7 +89,7 @@ func main() {
 const rootLayoutContent = `
 <goscript>
     import "os"
-    import "github.com/ZiplEix/stew/sdk/live"
+    import github.com/ZiplEix/stew/v2/sdk/live"
 </goscript>
 
 <!DOCTYPE html>

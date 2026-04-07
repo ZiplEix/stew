@@ -1,9 +1,11 @@
 //go:build js && wasm
+
 package storage
 
 import (
 	"syscall/js"
-	"github.com/ZiplEix/stew/sdk/wasm/state"
+
+	"github.com/ZiplEix/stew/v2/sdk/wasm/state"
 )
 
 // Store represents a browser storage area (Local or Session).
