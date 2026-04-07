@@ -28,6 +28,9 @@ var installCmd = &cobra.Command{
 
 		// Ensure wasm_exec.js is present for client-side features
 		utils.EnsureWasmRuntime()
+		
+		fmt.Println("🔍 Scanning for vendor static assets...")
+		utils.ExtractVendorAssets()
 
 		for _, dep := range config.Requires {
 			if _, err := exec.LookPath(dep.Name); err == nil {

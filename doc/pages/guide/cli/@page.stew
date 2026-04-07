@@ -119,5 +119,5 @@
         </div>
     </section>
 
-    <NavFooter PrevLink="/guide/wasm-sdk" PrevName="SDK Wasm" NextLink="/guide/hot-morphing" NextName="Hot Morphing" />
+    <NavFooter PrevLink="/guide/packages/reference" PrevName="Récapitulatif API" NextLink="/guide/ecosystem/creating" NextName="Créer une librairie" />
 </div>

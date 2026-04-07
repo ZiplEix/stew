@@ -20,6 +20,7 @@
         "arch":    false,
         "prod":    false,
         "help":    false,
+        "eco":     false,
     })
 
     // Détermine quelle catégorie ouvrir au chargement selon l'URL (SSR)
@@ -39,6 +40,8 @@
         m["package"] = true
     } else if strings.HasPrefix(url, "/guide/cli") {
         m["cli"] = true
+    } else if strings.HasPrefix(url, "/guide/ecosystem") {
+        m["eco"] = true
     } else if strings.HasPrefix(url, "/guide/hotmorphing") || strings.HasPrefix(url, "/guide/internals") {
         m["arch"] = true
     } else if strings.HasPrefix(url, "/guide/deployment") {
@@ -202,6 +205,19 @@
                 <div id="cat-content-cli" class='sidebar-content {{ if openSignal.Get()["cli"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
                         <li><a href="/guide/cli" class="{{ getLinkClass(data.URL, "/guide/cli") }}">Référence des commandes</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Écosystème -->
+            <div class="flex flex-col gap-1">
+                <button on:click={{toggle(this)}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Écosystème</span>
+                    <svg id="cat-chevron-eco" class='chevron w-3 h-3 {{ if openSignal.Get()["eco"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <div id="cat-content-eco" class='sidebar-content {{ if openSignal.Get()["eco"] }} is-open {{ end }}'>
+                    <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
+                        <li><a href="/guide/ecosystem/creating" class="{{ getLinkClass(data.URL, "/guide/ecosystem/creating") }}">Créer une bibliothéque</a></li>
                     </ul>
                 </div>
             </div>

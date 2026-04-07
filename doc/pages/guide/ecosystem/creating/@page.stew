@@ -1,0 +1,99 @@
+<goscript>
+    import "../../../../components/Code.stew"
+    import "../../../../components/Alert.stew"
+    import "../../../../components/NavFooter.stew"
+</goscript>
+
+<div class="space-y-12">
+    <header>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 15 — Écosystème</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">Créer une librairie Stew</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Grâce à son intégration native avec l'écosystème Go, la création et la publication de bibliothèques tierces (UI, Wrappers JS, Utilitaires) sont simples, sans gestionnaire de paquets supplémentaire.
+        </p>
+    </header>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold">1. La Fondation : Un Go Module standard</h2>
+        <p class="text-sm text-stone-600">
+            Puisque Stew transpile vers du code Go, une librairie Stew est avant tout un module Go classique.
+        </p>
+        
+        <Alert Type="info">
+            N'inventez pas de nouveau système de publication ! Initiez un module, codez, pushez sur GitHub, et publiez des tags de version.
+        </Alert>
+
+        <Code>mkdir stew-awesome-ui && cd stew-awesome-ui
+go mod init github.com/votre_nom/stew-awesome-ui</Code>
+    </section>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold">2. Création de Composants Réutilisables</h2>
+        <p class="text-sm text-stone-600">
+            Créez vos fichiers <code>.stew</code> normalement dans l'arborescence de votre module. Par exemple, <code>components/Button.stew</code> :
+        </p>
+
+        <Code>&lt;button class="bg-blue-500 rounded p-2"&gt;
+    &lt;slot /&gt;
+&lt;/button&gt;</Code>
+        
+        <p class="text-sm text-stone-700 italic">
+            Les utilisateurs importeront ensuite ce composant de manière absolue dans leurs projets :
+        </p>
+        <Code>&lt;goscript&gt;
+    import "github.com/votre_nom/stew-awesome-ui/components/Button.stew"
+&lt;/goscript&gt;
+
+&lt;Button&gt;Mon bouton tiers&lt;/Button&gt;</Code>
+        <p class="text-xs text-stone-500">
+            Le compilateur Stew du projet hôte se chargera automatiquement d'aller chercher et lire vos fichiers <code>.stew</code> directement depuis son cache <code>GOMODCACHE</code> !
+        </p>
+    </section>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold">3. Encapsulation Asynchrone de Bibliothèques JS</h2>
+        <p class="text-sm text-stone-600">
+            Si votre composant encapsule une bibliothèques JavaScript existante (Chart.js, Stripe, etc...), le meilleur moyen d'offrir une expérience <strong>Zero-Config</strong> à l'utilisateur est de charger le CDN à la volée grâce à <code>stew/js</code>.
+        </p>
+
+        <Code>&lt;goscript client&gt;
+    import "stew/js"
+    import "stew/data"
+
+    func onMount() {
+        // Le script est chargé seulement si son URL n'est pas déjà présente dans le document
+        js.Load("https://cdn.jsdelivr.net/npm/chart.js", func() {
+            // Le code Wasm suivant sera exécuté APRES le téléchargement de la librairie JS tierce
+            chart := js.Global("Chart").New(
+                js.Global("document").Call("getElementById", data.Attr["id"]),
+                // ... configuration JSON ...
+            )
+        })
+    }
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold">4. Fichiers Statiques Additionnels</h2>
+        <p class="text-sm text-stone-600">
+            Si votre librairie nécessite des images ou des CSS spécifiques embarqués, placez-les dans un dossier <code>static/</code> à la racine de votre module Go.
+        </p>
+        <Alert Type="success">
+            La commande <code>stew install</code> scannera automatiquement les modules Go dépendants de votre projet. S'ils contiennent un dossier <code>static/</code>, il sera recopié intégralement dans <code>static/vendor/github.com/.../</code> dans le projet de l'utilisateur.
+        </Alert>
+    </section>
+
+    <section class="p-8 bg-indigo-50 border border-indigo-200 rounded-3xl space-y-4">
+        <h2 class="text-2xl font-bold text-indigo-900 italic">5. Étape impérative avant publication</h2>
+        <p class="text-sm text-indigo-800 leading-relaxed">
+            Stew reste un environnement compilé vers Go. Pour que les utilisateurs (ainsi que la commande <code>go build</code>) puissent l'utiliser, il faut que Stew génère les fichiers <code>.go</code> correspondant à vos composants <strong>avant qu'ils n'atterrissent sur GitHub</strong>.
+        </p>
+        <Code># Compile les fichiers .stew en fichiers .go
+stew compile</Code>
+        <p class="text-xs text-indigo-700 italic">
+            Vos fichiers <code>.go</code> doivent être committés dans votre dépôt distant.
+        </p>
+    </section>
+
+    <NavFooter PrevLink="/guide/cli" PrevName="CLI" NextLink="/guide/hotmorphing" NextName="Hot Morphing" />
+</div>

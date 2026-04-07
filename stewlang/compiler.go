@@ -703,7 +703,12 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 							continue
 						}
 
-						fullPkgPath := path.Join(moduleBase, currentDir, dir)
+						var fullPkgPath string
+						if strings.HasPrefix(dir, ".") || strings.HasPrefix(dir, "/") {
+							fullPkgPath = path.Join(moduleBase, currentDir, dir)
+						} else {
+							fullPkgPath = dir
+						}
 						*stewImports = append(*stewImports, "\""+fullPkgPath+"\"")
 						continue
 					}
