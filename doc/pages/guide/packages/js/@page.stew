@@ -1,0 +1,79 @@
+<goscript>
+    import "../../../../components/Code.stew"
+    import "../../../../components/Alert.stew"
+    import "../../../../components/NavFooter.stew"
+</goscript>
+
+<div class="space-y-12">
+    <header>
+        <div class="text-yellow-600 font-mono text-sm mb-2">Packages stew/* / 14.10</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">🔌 stew/js</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le package <code>stew/js</code> sert de pont (bridge) entre le runtime Go/Wasm et l'environnement JavaScript du navigateur pour charger des bibliothèques externes et exécuter du code ad-hoc.
+        </p>
+    </header>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold">Exécution et Évaluation</h2>
+        <p class="text-sm text-stone-600 leading-relaxed">
+            Exécutez du code JavaScript brut ou évaluez des expressions avec conversion de type automatique.
+        </p>
+        
+        <Code>&lt;goscript client&gt;
+    import "stew/js"
+
+    js.Run("console.log('Hello from JS block')")
+
+    // Évaluation type-safe (Génériques)
+    width, _ := js.Eval[int]("window.innerWidth")
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Chargement de Bibliothèques</h2>
+        <p class="text-sm text-stone-600">
+            Le package permet de charger des scripts externes (CDN) de manière asynchrone et d'exécuter un callback une fois le script prêt.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/js"
+    import "stew/io"
+
+    loadConfetti := func() {
+        url := "https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.js"
+        
+        js.Load(url, func() {
+            io.Console.Log("Confetti chargé !")
+            js.Invoke("confetti") // Appel de la fonction globale
+        })
+    }
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Interopérabilité (Exposer vers JS)</h2>
+        <p class="text-sm text-stone-600">
+            Vous pouvez exposer des fonctions ou variables Go pour qu'elles soient accessibles depuis le monde JavaScript.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/js"
+    import "stew/io"
+
+    func init() {
+        // Expose une fonction Go vers le JS global
+        js.Set("notifyFromJS", func(this js.Value, args []js.Value) any {
+            io.Alert("Appelé depuis JS: " + args[0].String())
+            return nil
+        })
+    }
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <Alert Type="warning">
+        <strong class="block mb-1">⚖️ Utilisation parcimonieuse</strong>
+        <p class="text-sm">
+            L'utilisation abusive de <code>stew/js</code> pour manipuler le DOM contourne le moteur de réactivité de Stew. Privilégiez les bibliothèques purement Go ou les Signaux pour le rendu UI.
+        </p>
+    </Alert>
+
+    <NavFooter PrevLink="/guide/packages/anim" PrevName="stew/anim" NextLink="/guide/packages/reference" NextName="Récapitulatif API" />
+</div>

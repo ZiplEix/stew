@@ -83,6 +83,14 @@
             <p class="text-sm text-stone-600 mb-4 leading-relaxed">Pilotez des animations fluides via l'API Web Animations native du navigateur.</p>
             <span class="text-xs font-bold text-purple-500 uppercase tracking-wider">Voir les détails →</span>
         </a>
+
+        <a href="/guide/packages/js" class="group p-6 border border-stone-200 rounded-3xl hover:border-yellow-500 hover:bg-yellow-50/30 transition-all duration-300">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-yellow-600 flex items-center gap-2">
+                🔌 stew/js
+            </h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Pont d'interopérabilité pour exécuter du code JS et charger des bibliothèques externes.</p>
+            <span class="text-xs font-bold text-yellow-500 uppercase tracking-wider">Voir les détails →</span>
+        </a>
     </div>
 
     <section class="space-y-4">

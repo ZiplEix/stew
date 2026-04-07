@@ -103,7 +103,19 @@
                 <li><span class="text-amber-600">Store</span> <span class="text-stone-400">// map[string]any</span></li>
             </ul>
         </section>
+
+        <!-- js -->
+        <section class="p-6 bg-yellow-50/30 border border-yellow-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-yellow-700 flex items-center gap-2">🔌 stew/js</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-yellow-600">Run(code)</span></li>
+                <li><span class="text-yellow-600">Eval[T](code)</span> <span class="text-stone-400">-> (T, err)</span></li>
+                <li><span class="text-yellow-600">Load(url, onLoad)</span></li>
+                <li><span class="text-yellow-600">Invoke(fn, args...)</span></li>
+                <li><span class="text-yellow-600">Set(name, val)</span></li>
+            </ul>
+        </section>
     </div>
 
-    <NavFooter PrevLink="/guide/packages/anim" PrevName="stew/anim" NextLink="/guide/cli" NextName="CLI" />
+    <NavFooter PrevLink="/guide/packages/js" PrevName="stew/js" NextLink="/guide/cli" NextName="CLI" />
 </div>
