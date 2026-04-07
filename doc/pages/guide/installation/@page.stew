@@ -57,5 +57,5 @@ stew init github.com/username/my-app</Code>
         </p>
     </section>
 
-    <NavFooter PrevLink="/guide" PrevName="Introduction" NextLink="/guide/configuration" NextName="Configuration" />
+    <NavFooter PrevLink="/guide" PrevName="Introduction" NextLink="/guide/summary" NextName="Synthèse du Langage" />
 </div>

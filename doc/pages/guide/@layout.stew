@@ -25,7 +25,9 @@
     // Détermine quelle catégorie ouvrir au chargement selon l'URL (SSR)
     url := data.URL
     m := openSignal.Get()
-    if strings.HasPrefix(url, "/guide/installation") || strings.HasPrefix(url, "/guide/configuration") {
+    if strings.HasPrefix(url, "/guide/installation") || strings.HasPrefix(url, "/guide/configuration") || strings.HasPrefix(url, "/guide/summary") {
+        m["start"] = true
+    } else if strings.HasPrefix(url, "/guide/summary") {
         m["start"] = true
     } else if strings.HasPrefix(url, "/guide/syntax") || strings.HasPrefix(url, "/guide/components") || strings.HasPrefix(url, "/guide/routing") || strings.HasPrefix(url, "/guide/layouts") || strings.HasPrefix(url, "/guide/reservedfiles") || strings.HasPrefix(url, "/guide/assets") {
         m["stew"] = true
@@ -109,6 +111,7 @@
                 <div id="cat-content-start" class='sidebar-content {{ if openSignal.Get()["start"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
                         <li><a href="/guide" class="{{ getLinkClass(data.URL, "/guide") }}">Introduction</a></li>
+                        <li><a href="/guide/summary" class="{{ getLinkClass(data.URL, "/guide/summary") }}">Synthèse du Langage</a></li>
                         <li><a href="/guide/installation" class="{{ getLinkClass(data.URL, "/guide/installation") }}">Installation</a></li>
                         <li><a href="/guide/configuration" class="{{ getLinkClass(data.URL, "/guide/configuration") }}">Configuration</a></li>
                     </ul>

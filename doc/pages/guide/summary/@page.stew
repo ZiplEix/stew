@@ -1,0 +1,90 @@
+<goscript>
+    import "../../../components/Code.stew"
+    import "../../../components/Alert.stew"
+    import "../../../components/NavFooter.stew"
+</goscript>
+
+<div class="space-y-12">
+    <header>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / Introduction</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">✨ Synthèse du Langage</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Stew est un framework Go full-stack moderne pour créer des applications web ultra-rapides. Voici un condensé de son architecture, de sa syntaxe et de son fonctionnement.
+        </p>
+    </header>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <section class="space-y-4 p-6 border border-stone-100 rounded-3xl bg-stone-50/30">
+            <h2 class="text-xl font-bold flex items-center gap-2">🏗️ Architecture</h2>
+            <ul class="text-sm text-stone-600 space-y-2">
+                <li><strong class="text-stone-900">SSR</strong> : Rendu initial sur le serveur pour un SEO optimal.</li>
+                <li><strong class="text-stone-900">Wasm</strong> : Hydratation client ultra-légère via TinyGo.</li>
+                <li><strong class="text-stone-900">SPA Morphing</strong> : Navigation fluide sans rechargement complet (HTMX + Idiomorph).</li>
+            </ul>
+        </section>
+
+        <section class="space-y-4 p-6 border border-stone-100 rounded-3xl bg-stone-50/30">
+            <h2 class="text-xl font-bold flex items-center gap-2">📁 Routage</h2>
+            <ul class="text-sm text-stone-600 space-y-2">
+                <li><strong class="text-stone-900">File-based</strong> : Pas de configuration de routeur, la structure de <code>pages/</code> définit les URLs.</li>
+                <li><strong class="text-stone-900">Dynamique</strong> : Support des paramètres <code>[id]</code>.</li>
+            </ul>
+        </section>
+    </div>
+
+    <section class="space-y-6">
+        <h3 class="text-2xl font-bold">Templates <code>&#123;&#123; Go &#125;&#125;</code></h3>
+        <p class="text-sm text-stone-600">
+            Les fichiers <code>.stew</code> sont des templates HTML augmentés de logique Go.
+        </p>
+        <Code>&#123;&#123; if user.IsLoggedIn &#125;&#125;
+    &lt;h1&gt;Bonjour &#123;&#123; user.Name &#125;&#125; !&lt;/h1&gt;
+&#123;&#123; else &#125;&#125;
+    &lt;p&gt;Veuillez vous connecter.&lt;/p&gt;
+&#123;&#123; end &#125;&#125;
+
+&lt;ul&gt;
+    &#123;&#123; each products as p &#125;&#125;
+        &lt;li&gt;&#123;&#123; p.Title &#125;&#125; (&#123;&#123; p.Price &#125;&#125; €)&lt;/li&gt;
+    &#123;&#123; end &#125;&#125;
+&lt;/ul&gt;</Code>
+    </section>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <section class="space-y-4">
+            <h3 class="text-2xl font-bold">🖥️ Serveur</h3>
+            <p class="text-xs text-stone-500 italic">Bloc <code>&lt;goscript&gt;</code></p>
+            <p class="text-sm text-stone-600 leading-relaxed">
+                Logique exécutée lors de la génération du HTML. Parfait pour les requêtes DB, l'authentification et la préparation des données.
+            </p>
+        </section>
+        <section class="space-y-4">
+            <h3 class="text-2xl font-bold">🌐 Client</h3>
+            <p class="text-xs text-stone-500 italic">Bloc <code>&lt;goscript client&gt;</code></p>
+            <p class="text-sm text-stone-600 leading-relaxed">
+                Compilé en Wasm. Gère l'interactivité, les événements DOM et la réactivité via les <strong>Signaux</strong>.
+            </p>
+        </section>
+    </div>
+
+    <section class="p-8 bg-rose-50 border border-rose-100 rounded-3xl space-y-4">
+        <h3 class="text-2xl font-bold text-rose-900 italic">🚦 Réactivité Fine (Signaux)</h3>
+        <p class="text-sm text-rose-800 leading-relaxed">
+            Stew utilise l'auto-tracking. Il suffit d'appeler <code>.Get()</code> dans un <code>Effect</code> pour que ce dernier se ré-exécute automatiquement lorsque le Signal mute via <code>.Set()</code>.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/state"
+    count := state.New(0) // Création
+    
+    state.Effect(func() {
+        fmt.Println("Compteur :", count.Get()) // Observation
+    })
+    
+    increment := func() {
+        count.Set(count.Get() + 1) // Mutation
+    }
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <NavFooter PrevLink="/guide/installation" PrevName="Installation" NextLink="/guide/configuration" NextName="Configuration" />
+</div>

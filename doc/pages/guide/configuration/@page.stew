@@ -95,5 +95,5 @@ clean:                   # Patterns nettoyés par `stew clean`
         <p class="text-sm text-stone-500">Le pattern <code>**/*suffix</code> est un pattern récursif. Exemple : <code>**/*.tmp</code> supprime tous les fichiers <code>.tmp</code> de l'arborescence.</p>
     </section>
 
-    <NavFooter PrevLink="/guide/installation" PrevName="Installation" NextLink="/guide/syntax" NextName="Syntaxe .stew" />
+    <NavFooter PrevLink="/guide/summary" PrevName="Synthèse du Langage" NextLink="/guide/syntax" NextName="Syntaxe .stew" />
 </div>
