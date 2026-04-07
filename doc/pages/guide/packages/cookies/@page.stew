@@ -72,5 +72,5 @@
         </p>
     </Alert>
 
-    <NavFooter PrevLink="/guide/packages/event" PrevName="stew/event" NextLink="/guide/cli" NextName="CLI" />
+    <NavFooter PrevLink="/guide/packages/event" PrevName="stew/event" NextLink="/guide/packages/anim" NextName="stew/anim" />
 </div>

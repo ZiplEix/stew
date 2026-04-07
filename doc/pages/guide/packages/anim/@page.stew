@@ -1,0 +1,99 @@
+<goscript>
+    import "../../../../components/Code.stew"
+    import "../../../../components/Alert.stew"
+    import "../../../../components/NavFooter.stew"
+</goscript>
+
+<div class="space-y-12">
+    <header>
+        <div class="text-purple-600 font-mono text-sm mb-2">Packages stew/* / 14.9</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">🎭 stew/anim</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le package <code>stew/anim</code> exploite l'API <strong>Web Animations</strong> du navigateur pour offrir des transitions fluides pilotées par Go, sans dépendre exclusivement des classes CSS.
+        </p>
+    </header>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold">Animations Prédéfinies</h2>
+        <p class="text-sm text-stone-600 leading-relaxed">
+            Stew propose des fonctions prêtes à l'emploi pour les effets les plus courants.
+        </p>
+        
+        <Code>&lt;goscript client&gt;
+    import "stew/anim"
+    import "time"
+
+    showNotify := func() {
+        anim.FadeIn("#toast", 300*time.Millisecond)
+        anim.SlideIn("#toast", anim.Top, 500*time.Millisecond)
+    }
+
+    warnUser := func() {
+        anim.Shake("#login-form", 200*time.Millisecond)
+    }
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Directions de Glissement (Slide)</h2>
+        <p class="text-sm text-stone-600">
+            La fonction <code>SlideIn</code> utilise le type <code>anim.Direction</code> pour garantir la validité des directions.
+        </p>
+        <div class="flex gap-2">
+            <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-mono">anim.Top</span>
+            <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-mono">anim.Bottom</span>
+            <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-mono">anim.Left</span>
+            <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-mono">anim.Right</span>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Transitions Personnalisées</h2>
+        <p class="text-sm text-stone-600">
+            La méthode <code>Transition</code> permet de passer d'un état CSS à un autre de manière impérative.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/anim"
+    import "time"
+
+    expandCard := func() {
+        anim.Transition("#card", 
+            "height: 100px; opacity: 0.5", 
+            "height: 300px; opacity: 1", 
+            400*time.Millisecond)
+    }
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">API Bas-Niveau (Keyframes)</h2>
+        <p class="text-sm text-stone-600">
+            Pour un contrôle total, utilisez <code>Animate</code> qui interface directement l'API native.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/anim"
+
+    customAnim := func() {
+        keyframes := []map[string]any{
+            {"transform": "rotate(0deg)", "backgroundColor": "red"},
+            {"transform": "rotate(180deg)", "backgroundColor": "blue"},
+            {"transform": "rotate(360deg)", "backgroundColor": "green"},
+        }
+        options := map[string]any{
+            "duration": 2000,
+            "iterations": 3,
+        }
+        anim.Animate("#box", keyframes, options)
+    }
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <Alert Type="success">
+        <strong class="block mb-1">🏁 Performance Native</strong>
+        <p class="text-sm">
+            Contrairement aux animations gérées via des timers Go, <code>stew/anim</code> utilise le thread de rendu du navigateur. Cela garantit une fluidité parfaite et libère le CPU de votre binaire Wasm.
+        </p>
+    </Alert>
+
+    <NavFooter PrevLink="/guide/packages/cookies" PrevName="stew/cookies" NextLink="/guide/cli" NextName="CLI" />
+</div>

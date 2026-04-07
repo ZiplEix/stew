@@ -181,6 +181,7 @@
                         <li><a href="/guide/packages/ui" class="{{ getLinkClass(data.URL, "/guide/packages/ui") }}">stew/ui</a></li>
                         <li><a href="/guide/packages/event" class="{{ getLinkClass(data.URL, "/guide/packages/event") }}">stew/event</a></li>
                         <li><a href="/guide/packages/cookies" class="{{ getLinkClass(data.URL, "/guide/packages/cookies") }}">stew/cookies</a></li>
+                        <li><a href="/guide/packages/anim" class="{{ getLinkClass(data.URL, "/guide/packages/anim") }}">stew/anim</a></li>
                     </ul>
                 </div>
             </div>

@@ -20,6 +20,7 @@ import (
 	stew_guide_layouts "github.com/ZiplEix/stew/doc/pages/guide/layouts"
 	stew_guide_middleware "github.com/ZiplEix/stew/doc/pages/guide/middleware"
 	stew_guide_packages "github.com/ZiplEix/stew/doc/pages/guide/packages"
+	stew_guide_packages_anim "github.com/ZiplEix/stew/doc/pages/guide/packages/anim"
 	stew_guide_packages_cookies "github.com/ZiplEix/stew/doc/pages/guide/packages/cookies"
 	stew_guide_packages_data "github.com/ZiplEix/stew/doc/pages/guide/packages/data"
 	stew_guide_packages_event "github.com/ZiplEix/stew/doc/pages/guide/packages/event"
@@ -294,6 +295,23 @@ func RegisterStewRoutes(mux *http.ServeMux) {
 		stew_pages_root.Layout(w, data, func() {
 			stew_guide.Layout(w, data, func() {
 				stew_guide_packages.Page(w, data)
+			})
+		})
+	}))
+	// --- Route: /guide/packages/anim ---
+	mux.Handle("GET /guide/packages/anim", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := stew.PageData{
+			URL:     r.URL.Path,
+			Query:   r.URL.Query(),
+			Params:  make(map[string]string),
+			Request: r,
+			Store:   make(map[string]any),
+		}
+
+		// Appel direct de la fonction de rendu Stew-Lang
+		stew_pages_root.Layout(w, data, func() {
+			stew_guide.Layout(w, data, func() {
+				stew_guide_packages_anim.Page(w, data)
 			})
 		})
 	}))

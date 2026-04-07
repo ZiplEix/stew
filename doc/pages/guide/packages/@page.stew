@@ -75,6 +75,14 @@
             <p class="text-sm text-stone-600 mb-4 leading-relaxed">Gérez les cookies client (sessions, préférences) sans parser de chaines complexes.</p>
             <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Voir les détails →</span>
         </a>
+
+        <a href="/guide/packages/anim" class="group p-6 border border-stone-200 rounded-3xl hover:border-purple-500 hover:bg-purple-50/30 transition-all duration-300">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-purple-600 flex items-center gap-2">
+                🎭 stew/anim
+            </h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Pilotez des animations fluides via l'API Web Animations native du navigateur.</p>
+            <span class="text-xs font-bold text-purple-500 uppercase tracking-wider">Voir les détails →</span>
+        </a>
     </div>
 
     <section class="space-y-4">
