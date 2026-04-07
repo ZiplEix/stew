@@ -78,5 +78,5 @@
         </p>
     </Alert>
 
-    <NavFooter PrevLink="/guide/packages/storage" PrevName="stew/storage" NextLink="/guide/cli" NextName="CLI" />
+    <NavFooter PrevLink="/guide/packages/storage" PrevName="stew/storage" NextLink="/guide/packages/ui" NextName="stew/ui" />
 </div>

@@ -22,6 +22,7 @@ type WasmOptions struct {
 	UsesIO      bool
 	UsesNav     bool
 	UsesStorage bool
+	UsesUI      bool
 }
 
 func buildWasm(name string, nodes []Node, bindings string, clientImports []string, opts WasmOptions, clientVars map[string]bool) (string, error) {
@@ -95,6 +96,10 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 			importMap["github.com/ZiplEix/stew/sdk/wasm/state"] = ""
 			continue
 		}
+		if trimmedImp == "stew/ui" {
+			importMap["github.com/ZiplEix/stew/sdk/wasm/ui"] = ""
+			continue
+		}
 		importMap[trimmedImp] = ""
 	}
 
@@ -138,6 +143,10 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	if opts.UsesStorage {
 		wasmBuf.WriteString("\tstorage := storage.Instance\n")
 		allDeclaredNames = append(allDeclaredNames, "storage")
+	}
+	if opts.UsesUI {
+		wasmBuf.WriteString("\tui := ui.Instance\n")
+		allDeclaredNames = append(allDeclaredNames, "ui")
 	}
 
 	// 3. Touch package aliases to avoid "imported and not used"
@@ -596,6 +605,11 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 						} else {
 							*userImports = append(*userImports, "\"github.com/ZiplEix/stew/sdk/wasm/state\"")
 						}
+						continue
+					}
+					if importStr == "stew/ui" {
+						opts.UsesUI = true
+						*clientImports = append(*clientImports, "\""+importStr+"\"")
 						continue
 					}
 

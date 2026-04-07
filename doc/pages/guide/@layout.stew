@@ -178,6 +178,7 @@
                         <li><a href="/guide/packages/nav" class="{{ getLinkClass(data.URL, "/guide/packages/nav") }}">stew/nav</a></li>
                         <li><a href="/guide/packages/storage" class="{{ getLinkClass(data.URL, "/guide/packages/storage") }}">stew/storage</a></li>
                         <li><a href="/guide/packages/state" class="{{ getLinkClass(data.URL, "/guide/packages/state") }}">stew/state</a></li>
+                        <li><a href="/guide/packages/ui" class="{{ getLinkClass(data.URL, "/guide/packages/ui") }}">stew/ui</a></li>
                     </ul>
                 </div>
             </div>
