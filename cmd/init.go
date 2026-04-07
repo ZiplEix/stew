@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ZiplEix/stew/internal/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -214,24 +215,8 @@ var initCmd = &cobra.Command{
 			handleFileCreation(filepath.Join(pagesDir, "@page.stew"), rootPageContent)
 		}
 
-		publicWasmDir := "static/wasm"
-		os.MkdirAll(publicWasmDir, 0755)
-		fmt.Println("🚀 Fetching WebAssembly runtime from TinyGo...")
-		out, err := exec.Command("tinygo", "env", "TINYGOROOT").Output()
-		if err == nil {
-			tinygoRoot := strings.TrimSpace(string(out))
-			wasmExecSrc := filepath.Join(tinygoRoot, "targets", "wasm_exec.js")
-			wasmExecDest := filepath.Join(publicWasmDir, "wasm_exec.js")
-			input, err := os.ReadFile(wasmExecSrc)
-			if err == nil {
-				os.WriteFile(wasmExecDest, input, 0644)
-				fmt.Println("✅ Copied wasm_exec.js successfully")
-			} else {
-				fmt.Println("⚠️  Warning: Could not read wasm_exec.js from TinyGo installation")
-			}
-		} else {
-			fmt.Println("⚠️  Warning: TinyGo is not installed, Wasm client features will be unavailable. Install it: https://tinygo.org/")
-		}
+		// Fetch WebAssembly runtime from TinyGo if needed
+		utils.EnsureWasmRuntime()
 
 		handleFileCreation("main.go", mainGoContent)
 

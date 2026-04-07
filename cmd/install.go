@@ -26,6 +26,9 @@ var installCmd = &cobra.Command{
 
 		fmt.Println("📦 Installing dependencies...")
 
+		// Ensure wasm_exec.js is present for client-side features
+		utils.EnsureWasmRuntime()
+
 		for _, dep := range config.Requires {
 			if _, err := exec.LookPath(dep.Name); err == nil {
 				fmt.Printf("✅ %-15s is already installed. Skipping.\n", dep.Name)
