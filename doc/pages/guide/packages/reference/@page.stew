@@ -1,0 +1,109 @@
+<goscript>
+    import "../../../../components/Code.stew"
+    import "../../../../components/Alert.stew"
+    import "../../../../components/NavFooter.stew"
+</goscript>
+
+<div class="space-y-12 pb-24">
+    <header>
+        <div class="text-stone-400 font-mono text-sm mb-2">Guide / 14-Ref</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Récapitulatif de l'API</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Consultez rapidement l'ensemble des fonctions exposées par les packages virtuels <code>stew/*</code> dans vos scripts <code>&lt;goscript client&gt;</code>.
+        </p>
+    </header>
+
+    <div class="grid md:grid-cols-2 gap-8 items-start">
+        <!-- state -->
+        <section class="p-6 bg-rose-50/30 border border-rose-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-rose-700 flex items-center gap-2">🚥 stew/state</h3>
+            <ul class="text-xs space-y-2 font-mono text-stone-700">
+                <li><span class="text-rose-600">New[T](val T)</span> <span class="text-stone-400">-> *Signal[T]</span></li>
+                <li><span class="text-rose-600">.Get()</span> <span class="text-stone-400">-> T</span></li>
+                <li><span class="text-rose-600">.Set(val T)</span></li>
+                <li><span class="text-rose-600">Effect(func())</span></li>
+            </ul>
+        </section>
+
+        <!-- nav -->
+        <section class="p-6 bg-indigo-50/30 border border-indigo-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-indigo-700 flex items-center gap-2">🧭 stew/nav</h3>
+            <ul class="text-xs space-y-2 font-mono text-stone-700">
+                <li><span class="text-indigo-600">To(url)</span> <span class="text-stone-400">// SPA Morphing</span></li>
+                <li><span class="text-indigo-600">Back() / Forward() / Reload()</span></li>
+                <li><span class="text-indigo-600">Replace(url)</span></li>
+                <li><span class="text-indigo-600">StandardTo(url)</span> <span class="text-stone-400">// Reload</span></li>
+            </ul>
+        </section>
+
+        <!-- ui -->
+        <section class="p-6 bg-blue-50/30 border border-blue-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-blue-700 flex items-center gap-2">✨ stew/ui</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-blue-600">Title(txt)</span></li>
+                <li><span class="text-blue-600">Focus(sel)</span></li>
+                <li><span class="text-blue-600">ScrollTo(sel, smooth)</span></li>
+                <li><span class="text-blue-600">Add / Remove / ToggleClass(sel, cls)</span></li>
+                <li><span class="text-blue-600">Get / SetValue(sel, val)</span></li>
+                <li><span class="text-blue-600">SetStyle(sel, prop, val)</span></li>
+            </ul>
+        </section>
+
+        <!-- event -->
+        <section class="p-6 bg-indigo-50/30 border border-indigo-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-indigo-700 flex items-center gap-2">⌨️ stew/event</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-indigo-600">OnKeyDown / OnKeyUp(key, cb)</span></li>
+                <li><span class="text-indigo-600">OnResize(cb func(w, h int))</span></li>
+                <li><span class="text-indigo-600">OnScroll(cb func(t, l int))</span></li>
+                <li><span class="text-indigo-600">OnOnline / OnOffline(cb)</span></li>
+                <li><span class="text-indigo-600">IsOnline() bool</span></li>
+            </ul>
+        </section>
+
+        <!-- anim -->
+        <section class="p-6 bg-purple-50/30 border border-purple-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-purple-700 flex items-center gap-2">🎭 stew/anim</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-purple-600">FadeIn / FadeOut(sel, d)</span></li>
+                <li><span class="text-purple-600">SlideIn(sel, dir, d)</span></li>
+                <li><span class="text-purple-600">Shake / Pulse(sel, d)</span></li>
+                <li><span class="text-purple-600">Transition(sel, from, to, d)</span></li>
+                <li><span class="text-purple-600">Animate(sel, kf, opt)</span></li>
+            </ul>
+        </section>
+
+        <!-- cookies -->
+        <section class="p-6 bg-emerald-50/30 border border-emerald-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-emerald-700 flex items-center gap-2">🍪 stew/cookies</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-emerald-600">Get(name)</span> <span class="text-stone-400">-> string</span></li>
+                <li><span class="text-emerald-600">Set(name, val, opts)</span></li>
+                <li><span class="text-emerald-600">Delete(name) / Has(name)</span></li>
+                <li><span class="text-emerald-600">GetAll()</span> <span class="text-stone-400">-> map[string]string</span></li>
+            </ul>
+        </section>
+
+        <!-- storage -->
+        <section class="p-6 bg-emerald-50/30 border border-emerald-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-emerald-700 flex items-center gap-2">💾 stew/storage</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-emerald-600">Local.Get / Set / Delete(key)</span></li>
+                <li><span class="text-emerald-600">Session.Get / Set / Delete(key)</span></li>
+            </ul>
+        </section>
+
+        <!-- data -->
+        <section class="p-6 bg-amber-50/30 border border-amber-100 rounded-3xl space-y-3">
+            <h3 class="text-xl font-bold text-amber-700 flex items-center gap-2">📦 stew/data</h3>
+            <ul class="text-xs space-y-1 font-mono text-stone-700">
+                <li><span class="text-amber-600">URL</span> <span class="text-stone-400">// string</span></li>
+                <li><span class="text-amber-600">Query</span> <span class="text-stone-400">// url.Values</span></li>
+                <li><span class="text-amber-600">Params</span> <span class="text-stone-400">// map[string]string</span></li>
+                <li><span class="text-amber-600">Store</span> <span class="text-stone-400">// map[string]any</span></li>
+            </ul>
+        </section>
+    </div>
+
+    <NavFooter PrevLink="/guide/packages/anim" PrevName="stew/anim" NextLink="/guide/cli" NextName="CLI" />
+</div>
