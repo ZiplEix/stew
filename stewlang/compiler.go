@@ -23,6 +23,8 @@ type WasmOptions struct {
 	UsesNav     bool
 	UsesStorage bool
 	UsesUI      bool
+	UsesEvent   bool
+	UsesCookies bool
 }
 
 func buildWasm(name string, nodes []Node, bindings string, clientImports []string, opts WasmOptions, clientVars map[string]bool) (string, error) {
@@ -100,6 +102,14 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 			importMap["github.com/ZiplEix/stew/sdk/wasm/ui"] = ""
 			continue
 		}
+		if trimmedImp == "stew/event" {
+			importMap["github.com/ZiplEix/stew/sdk/wasm/event"] = ""
+			continue
+		}
+		if trimmedImp == "stew/cookies" {
+			importMap["github.com/ZiplEix/stew/sdk/wasm/cookies"] = ""
+			continue
+		}
 		importMap[trimmedImp] = ""
 	}
 
@@ -147,6 +157,14 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	if opts.UsesUI {
 		wasmBuf.WriteString("\tui := ui.Instance\n")
 		allDeclaredNames = append(allDeclaredNames, "ui")
+	}
+	if opts.UsesEvent {
+		wasmBuf.WriteString("\tevent := event.Instance\n")
+		allDeclaredNames = append(allDeclaredNames, "event")
+	}
+	if opts.UsesCookies {
+		wasmBuf.WriteString("\tcookies := cookies.Instance\n")
+		allDeclaredNames = append(allDeclaredNames, "cookies")
 	}
 
 	// 3. Touch package aliases to avoid "imported and not used"
@@ -609,6 +627,16 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 					}
 					if importStr == "stew/ui" {
 						opts.UsesUI = true
+						*clientImports = append(*clientImports, "\""+importStr+"\"")
+						continue
+					}
+					if importStr == "stew/event" {
+						opts.UsesEvent = true
+						*clientImports = append(*clientImports, "\""+importStr+"\"")
+						continue
+					}
+					if importStr == "stew/cookies" {
+						opts.UsesCookies = true
 						*clientImports = append(*clientImports, "\""+importStr+"\"")
 						continue
 					}

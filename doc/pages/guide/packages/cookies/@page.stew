@@ -1,0 +1,76 @@
+<goscript>
+    import "../../../../components/Code.stew"
+    import "../../../../components/Alert.stew"
+    import "../../../../components/NavFooter.stew"
+</goscript>
+
+<div class="space-y-12">
+    <header>
+        <div class="text-emerald-500 font-mono text-sm mb-2">Packages stew/* / 14.8</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">🍪 stew/cookies</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le package <code>stew/cookies</code> facilite la gestion des cookies client (sessions, préférences) sans avoir à parser manuellement la chaine <code>document.cookie</code>.
+        </p>
+    </header>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold">Lecture et Écritures Simples</h2>
+        <p class="text-sm text-stone-600 leading-relaxed">
+            Gérez les cookies de base en une ligne de code Go.
+        </p>
+        
+        <Code>&lt;goscript client&gt;
+    import "stew/cookies"
+
+    saveTheme := func(name string) {
+        cookies.Set("theme", name, cookies.Options{Path: "/"})
+    }
+
+    deleteSession := func() {
+        cookies.Delete("session_id")
+    }
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Options Avancées</h2>
+        <p class="text-sm text-stone-600">
+            Définit des dates d'expiration, des domaines ou active la sécurité SSL pour vos cookies.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/cookies"
+    import "time"
+
+    cookies.Set("consent", "true", cookies.Options{
+        Expires: time.Now().AddDate(1, 0, 0), // Expire dans 1 an
+        Secure:  true,
+        SameSite: "Strict",
+    })
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Utilitaires de Vérification</h2>
+        <p class="text-sm text-stone-600">
+            Accédez rapidement à l'existence d'un cookie ou à la liste complète.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/cookies"
+
+    if cookies.Has("user_id") {
+        username := cookies.Get("username")
+    }
+
+    all := cookies.GetAll() // map[string]string
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <Alert Type="warning">
+        <strong class="block mb-1">🔒 Sécurité des Cookies</strong>
+        <p class="text-sm">
+            Si vos cookies contiennent des données sensibles (tokens de session), assurez-vous qu'ils sont marqués <code>Secure</code> et <code>SameSite=Lax/Strict</code>. Notez que <code>HttpOnly</code> ne peut PAS être activé par le client JS/Wasm.
+        </p>
+    </Alert>
+
+    <NavFooter PrevLink="/guide/packages/event" PrevName="stew/event" NextLink="/guide/cli" NextName="CLI" />
+</div>

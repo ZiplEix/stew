@@ -1,0 +1,84 @@
+<goscript>
+    import "../../../../components/Code.stew"
+    import "../../../../components/Alert.stew"
+    import "../../../../components/NavFooter.stew"
+</goscript>
+
+<div class="space-y-12">
+    <header>
+        <div class="text-indigo-600 font-mono text-sm mb-2">Packages stew/* / 14.7</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">⌨️ stew/event</h1>
+        <p class="text-xl text-stone-500 leading-relaxed">
+            Le package <code>stew/event</code> permet d'écouter des événements globaux (clavier, fenêtre, réseau) qui ne sont pas attachés à un élément DOM spécifique.
+        </p>
+    </header>
+
+    <section class="space-y-6">
+        <h2 class="text-2xl font-bold">Événements Clavier</h2>
+        <p class="text-sm text-stone-600 leading-relaxed">
+            Écoutez les pressions de touches au niveau de la fenêtre globale. Idéal pour les raccourcis clavier ou les fermetures de modales.
+        </p>
+        
+        <Code>&lt;goscript client&gt;
+    import "stew/event"
+    import "stew/io"
+
+    event.OnKeyDown("Enter", func() {
+        io.Alert("Vous avez appuyé sur Entrée !")
+    })
+
+    event.OnKeyDown("Escape", func() {
+        closeModal()
+    })
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Fenêtre et État du Navigateur</h2>
+        <p class="text-sm text-stone-600">
+            Suivez le redimensionnement de la fenêtre ou l'état de la connexion réseau de l'utilisateur.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/event"
+
+    event.OnResize(func(w, h int) {
+        Console.Log("Nouvelle taille :", w, "x", h)
+    })
+
+    event.OnOffline(func() {
+        ui.ToggleClass("#offline-banner", "hidden")
+    })
+
+    event.OnOnline(func() {
+        ui.AddClass("#offline-banner", "hidden")
+    })
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Défilement Global (Scroll)</h2>
+        <p class="text-sm text-stone-600">
+            Le package permet de suivre le défilement de la page entière.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/event"
+
+    event.OnScroll(func(top, left int) {
+        if top > 100 {
+            ui.AddClass("#navbar", "shadow-md")
+        } else {
+            ui.RemoveClass("#navbar", "shadow-md")
+        }
+    })
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <Alert Type="tip">
+        <strong class="block mb-1">🔌 OnOnline & IsOnline</strong>
+        <p class="text-sm">
+            Utilisez `event.IsOnline()` pour vérifier l'état actuel au chargement, et `OnOnline`/`OnOffline` pour réagir aux changements en temps réel.
+        </p>
+    </Alert>
+
+    <NavFooter PrevLink="/guide/packages/ui" PrevName="stew/ui" NextLink="/guide/packages/cookies" NextName="stew/cookies" />
+</div>
