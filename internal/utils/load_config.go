@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ZiplEix/stew/v2/internal/config"
+	"github.com/ZiplEix/stew/internal/config"
 	"gopkg.in/yaml.v3"
 )
 

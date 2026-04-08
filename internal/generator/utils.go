@@ -16,9 +16,12 @@ func GetModuleName() (string, error) {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		line := scanner.Text()
+		line := strings.TrimSpace(scanner.Text())
 		if strings.HasPrefix(line, "module ") {
-			return strings.TrimPrefix(line, "module "), nil
+			fields := strings.Fields(line)
+			if len(fields) >= 2 {
+				return fields[1], nil
+			}
 		}
 	}
 	return "", fmt.Errorf("module name not found in go.mod")

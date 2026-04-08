@@ -1,6 +1,6 @@
 package generator
 
-// file specifier for stew 2.0
+// file specifier for stew
 const (
 	PageFile       = "stew.page.go"
 	LayoutFile     = "stew.layout.go"

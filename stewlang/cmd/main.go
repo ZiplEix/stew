@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/ZiplEix/stew/v2/stewlang"
+	"github.com/ZiplEix/stew/stewlang"
 )
 
 func main() {

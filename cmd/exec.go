@@ -8,8 +8,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/ZiplEix/stew/v2/internal/config"
-	"github.com/ZiplEix/stew/v2/internal/utils"
+	"github.com/ZiplEix/stew/internal/config"
+	"github.com/ZiplEix/stew/internal/utils"
 	"github.com/spf13/cobra"
 )
 

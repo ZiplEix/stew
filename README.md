@@ -1,4 +1,4 @@
-# 🍲 STEW 2.0
+# 🍲 STEW
 
 **Stew** is a high-performance, opinionated **Isomorphic Go Framework** designed for the **Go + Wasm + HTMX** stack. It transforms Go's standard library into a modern fullstack experience with **File-Based Routing**, **Isomorphic Reactivity**, and built-in **Hot Morphing**.
 
@@ -38,7 +38,7 @@ Inspired by SvelteKit but powered by the performance and type-safety of Go, Stew
 
 ## 📂 Router Architecture
 
-Stew 2.0 uses a strict file-naming convention to avoid conflicts with Go's standard build tools. All special files in `pages/` are prefixed with `@` or `stew.`.
+Stew uses a strict file-naming convention to avoid conflicts with Go's standard build tools. All special files in `pages/` are prefixed with `@` or `stew.`.
 
 | File | Purpose | Logic Context |
 | --- | --- | --- |
@@ -67,7 +67,7 @@ Stew files combine the simplicity of HTML with the power of Go.
 
 <goscript client>
     // Isomorphic Wasm logic (TinyGo)
-    import github.com/ZiplEix/stew/v2/sdk/wasm"
+    import github.com/ZiplEix/stew/sdk/wasm"
 
     func HandleClick() {
         wasm.Alert("Clicked from Go/Wasm!")

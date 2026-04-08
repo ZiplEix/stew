@@ -108,7 +108,7 @@ package component
 
 import (
     "io"
-    github.com/ZiplEix/stew/v2/sdk/stew"
+    github.com/ZiplEix/stew/sdk/stew"
 )
 
 type CardProps struct {

@@ -1,6 +1,6 @@
 <goscript>
     import "strings"
-    import github.com/ZiplEix/stew/v2/sdk/wasm/state"
+    import "github.com/ZiplEix/stew/sdk/wasm/state"
 
     getLinkClass := func(current, target string) string {
         if current == target {
@@ -92,7 +92,7 @@
 <!-- Top Nav (Documentation Only) -->
 <nav class="fixed top-0 left-0 right-0 z-50 h-14 border-b border-stone-200 bg-white/90 backdrop-blur-md flex items-center px-6 gap-4">
     <a href="/" class="text-xl font-black tracking-tighter italic flex items-center gap-2">
-        🍲 <span>Stew</span> <span class="text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full">2.0</span>
+        🍲 <span>Stew</span> <span class="text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full">0.1.0</span>
     </a>
     <div class="flex-1"></div>
     <a href="/guide" class="text-sm font-semibold text-stone-600 hover:text-stone-900 transition">Documentation</a>

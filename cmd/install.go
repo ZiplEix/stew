@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/ZiplEix/stew/v2/internal/utils"
+	"github.com/ZiplEix/stew/internal/utils"
 	"github.com/spf13/cobra"
 )
 

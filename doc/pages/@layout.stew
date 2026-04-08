@@ -1,6 +1,6 @@
 <goscript>
     import "os"
-    import github.com/ZiplEix/stew/v2/sdk/live"
+    import "github.com/ZiplEix/stew/sdk/live"
 </goscript>
 
 <!DOCTYPE html>
@@ -8,7 +8,7 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Stew 2.0 — Documentation</title>
+        <title>Stew — Documentation</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://unpkg.com/htmx.org@1.9.10"></script>
         <script src="https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js"></script>

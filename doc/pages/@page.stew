@@ -9,7 +9,7 @@
               <span class="animate-ping absolute inline-flex h-full w-2 rounded-full bg-amber-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
             </span>
-            Stew 2.0 Alpha — Hybrid Isomorphic
+            Stew — Hybrid Isomorphic
         </div>
 
         <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] text-stone-900">

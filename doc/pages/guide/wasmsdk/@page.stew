@@ -7,7 +7,7 @@
         <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 13 — Wasm Isomorphique</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4">SDK Wasm</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le package <code>github.com/ZiplEix/stew/v2sdk/wasm</code> est automatiquement importé dans chaque bundle Wasm client. Il fournit toutes les primitives de réactivité et d'interactivité DOM.
+            Le package <code>github.com/ZiplEix/stewsdk/wasm</code> est automatiquement importé dans chaque bundle Wasm client. Il fournit toutes les primitives de réactivité et d'interactivité DOM.
         </p>
     </header>
 

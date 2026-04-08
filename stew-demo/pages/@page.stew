@@ -16,7 +16,7 @@
 <div class="flex flex-col items-center justify-center min-h-[80vh] text-center font-sans p-6">
     <div class="bg-white p-12 rounded-[2.5rem] shadow-xl shadow-stone-200 border border-stone-100">
         <h1 class="text-6xl mb-4">🍲</h1>
-        <h2 class="text-4xl font-black tracking-tighter mb-4">Stew 2.0 Alpha</h2>
+        <h2 class="text-4xl font-black tracking-tighter mb-4">Stew</h2>
         <p class="text-stone-500 text-lg mb-8">Your Go Fullstack framework is ready to cook.</p>
         
         <!-- Server HTMX Counter -->

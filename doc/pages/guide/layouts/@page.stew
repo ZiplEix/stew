@@ -17,7 +17,7 @@
         <p class="text-sm text-stone-600">Le fichier <code>pages/@layout.stew</code> :</p>
         <Code>&lt;goscript&gt;
     import "os"
-    import github.com/ZiplEix/stew/v2/sdk/live"
+    import "github.com/ZiplEix/stew/sdk/live"
 &lt;/goscript&gt;
 
 &lt;!DOCTYPE html&gt;

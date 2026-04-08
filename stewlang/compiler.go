@@ -56,7 +56,7 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	}
 
 	importMap := make(map[string]string)
-	importMap["github.com/ZiplEix/stew/v2/sdk/wasm"] = ""
+	importMap["github.com/ZiplEix/stew/sdk/wasm"] = ""
 
 	if hasAnyReactivity || bindings != "" {
 		importMap["strings"] = ""
@@ -67,7 +67,7 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 			importMap["html"] = ""
 		}
 		if scan.hasRanges {
-			importMap["github.com/ZiplEix/stew/v2/sdk/stew"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/stew"] = ""
 		}
 	}
 
@@ -82,47 +82,47 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 	for _, imp := range clientImports {
 		trimmedImp := strings.Trim(imp, "\"")
 		if trimmedImp == "stew/data" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/data"] = "stewdata"
+			importMap["github.com/ZiplEix/stew/sdk/wasm/data"] = "stewdata"
 			continue
 		}
 		if trimmedImp == "stew/io" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/io"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/io"] = ""
 			continue
 		}
 		if trimmedImp == "stew/nav" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/nav"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/nav"] = ""
 			continue
 		}
 		if trimmedImp == "stew/storage" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/storage"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/storage"] = ""
 			continue
 		}
 		if trimmedImp == "stew/state" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/state"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/state"] = ""
 			continue
 		}
 		if trimmedImp == "stew/ui" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/ui"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/ui"] = ""
 			continue
 		}
 		if trimmedImp == "stew/event" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/event"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/event"] = ""
 			continue
 		}
 		if trimmedImp == "stew/cookies" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/cookies"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/cookies"] = ""
 			continue
 		}
 		if trimmedImp == "stew/anim" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/anim"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/anim"] = ""
 			continue
 		}
 		if trimmedImp == "stew/js" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/js"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/js"] = ""
 			continue
 		}
 		if trimmedImp == "stew/net" {
-			importMap["github.com/ZiplEix/stew/v2/sdk/wasm/net"] = ""
+			importMap["github.com/ZiplEix/stew/sdk/wasm/net"] = ""
 			continue
 		}
 		importMap[trimmedImp] = ""
@@ -236,7 +236,7 @@ func buildWasm(name string, nodes []Node, bindings string, clientImports []strin
 		if _, ok := importMap["strings"]; ok {
 			wasmBuf.WriteString("\t_ = strings.Contains\n")
 		}
-		if _, ok := importMap["github.com/ZiplEix/stew/v2/sdk/stew"]; ok {
+		if _, ok := importMap["github.com/ZiplEix/stew/sdk/stew"]; ok {
 			wasmBuf.WriteString("\t_ = stew.Range(0, 0)\n")
 		}
 		wasmBuf.WriteString("\tanonBuilder := strings.Builder{}\n")
@@ -538,7 +538,7 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 	// Collect unique imports and verify usage
 	importPaths := make(map[string]bool)
 	importPaths["\"io\""] = true
-	importPaths["\"github.com/ZiplEix/stew/v2/sdk/stew\""] = true
+	importPaths["\"github.com/ZiplEix/stew/sdk/stew\""] = true
 	if hasClientCode {
 		importPaths["\"encoding/json\""] = true
 	}
@@ -554,7 +554,7 @@ func Compile(name string, pkgName string, moduleBase string, relFilePath string,
 		importPaths["\"html\""] = true
 	}
 	if strings.Contains(codeOnlyStr, "state.") || strings.Contains(pkgLevel.String(), "state.") {
-		importPaths["\"github.com/ZiplEix/stew/v2/sdk/wasm/state\""] = true
+		importPaths["\"github.com/ZiplEix/stew/sdk/wasm/state\""] = true
 	}
 
 	// Check user imports usage
@@ -644,7 +644,7 @@ func extractImports(nodes []Node, userImports *[]string, stewImports *[]string, 
 						if gs.Context == "client" {
 							*clientImports = append(*clientImports, "\""+importStr+"\"")
 						} else {
-							*userImports = append(*userImports, "\"github.com/ZiplEix/stew/v2/sdk/wasm/state\"")
+							*userImports = append(*userImports, "\"github.com/ZiplEix/stew/sdk/wasm/state\"")
 						}
 						continue
 					}

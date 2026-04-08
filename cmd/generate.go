@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ZiplEix/stew/v2/internal/generator"
+	"github.com/ZiplEix/stew/internal/generator"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 )

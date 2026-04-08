@@ -1,7 +1,7 @@
 
 <goscript>
     import "os"
-    import github.com/ZiplEix/stew/v2/sdk/live"
+    import github.com/ZiplEix/stew/sdk/live"
 </goscript>
 
 <!DOCTYPE html>

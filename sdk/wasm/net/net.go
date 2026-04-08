@@ -8,7 +8,7 @@ import (
 	"syscall/js"
 	"time"
 
-	"github.com/ZiplEix/stew/v2/sdk/wasm/state"
+	"github.com/ZiplEix/stew/sdk/wasm/state"
 )
 
 // IsLoading is a global signal to track network activity.

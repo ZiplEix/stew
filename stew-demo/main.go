@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/ZiplEix/stew/v2/sdk/live"
+	"github.com/ZiplEix/stew/sdk/live"
 )
 
 func main() {

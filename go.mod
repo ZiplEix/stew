@@ -1,6 +1,10 @@
-module github.com/ZiplEix/stew/v2
+module github.com/ZiplEix/stew
 
 go 1.25.0
+
+retract (
+	[v1.0.0, v1.1.0]
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.9.0

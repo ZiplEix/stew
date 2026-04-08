@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ZiplEix/stew/v2/internal/utils"
+	"github.com/ZiplEix/stew/internal/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -64,7 +64,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"github.com/ZiplEix/stew/v2/sdk/live"
+	"github.com/ZiplEix/stew/sdk/live"
 )
 
 func main() {
@@ -89,7 +89,7 @@ func main() {
 const rootLayoutContent = `
 <goscript>
     import "os"
-    import github.com/ZiplEix/stew/v2/sdk/live"
+    import github.com/ZiplEix/stew/sdk/live"
 </goscript>
 
 <!DOCTYPE html>
@@ -130,7 +130,7 @@ const rootPageContent = `<goscript>
 <div class="flex flex-col items-center justify-center min-h-[80vh] text-center font-sans p-6">
     <div class="bg-white p-12 rounded-[2.5rem] shadow-xl shadow-stone-200 border border-stone-100">
         <h1 class="text-6xl mb-4">🍲</h1>
-        <h2 class="text-4xl font-black tracking-tighter mb-4">Stew 2.0 Alpha</h2>
+        <h2 class="text-4xl font-black tracking-tighter mb-4">Stew</h2>
         <p class="text-stone-500 text-lg mb-8">Your Go Fullstack framework is ready to cook.</p>
         
         <!-- Server HTMX Counter -->
@@ -197,7 +197,7 @@ const rootPageContent = `<goscript>
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init [module-name]",
-	Short: "Initialize a new Stew 2.0 project",
+	Short: "Initialize a new Stew project",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("🍲 Simmering a new Stew project...")

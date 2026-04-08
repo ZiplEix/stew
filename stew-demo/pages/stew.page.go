@@ -8,7 +8,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/ZiplEix/stew/v2/sdk/stew"
+	"github.com/ZiplEix/stew/sdk/stew"
 )
 
 func Page(w io.Writer, data stew.PageData) {

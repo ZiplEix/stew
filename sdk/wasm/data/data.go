@@ -5,7 +5,7 @@ package data
 import (
 	"encoding/json"
 
-	"github.com/ZiplEix/stew/v2/sdk/wasm"
+	"github.com/ZiplEix/stew/sdk/wasm"
 )
 
 // WasmPageData represents the subset of PageData accessible in the Wasm context.

@@ -26,7 +26,7 @@
         <p class="text-sm text-stone-600">Dans le layout racine <code>pages/@layout.stew</code> :</p>
         <Code>&lt;goscript&gt;
     import "os"
-    import github.com/ZiplEix/stew/v2/sdk/live"
+    import "github.com/ZiplEix/stew/sdk/live"
 &lt;/goscript&gt;
 
 &lt;!DOCTYPE html&gt;
@@ -57,7 +57,7 @@
 import (
     "net/http"
     "os"
-    github.com/ZiplEix/stew/v2/sdk/live"
+    github.com/ZiplEix/stew/sdk/live"
 )
 
 func main() {

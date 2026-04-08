@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"syscall/js"
 
-	"github.com/ZiplEix/stew/v2/sdk/stew"
-	"github.com/ZiplEix/stew/v2/sdk/wasm/state"
+	"github.com/ZiplEix/stew/sdk/stew"
+	"github.com/ZiplEix/stew/sdk/wasm/state"
 )
 
 var document = js.Global().Get("document")

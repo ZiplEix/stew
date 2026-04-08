@@ -79,7 +79,7 @@
         <Code>&lt;goscript&gt;
     <span class="text-stone-400">// Côté serveur : alimenter le Store</span>
     data.Store["Title"] = "Mon App"
-    data.Store["Version"] = "2.0"
+    data.Store["Version"] = "1.0"
 &lt;/goscript&gt;</Code>
         <p class="text-sm text-stone-500">Ces données sont injectées en JSON dans le HTML sous la forme <code>&lt;script id="stew-pagedata"&gt;{...}&lt;/script&gt;</code> et récupérables côté Wasm avec <code>wasm.GetPageDataJSON()</code>.</p>
     </section>
