@@ -53,7 +53,7 @@ func NavFooter(w io.Writer, data stew.PageData, props NavFooterProps, slot func(
 		w.Write([]byte(`<a href="`))
 		w.Write([]byte(html.EscapeString(fmt.Sprint(props.NextLink))))
 		w.Write([]byte(`" class="text-amber-600 font-bold hover:underline">`))
-		w.Write([]byte(`Suivant : `))
+		w.Write([]byte(`Next: `))
 		w.Write([]byte(html.EscapeString(fmt.Sprint(props.NextName))))
 		w.Write([]byte(` →`))
 		w.Write([]byte(`</a>`))

@@ -9,7 +9,7 @@
         return "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors"
     }
 
-    // État initial pour SSR
+    // Initial state for SSR
     openSignal := state.New(map[string]bool{
         "start":   false,
         "stew":    false,
@@ -23,7 +23,7 @@
         "eco":     false,
     })
 
-    // Détermine quelle catégorie ouvrir au chargement selon l'URL (SSR)
+    // Determine which category to open on load based on URL (SSR)
     url := data.URL
     m := openSignal.Get()
     if strings.HasPrefix(url, "/guide/installation") || strings.HasPrefix(url, "/guide/configuration") || strings.HasPrefix(url, "/guide/summary") {
@@ -108,13 +108,13 @@
         <nav class="flex flex-col gap-4">
             <div class="flex flex-col gap-1">
                 <button on:click={{toggle(this)}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Démarrage</span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Getting Started</span>
                     <svg id="cat-chevron-start" class='chevron w-3 h-3 {{ if openSignal.Get()["start"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                 </button>
                 <div id="cat-content-start" class='sidebar-content {{ if openSignal.Get()["start"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
                         <li><a href="/guide" class="{{ getLinkClass(data.URL, "/guide") }}">Introduction</a></li>
-                        <li><a href="/guide/summary" class="{{ getLinkClass(data.URL, "/guide/summary") }}">Synthèse du Langage</a></li>
+                        <li><a href="/guide/summary" class="{{ getLinkClass(data.URL, "/guide/summary") }}">Language Summary</a></li>
                         <li><a href="/guide/installation" class="{{ getLinkClass(data.URL, "/guide/installation") }}">Installation</a></li>
                         <li><a href="/guide/configuration" class="{{ getLinkClass(data.URL, "/guide/configuration") }}">Configuration</a></li>
                     </ul>
@@ -124,16 +124,16 @@
             <!-- Templates .stew -->
             <div class="flex flex-col gap-1">
                 <button on:click={{toggle(this)}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Templates .stew</span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Templates (.stew)</span>
                     <svg id="cat-chevron-stew" class='chevron w-3 h-3 {{ if openSignal.Get()["stew"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                 </button>
                 <div id="cat-content-stew" class='sidebar-content {{ if openSignal.Get()["stew"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
-                        <li><a href="/guide/syntax" class="{{ getLinkClass(data.URL, "/guide/syntax") }}">Syntaxe & Expressions</a></li>
-                        <li><a href="/guide/components" class="{{ getLinkClass(data.URL, "/guide/components") }}">Composants</a></li>
-                        <li><a href="/guide/routing" class="{{ getLinkClass(data.URL, "/guide/routing") }}">Routing fichier</a></li>
+                        <li><a href="/guide/syntax" class="{{ getLinkClass(data.URL, "/guide/syntax") }}">Syntax & Expressions</a></li>
+                        <li><a href="/guide/components" class="{{ getLinkClass(data.URL, "/guide/components") }}">Components</a></li>
+                        <li><a href="/guide/routing" class="{{ getLinkClass(data.URL, "/guide/routing") }}">File-Based Routing</a></li>
                         <li><a href="/guide/layouts" class="{{ getLinkClass(data.URL, "/guide/layouts") }}">Layouts & Nesting</a></li>
-                        <li><a href="/guide/reservedfiles" class="{{ getLinkClass(data.URL, "/guide/reservedfiles") }}">Fichiers réservés</a></li>
+                        <li><a href="/guide/reservedfiles" class="{{ getLinkClass(data.URL, "/guide/reservedfiles") }}">Reserved Files</a></li>
                         <li><a href="/guide/assets" class="{{ getLinkClass(data.URL, "/guide/assets") }}">Assets & Tailwind</a></li>
                     </ul>
                 </div>
@@ -142,7 +142,7 @@
             <!-- Logique Go -->
             <div class="flex flex-col gap-1">
                 <button on:click={{toggle(this)}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Logique Go</span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Go Logic</span>
                     <svg id="cat-chevron-go" class='chevron w-3 h-3 {{ if openSignal.Get()["go"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                 </button>
                 <div id="cat-content-go" class='sidebar-content {{ if openSignal.Get()["go"] }} is-open {{ end }}'>
@@ -150,7 +150,7 @@
                         <li><a href="/guide/goscriptserver" class="{{ getLinkClass(data.URL, "/guide/goscriptserver") }}">goscript server</a></li>
                         <li><a href="/guide/pagedata" class="{{ getLinkClass(data.URL, "/guide/pagedata") }}">PageData</a></li>
                         <li><a href="/guide/middleware" class="{{ getLinkClass(data.URL, "/guide/middleware") }}">Middleware</a></li>
-                        <li><a href="/guide/serverhandlers" class="{{ getLinkClass(data.URL, "/guide/serverhandlers") }}">Handlers Serveur</a></li>
+                        <li><a href="/guide/serverhandlers" class="{{ getLinkClass(data.URL, "/guide/serverhandlers") }}">Server Handlers</a></li>
                     </ul>
                 </div>
             </div>
@@ -158,14 +158,14 @@
             <!-- Wasm Isomorphique -->
             <div class="flex flex-col gap-1">
                 <button on:click={{toggle(this)}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Wasm Isomorphique</span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Isomorphic Wasm</span>
                     <svg id="cat-chevron-wasm" class='chevron w-3 h-3 {{ if openSignal.Get()["wasm"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                 </button>
                 <div id="cat-content-wasm" class='sidebar-content {{ if openSignal.Get()["wasm"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
                         <li><a href="/guide/goscriptclient" class="{{ getLinkClass(data.URL, "/guide/goscriptclient") }}">goscript client</a></li>
                         <li><a href="/guide/wasmbindings" class="{{ getLinkClass(data.URL, "/guide/wasmbindings") }}">Bindings (bind: / on:)</a></li>
-                        <li><a href="/guide/wasmsdk" class="{{ getLinkClass(data.URL, "/guide/wasmsdk") }}">SDK Wasm</a></li>
+                        <li><a href="/guide/wasmsdk" class="{{ getLinkClass(data.URL, "/guide/wasmsdk") }}">Wasm SDK</a></li>
                     </ul>
                 </div>
             </div>
@@ -173,12 +173,12 @@
             <!-- Packages stew/* -->
             <div class="flex flex-col gap-1">
                 <button on:click={{toggle(this)}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Packages stew/*</span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Packages (stew/*)</span>
                     <svg id="cat-chevron-package" class='chevron w-3 h-3 {{ if openSignal.Get()["package"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                 </button>
                 <div id="cat-content-package" class='sidebar-content {{ if openSignal.Get()["package"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
-                        <li><a href="/guide/packages" class="{{ getLinkClass(data.URL, "/guide/packages") }}">Vue d'ensemble</a></li>
+                        <li><a href="/guide/packages" class="{{ getLinkClass(data.URL, "/guide/packages") }}">Overview</a></li>
                         <li><a href="/guide/packages/data" class="{{ getLinkClass(data.URL, "/guide/packages/data") }}">stew/data</a></li>
                         <li><a href="/guide/packages/io" class="{{ getLinkClass(data.URL, "/guide/packages/io") }}">stew/io</a></li>
                         <li><a href="/guide/packages/nav" class="{{ getLinkClass(data.URL, "/guide/packages/nav") }}">stew/nav</a></li>
@@ -191,7 +191,7 @@
                         <li><a href="/guide/packages/js" class="{{ getLinkClass(data.URL, "/guide/packages/js") }}">stew/js</a></li>
                         <li><a href="/guide/packages/net" class="{{ getLinkClass(data.URL, "/guide/packages/net") }}">stew/net</a></li>
                         <li><hr class="border-stone-100 my-2" /></li>
-                        <li><a href="/guide/packages/reference" class="text-stone-400 hover:text-stone-900 transition-colors {{ getLinkClass(data.URL, "/guide/packages/reference") }}">📚 Récapitulatif API</a></li>
+                        <li><a href="/guide/packages/reference" class="text-stone-400 hover:text-stone-900 transition-colors {{ getLinkClass(data.URL, "/guide/packages/reference") }}">📚 API Reference</a></li>
                     </ul>
                 </div>
             </div>
@@ -204,7 +204,7 @@
                 </button>
                 <div id="cat-content-cli" class='sidebar-content {{ if openSignal.Get()["cli"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
-                        <li><a href="/guide/cli" class="{{ getLinkClass(data.URL, "/guide/cli") }}">Référence des commandes</a></li>
+                        <li><a href="/guide/cli" class="{{ getLinkClass(data.URL, "/guide/cli") }}">Command Reference</a></li>
                     </ul>
                 </div>
             </div>
@@ -212,12 +212,12 @@
             <!-- Écosystème -->
             <div class="flex flex-col gap-1">
                 <button on:click={{toggle(this)}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Écosystème</span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Ecosystem</span>
                     <svg id="cat-chevron-eco" class='chevron w-3 h-3 {{ if openSignal.Get()["eco"] }} rotated text-amber-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                 </button>
                 <div id="cat-content-eco" class='sidebar-content {{ if openSignal.Get()["eco"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
-                        <li><a href="/guide/ecosystem/creating" class="{{ getLinkClass(data.URL, "/guide/ecosystem/creating") }}">Créer une bibliothéque</a></li>
+                        <li><a href="/guide/ecosystem/creating" class="{{ getLinkClass(data.URL, "/guide/ecosystem/creating") }}">Creating a Library</a></li>
                     </ul>
                 </div>
             </div>
@@ -231,7 +231,7 @@
                 <div id="cat-content-arch" class='sidebar-content {{ if openSignal.Get()["arch"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
                         <li><a href="/guide/hotmorphing" class="{{ getLinkClass(data.URL, "/guide/hotmorphing") }}">Hot Morphing</a></li>
-                        <li><a href="/guide/internals" class="{{ getLinkClass(data.URL, "/guide/internals") }}">Fonctionnement interne</a></li>
+                        <li><a href="/guide/internals" class="{{ getLinkClass(data.URL, "/guide/internals") }}">Internals</a></li>
                     </ul>
                 </div>
             </div>
@@ -244,7 +244,7 @@
                 </button>
                 <div id="cat-content-prod" class='sidebar-content {{ if openSignal.Get()["prod"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
-                        <li><a href="/guide/deployment" class="{{ getLinkClass(data.URL, "/guide/deployment") }}">Déploiement & Docker</a></li>
+                        <li><a href="/guide/deployment" class="{{ getLinkClass(data.URL, "/guide/deployment") }}">Deployment & Docker</a></li>
                     </ul>
                 </div>
             </div>
@@ -252,12 +252,12 @@
             <!-- Aide -->
             <div class="flex flex-col gap-1">
                 <button on:click={{toggle(this)}} class="w-full flex items-center justify-between px-3 py-2 text-stone-400 hover:text-stone-900 hover:bg-stone-50 active:scale-[0.98] rounded-lg transition-all group text-left">
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Aide</span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em]">Help</span>
                     <svg id="cat-chevron-help" class='chevron w-3 h-3 {{ if openSignal.Get()["help"] }} rotated text-rose-500 {{ end }}' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                 </button>
                 <div id="cat-content-help" class='sidebar-content {{ if openSignal.Get()["help"] }} is-open {{ end }}'>
                     <ul class="sidebar-inner flex flex-col gap-0.5 pl-4 border-l-2 border-stone-100 ml-3">
-                        <li><a href="/guide/troubleshooting" class="{{ getLinkClass(data.URL, "/guide/troubleshooting") }}">Dépannage</a></li>
+                        <li><a href="/guide/troubleshooting" class="{{ getLinkClass(data.URL, "/guide/troubleshooting") }}">Troubleshooting</a></li>
                     </ul>
                 </div>
             </div>

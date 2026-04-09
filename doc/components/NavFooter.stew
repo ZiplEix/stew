@@ -14,6 +14,6 @@
         <div></div>
     {{ end }}
     {{ if props.NextLink != "" }}
-        <a href="{{ props.NextLink }}" class="text-amber-600 font-bold hover:underline">Suivant : {{ props.NextName }} →</a>
+        <a href="{{ props.NextLink }}" class="text-amber-600 font-bold hover:underline">Next: {{ props.NextName }} →</a>
     {{ end }}
 </footer>

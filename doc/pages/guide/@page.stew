@@ -5,44 +5,44 @@
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 00</div>
-        <h1 class="text-5xl font-black tracking-tighter mb-4">Introduction à Stew</h1>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Introduction to Stew</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Stew est un méta-framework Go opinioné, conçu pour construire des applications web full-stack servies depuis un seul binaire Go. Il intègre nativement le rendu serveur (SSR), les composants typés, le routing fichier, le morphing à chaud et une architecture Wasm isomorphique.
+            Stew is an opinionated Go meta-framework designed for building full-stack web applications served from a single Go binary. It natively integrates Server-Side Rendering (SSR), typed components, file-based routing, hot morphing, and a hybrid isomorphic WebAssembly architecture.
         </p>
     </header>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Philosophie</h2>
-        <p>Stew reposait initialement sur <code>templ</code> et les templates Go. La version 0.1 introduit le langage de templates <strong>natif Stew</strong> (<code>.stew</code>), un compilateur maison qui transforme ces fichiers en code Go idiomatique. Les principaux principes sont :</p>
+        <h2 class="text-2xl font-bold">Philosophy</h2>
+        <p>Stew was originally built on top of <code>templ</code> and Go templates. The 0.1 release introduces the <b>native Stew template language</b> (<code>.stew</code>), a custom compiler that transforms these files into idiomatic Go code. The core principles are:</p>
         <ul class="list-disc list-inside space-y-2 text-stone-700 text-sm">
-            <li><strong>One file, two contexts.</strong> Un fichier <code>.stew</code> peut contenir à la fois de la logique serveur (Go natif) et de la logique client (compilée en Wasm).</li>
-            <li><strong>Convention over configuration.</strong> La structure des dossiers définit le routing — aucune configuration manuelle n'est nécessaire.</li>
-            <li><strong>Go is the language.</strong> Pas de DSL obscur : la logique est du Go standard à l'intérieur des blocs <code>&lt;goscript&gt;</code>.</li>
-            <li><strong>Zéro build front-end.</strong> Pas de Node.js, pas de bundler. TinyGo seul pour le Wasm.</li>
+            <li><strong>One file, two contexts.</strong> A <code>.stew</code> file can contain both server-side logic (native Go) and client-side logic (compiled to Wasm).</li>
+            <li><strong>Convention over configuration.</strong> The directory structure defines the routing — no manual configuration required.</li>
+            <li><strong>Go is the language.</strong> No obscure DSL: the logic is standard Go inside <code>&lt;goscript&gt;</code> blocks.</li>
+            <li><strong>Zero front-end build.</strong> No Node.js, no bundler. TinyGo alone for WebAssembly.</li>
         </ul>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Stack technologique</h2>
+        <h2 class="text-2xl font-bold">Tech Stack</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
             <div class="p-4 rounded-xl border border-stone-200 text-sm">
-                <div class="font-bold mb-1">🖥️ Serveur</div>
-                <div class="text-stone-500">Go 1.22+ (natif)</div>
+                <div class="font-bold mb-1">🖥️ Server</div>
+                <div class="text-stone-500">Go 1.22+ (native)</div>
             </div>
             <div class="p-4 rounded-xl border border-stone-200 text-sm">
                 <div class="font-bold mb-1">🌐 Client</div>
                 <div class="text-stone-500">TinyGo → WebAssembly</div>
             </div>
             <div class="p-4 rounded-xl border border-stone-200 text-sm">
-                <div class="font-bold mb-1">🔗 Partiel</div>
+                <div class="font-bold mb-1">🔗 Partial Updates</div>
                 <div class="text-stone-500">HTMX + idiomorph</div>
             </div>
             <div class="p-4 rounded-xl border border-stone-200 text-sm">
-                <div class="font-bold mb-1">🔥 Dev</div>
-                <div class="text-stone-500">SSE + air (live reload)</div>
+                <div class="font-bold mb-1">🔥 Dev Mode</div>
+                <div class="text-stone-500">SSE + Air (live reload)</div>
             </div>
             <div class="p-4 rounded-xl border border-stone-200 text-sm">
-                <div class="font-bold mb-1">🎨 Styles</div>
+                <div class="font-bold mb-1">🎨 Styling</div>
                 <div class="text-stone-500">Tailwind CSS (CDN)</div>
             </div>
             <div class="p-4 rounded-xl border border-stone-200 text-sm">
@@ -53,25 +53,26 @@
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Structure minimale d'un projet</h2>
+        <h2 class="text-2xl font-bold">Minimal Project Structure</h2>
         <Code>my-app/
 ├── pages/
-│   ├── @layout.stew       ← Layout racine (HTML shell)
+│   ├── @layout.stew       ← Root layout (HTML shell)
 │   ├── @page.stew         ← Route /
 │   └── users/
-│       ├── @layout.stew   ← Layout imbriqué (optionnel)
+│       ├── @layout.stew   ← Nested layout (optional)
 │       ├── @page.stew     ← Route /users
 │       └── __id__/
-│           └── @page.stew ← Route /users/{id} (paramètres URL)
+│           └── @page.stew ← Route /users/{id} (URL parameters)
 ├── component/
-│   └── Card.stew          ← Composant réutilisable
+│   └── Card.stew          ← Reusable component
 ├── static/
-│   └── wasm/              ← Binaires Wasm générés automatiquement
+│   └── wasm/              ← Automatically generated Wasm binaries
 ├── .stew/                 ← Cache tracker (gitignore)
-├── .stew.yaml             ← Configuration Stew
-├── main.go                ← Point d'entrée du serveur
-└── stew_router_gen.go     ← Router généré automatiquement</Code>
+├── .stew.yaml             ← Stew configuration
+├── main.go                ← Server entry point
+└── stew_router_gen.go     ← Automatically generated router</Code>
     </section>
 
     <NavFooter PrevLink="/" PrevName="Home" NextLink="/guide/installation" NextName="Installation" />
 </div>
+

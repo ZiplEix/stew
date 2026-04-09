@@ -8,54 +8,55 @@
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 01</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4">Installation</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Prépare ton environnement pour cuisiner des applications Go haute-performance.
+            Prepare your environment for cooking high-performance Go applications.
         </p>
     </header>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Prérequis</h2>
+        <h2 class="text-2xl font-bold">Prerequisites</h2>
         <ul class="list-disc list-inside space-y-2 text-stone-700 text-sm">
-            <li><strong>Go 1.22+</strong> — Pour le support du <code>net/http.ServeMux</code> avec verbes HTTP.</li>
-            <li><strong>TinyGo 0.31+</strong> — <em>(Optionnel)</em> Pour compiler les blocs <code>&lt;goscript client&gt;</code> en WebAssembly. Sans TinyGo, le serveur fonctionne parfaitement mais sans Wasm côté client.</li>
-            <li><code>$GOPATH/bin</code> doit être dans votre <code>$PATH</code>.</li>
+            <li><strong>Go 1.22+</strong> — For <code>net/http.ServeMux</code> support with HTTP verbs.</li>
+            <li><strong>TinyGo 0.31+</strong> — <em>(Optional)</em> To compile <code>&lt;goscript client&gt;</code> blocks into WebAssembly. Without TinyGo, the server works perfectly but without client-side Wasm.</li>
+            <li><code>$GOPATH/bin</code> must be in your <code>$PATH</code>.</li>
         </ul>
         <Alert Type="info">
-            <strong class="text-blue-900">Note TinyGo :</strong> <span class="text-blue-800">TinyGo supporte Go 1.19 à 1.25. Si votre version de Go est supérieure, Stew émit un avertissement non-bloquant et continue la compilation serveur.</span>
+            <strong class="text-blue-900">TinyGo Note:</strong> <span class="text-blue-800">TinyGo supports Go 1.19 to 1.25. If your Go version is higher, Stew will emit a non-blocking warning and continue server compilation.</span>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">1. Installer le CLI Stew</h2>
+        <h2 class="text-2xl font-bold">1. Install the Stew CLI</h2>
         <Code>go install github.com/ZiplEix/stew@latest</Code>
-        <p class="text-sm text-stone-500">Vérifier l'installation :</p>
+        <p class="text-sm text-stone-500">Verify installation:</p>
         <Code>stew version</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">2. Initialiser un nouveau projet</h2>
+        <h2 class="text-2xl font-bold">2. Initialize a new project</h2>
         <Code>mkdir my-app && cd my-app
 stew init github.com/username/my-app</Code>
         <Alert Type="warning">
-            <strong class="text-amber-900">Que fait <code>stew init</code> ?</strong>
+            <strong class="text-amber-900">What does <code>stew init</code> do?</strong>
             <ul class="list-disc list-inside space-y-1 mt-2 text-amber-800">
-                <li>Exécute <code>go mod init</code> avec le module fourni</li>
-                <li>Crée <code>.stew.yaml</code>, <code>main.go</code>, <code>.gitignore</code></li>
-                <li>Crée <code>pages/@layout.stew</code> et <code>pages/@page.stew</code> (starter kit complet avec compteur HTMX + Wasm)</li>
-                <li>Copie <code>wasm_exec.js</code> depuis l'installation TinyGo locale vers <code>static/wasm/</code></li>
-                <li>Exécute <code>stew install</code> (installe <code>air</code>)</li>
-                <li>Exécute <code>stew compile</code> puis <code>stew generate</code></li>
-                <li>Exécute <code>go mod tidy</code></li>
+                <li>Executes <code>go mod init</code> with the provided module name</li>
+                <li>Creates <code>.stew.yaml</code>, <code>main.go</code>, and <code>.gitignore</code></li>
+                <li>Creates <code>pages/@layout.stew</code> and <code>pages/@page.stew</code> (complete starter kit with HTMX + Wasm counter)</li>
+                <li>Copies <code>wasm_exec.js</code> from your local TinyGo installation to <code>static/wasm/</code></li>
+                <li>Executes <code>stew install</code> (installs <code>air</code>)</li>
+                <li>Executes <code>stew compile</code> then <code>stew generate</code></li>
+                <li>Executes <code>go mod tidy</code></li>
             </ul>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">3. Démarrer le serveur de développement</h2>
+        <h2 class="text-2xl font-bold">3. Start the development server</h2>
         <Code>stew run dev</Code>
-        <p class="text-sm text-stone-500">
-            Lance en parallèle : <code>stew compile --watch</code>, <code>stew generate --watch</code> et <code>air</code>. Le serveur est accessible sur <strong>http://localhost:8080</strong> avec Hot Morphing activé.
+        <p class="text-sm text-stone-600 leading-relaxed">
+            Launches in parallel: <code>stew compile --watch</code>, <code>stew generate --watch</code>, and <code>air</code>. The server is accessible at <strong>http://localhost:8080</strong> with Hot Morphing enabled.
         </p>
     </section>
 
-    <NavFooter PrevLink="/guide" PrevName="Introduction" NextLink="/guide/summary" NextName="Synthèse du Langage" />
+    <NavFooter PrevLink="/guide" PrevName="Introduction" NextLink="/guide/summary" NextName="Language Summary" />
 </div>
+
