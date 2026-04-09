@@ -8,28 +8,28 @@
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 06</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4">Layouts & Nesting</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Les layouts permettent de définir des structures HTML partagées (navbar, sidebar, footer) qui encapsulent les pages enfants. Ils se chainent automatiquement selon la hiérarchie des dossiers.
+            Layouts allow you to define shared HTML structures (navbar, sidebar, footer) that wrap child pages. They are automatically chained based on the directory hierarchy.
         </p>
     </header>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Créer un layout</h2>
-        <p class="text-sm text-stone-600">Le fichier <code>pages/@layout.stew</code> :</p>
+        <h2 class="text-2xl font-bold">Creating a layout</h2>
+        <p class="text-sm text-stone-600">The <code>pages/@layout.stew</code> file:</p>
         <Code>&lt;goscript&gt;
     import "os"
     import "github.com/ZiplEix/stew/sdk/live"
 &lt;/goscript&gt;
 
 &lt;!DOCTYPE html&gt;
-&lt;html lang="fr"&gt;
+&lt;html lang="en"&gt;
     &lt;head&gt;
         &lt;meta charset="UTF-8"/&gt;
-        &lt;title&gt;Mon App&lt;/title&gt;
+        &lt;title&gt;My App&lt;/title&gt;
     &lt;/head&gt;
     &lt;body&gt;
         &lt;nav&gt;...Navbar...&lt;/nav&gt;
 
-        &lt;slot /&gt;    ← Ici s'ins&egrave;re le contenu de la page
+        &lt;slot /&gt;    &lt;!-- The page content is inserted here --&gt;
 
         &#123;&#123; if os.Getenv("STEW_DEV") == "true" &#125;&#125;
             &#123;&#123; raw(live.InjectScript()) &#125;&#125;
@@ -37,19 +37,19 @@
     &lt;/body&gt;
 &lt;/html&gt;</Code>
         <Alert Type="warning">
-            <strong class="text-amber-900"><code>&lt;slot /&gt;</code></strong> : <span class="text-amber-800">La balise <code>&lt;slot /&gt;</code> est le point d'injection du contenu enfant. Sans elle, la page ne s'afficherait pas dans le layout.</span>
+            <strong class="text-amber-900"><code>&lt;slot /&gt;</code></strong>: <span class="text-amber-800">The <code>&lt;slot /&gt;</code> tag is the injection point for child content. Without it, the page would not be displayed within the layout.</span>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Layouts imbriqués</h2>
-        <p class="text-sm text-stone-600">Chaque sous-dossier peut avoir son propre <code>@layout.stew</code>. Les layouts se chainent de la racine vers la feuille :</p>
-        <Code>Rendu de GET /guide/installation :
+        <h2 class="text-2xl font-bold">Nested Layouts</h2>
+        <p class="text-sm text-stone-600">Each subfolder can have its own <code>@layout.stew</code>. Layouts chain from the root to the leaf:</p>
+        <Code>Rendering of GET /guide/installation:
 
 pages/@layout.stew       → HTML shell (DOCTYPE, head, body)
-  └── pages/guide/@layout.stew → Sidebar de navigation
-        └── pages/guide/installation/@page.stew → Contenu</Code>
-        <p class="text-sm text-stone-500">Le routeur généré crée automatiquement la chaîne de closures :</p>
+  └── pages/guide/@layout.stew → Navigation sidebar
+        └── pages/guide/installation/@page.stew → Content</Code>
+        <p class="text-sm text-stone-500">The generated router automatically creates the closure chain:</p>
         <Code>pages.Layout(w, data, func() {
     stew_pages_guide.Layout(w, data, func() {
         stew_pages_guide_installation.Page(w, data)
@@ -58,25 +58,25 @@ pages/@layout.stew       → HTML shell (DOCTYPE, head, body)
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Signature Go d'un layout</h2>
-        <p class="text-sm text-stone-600">Le compilateur génère pour <code>@layout.stew</code> :</p>
+        <h2 class="text-2xl font-bold">Go Signature of a Layout</h2>
+        <p class="text-sm text-stone-600">The compiler generates for <code>@layout.stew</code>:</p>
         <Code>func Layout(w io.Writer, data stew.PageData, slot func()) {
-    <span class="text-stone-400">// Rendu HTML avant le slot</span>
+    <span class="text-stone-400">// HTML rendering before the slot</span>
     w.Write([]byte(`...`))
 
-    <span class="text-stone-400">// Injection du slot</span>
+    <span class="text-stone-400">// Slot injection</span>
     if slot != nil {
         slot()
     }
 
-    <span class="text-stone-400">// Rendu HTML après le slot</span>
+    <span class="text-stone-400">// HTML rendering after the slot</span>
     w.Write([]byte(`...`))
 }</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">PageData dans les layouts</h2>
-        <p class="text-sm text-stone-600">Le layout reçoit le même objet <code>data stew.PageData</code> que la page. Il peut donc accéder à l'URL courante pour surligner le lien actif dans une navigation :</p>
+        <h2 class="text-2xl font-bold">PageData in Layouts</h2>
+        <p class="text-sm text-stone-600">The layout receives the same <code>data stew.PageData</code> object as the page. It can therefore access the current URL to highlight the active link in a navigation:</p>
         <Code>&lt;goscript&gt;
     getLinkClass := func(target string) string {
         if data.URL == target {
@@ -87,10 +87,10 @@ pages/@layout.stew       → HTML shell (DOCTYPE, head, body)
 &lt;/goscript&gt;
 
 &lt;nav&gt;
-    &lt;a href="/" class="&#123;&#123; getLinkClass("/") &#125;&#125;"&gt;Accueil&lt;/a&gt;
+    &lt;a href="/" class="&#123;&#123; getLinkClass("/") &#125;&#125;"&gt;Home&lt;/a&gt;
     &lt;a href="/blog" class="&#123;&#123; getLinkClass("/blog") &#125;&#125;"&gt;Blog&lt;/a&gt;
 &lt;/nav&gt;</Code>
     </section>
 
-    <NavFooter PrevLink="/guide/routing" PrevName="Routing" NextLink="/guide/reservedfiles" NextName="Fichiers réservés" />
+    <NavFooter PrevLink="/guide/routing" PrevName="Routing" NextLink="/guide/reservedfiles" NextName="Reserved Files" />
 </div>

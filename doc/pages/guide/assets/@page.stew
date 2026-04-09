@@ -8,13 +8,13 @@
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 08 — Assets</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4">Assets & Tailwind CSS</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Gérer les fichiers statiques et le CSS moderne dans un environnement Go. Stew s'efface pour laisser votre binaire portable.
+            Manage static files and modern CSS in a Go environment. Stew stays out of the way to keep your binary portable.
         </p>
     </header>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold font-mono text-stone-900 italic">Dossier /static</h2>
-        <p class="text-sm text-stone-600">Le dossier <code>static/</code> à la racine de votre projet est le point central pour tous vos assets (images, fonts, scripts). Le compilateur Stew y place aussi les binaires Wasm générés et le script <code>wasm_exec.js</code>.</p>
+        <h2 class="text-2xl font-bold font-mono text-stone-900 italic">The /static Folder</h2>
+        <p class="text-sm text-stone-600">The <code>static/</code> folder at the root of your project is the central hub for all your assets (images, fonts, scripts). The Stew compiler also places generated Wasm binaries and the <code>wasm_exec.js</code> script here.</p>
         <Code>project/
 ├── static/
 │   ├── images/
@@ -26,14 +26,14 @@
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold font-mono text-stone-900 border-b-2 border-stone-200 pb-2">Intégration Tailwind CSS</h2>
-        <p class="text-sm text-stone-600">Puisque Stew utilise des fichiers <code>.stew</code>, vous devez indiquer à Tailwind de scanner ces fichiers pour extraire les classes utilitaires.</p>
+        <h2 class="text-2xl font-bold font-mono text-stone-900 border-b-2 border-stone-200 pb-2">Tailwind CSS Integration</h2>
+        <p class="text-sm text-stone-600">Since Stew uses <code>.stew</code> files, you must tell Tailwind to scan these files to extract utility classes.</p>
         <Code><span class="text-stone-400">// tailwind.config.js</span>
 module.exports = {
   content: [
-    "./pages/**/*.stew",     <span class="text-stone-400">// Scanner les pages et layouts</span>
-    "./components/**/*.stew", <span class="text-stone-400">// Scanner les composants</span>
-    "./sdk/**/*.stew",       <span class="text-stone-400">// Scanner les composants SDK (optionnel)</span>
+    "./pages/**/*.stew",     <span class="text-stone-400">// Scan pages and layouts</span>
+    "./components/**/*.stew", <span class="text-stone-400">// Scan components</span>
+    "./sdk/**/*.stew",       <span class="text-stone-400">// Scan SDK components (optional)</span>
   ],
   theme: {
     extend: {},
@@ -41,17 +41,18 @@ module.exports = {
   plugins: [],
 }</Code>
         <Alert Type="info">
-            <strong>Pro Tip :</strong> Ajoutez la commande de build Tailwind (<code>tailwind -i ./src/input.css -o ./static/style.css --watch</code>) dans la section <code>commands: dev: scripts:</code> de votre <code>.stew.yaml</code> pour automatiser la compilation CSS.
+            <strong>Pro Tip:</strong> Add the Tailwind build command (<code>tailwind -i ./src/input.css -o ./static/style.css --watch</code>) to the <code>commands: dev: scripts:</code> section of your <code>.stew.yaml</code> to automate CSS compilation.
         </Alert>
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Performance & Cache</h2>
-        <p class="text-sm text-stone-600">En production, nous recommandons d'ajouter un middleware pour définir les headers <code>Cache-Control</code> de vos routes <code>/static/</code> afin d'assurer une livraison ultra-rapide des assets.</p>
+        <p class="text-sm text-stone-600">In production, we recommend adding middleware to set <code>Cache-Control</code> headers for your <code>/static/</code> routes to ensure ultra-fast asset delivery.</p>
         <Alert Type="warning">
-            <strong class="text-amber-900">🚀 Optimisation :</strong> <span class="text-amber-800">Si vous utilisez un CDN comme Cloudflare, les fichiers de <code>static/wasm/</code> seront mis en cache, réduisant drastiquement le temps de chargement pour vos utilisateurs.</span>
+            <strong class="text-amber-900">🚀 Optimization:</strong> <span class="text-amber-800">If you use a CDN like Cloudflare, the files in <code>static/wasm/</code> will be cached, drastically reducing loading times for your users.</span>
         </Alert>
     </section>
 
-    <NavFooter PrevLink="/guide/reservedfiles" PrevName="Fichiers réservés" NextLink="/guide/goscriptserver" NextName="goscript server" />
+    <NavFooter PrevLink="/guide/reservedfiles" PrevName="Reserved Files" NextLink="/guide/goscriptserver" NextName="goscript server" />
 </div>
+

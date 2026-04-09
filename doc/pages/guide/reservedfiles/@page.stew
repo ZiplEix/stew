@@ -6,81 +6,81 @@
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 07</div>
-        <h1 class="text-5xl font-black tracking-tighter mb-4">Fichiers Réservés</h1>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Reserved Files</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Stew utilise des conventions de nommage strictes. Certains fichiers et dossiers ont une signification particulière dans le framework.
+            Stew uses strict naming conventions. Certain files and directories have particular meanings within the framework.
         </p>
     </header>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Fichiers <code>.stew</code></h2>
+        <h2 class="text-2xl font-bold"><code>.stew</code> Files</h2>
         <div class="overflow-x-auto">
             <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
                 <thead class="bg-stone-50">
                     <tr>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Fichier</th>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Rôle</th>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Génère</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">File</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Role</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Generates</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-amber-700">@page.stew</td><td class="p-3">Page principale d'une route. Défini une fonction <code>Page(w, data)</code></td><td class="p-3 font-mono text-xs">stew.page.go</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-amber-700">@layout.stew</td><td class="p-3">Layout enveloppant les pages d'un dossier. Défini une fonction <code>Layout(w, data, slot)</code></td><td class="p-3 font-mono text-xs">stew.layout.go</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-stone-700">Xxx.stew</td><td class="p-3">Composant (nom commence par majuscule). Défini <code>Xxx(w, data, props, slot)</code></td><td class="p-3 font-mono text-xs">Xxx.go</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-amber-700">@page.stew</td><td class="p-3">Main page of a route. Defines a <code>Page(w, data)</code> function.</td><td class="p-3 font-mono text-xs">stew.page.go</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-amber-700">@layout.stew</td><td class="p-3">Layout wrapping the pages of a folder. Defines a <code>Layout(w, data, slot)</code> function.</td><td class="p-3 font-mono text-xs">stew.layout.go</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono font-bold text-stone-700">Xxx.stew</td><td class="p-3">Component (name starts with an uppercase letter). Defines <code>Xxx(w, data, props, slot)</code>.</td><td class="p-3 font-mono text-xs">Xxx.go</td></tr>
                 </tbody>
             </table>
         </div>
         <Alert Type="error">
-            <strong class="text-rose-900">Règle critique :</strong> <span class="text-rose-800"><code>@</code> préfixe les fichiers réservés Stew (<code>@page</code>, <code>@layout</code>). Les fichiers de composants commencent par une <strong>majuscule</strong>. Tous les autres noms de fichiers <code>.stew</code> en minuscule seraient ignorés.</span>
+            <strong class="text-rose-900">Critical Rule:</strong> <span class="text-rose-800">The <code>@</code> prefix denotes reserved Stew files (<code>@page</code>, <code>@layout</code>). Component files must start with an <strong>uppercase letter</strong>. All other lowercase <code>.stew</code> filenames will be ignored.</span>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Fichiers Go réservés</h2>
+        <h2 class="text-2xl font-bold">Reserved Go Files</h2>
         <div class="overflow-x-auto">
             <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
                 <thead class="bg-stone-50">
                     <tr>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Fichier</th>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Rôle</th>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Produit par</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">File</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Role</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Produced by</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">stew_router_gen.go</td><td class="p-3">Routeur HTTP généré automatiquement à la racine du projet</td><td class="p-3 font-mono text-xs">stew generate</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">stew.page.go</td><td class="p-3">Sortie compilée d'un <code>@page.stew</code></td><td class="p-3 font-mono text-xs">stew compile</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">stew.layout.go</td><td class="p-3">Sortie compilée d'un <code>@layout.stew</code></td><td class="p-3 font-mono text-xs">stew compile</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">stew.middleware.go</td><td class="p-3">Middleware de route (optionnel, écrit manuellement)</td><td class="p-3 font-mono text-xs">Manuel</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">server.go</td><td class="p-3">Handlers Go custom (POST, DELETE, etc.) pour une route</td><td class="p-3 font-mono text-xs">Manuel</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">stew_router_gen.go</td><td class="p-3">Automatically generated HTTP router at the project root.</td><td class="p-3 font-mono text-xs">stew generate</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">stew.page.go</td><td class="p-3">Compiled output of a <code>@page.stew</code> file.</td><td class="p-3 font-mono text-xs">stew compile</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">stew.layout.go</td><td class="p-3">Compiled output of a <code>@layout.stew</code> file.</td><td class="p-3 font-mono text-xs">stew compile</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">stew.middleware.go</td><td class="p-3">Route middleware (optional, manually written).</td><td class="p-3 font-mono text-xs">Manual</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">server.go</td><td class="p-3">Custom Go handlers (POST, DELETE, etc.) for a route.</td><td class="p-3 font-mono text-xs">Manual</td></tr>
                 </tbody>
             </table>
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Dossiers réservés</h2>
+        <h2 class="text-2xl font-bold">Reserved Directories</h2>
         <div class="overflow-x-auto">
             <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
                 <thead class="bg-stone-50">
                     <tr>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Dossier</th>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Rôle</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Directory</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Role</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">pages/</td><td class="p-3">Racine du routing. Obligatoire.</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">static/</td><td class="p-3">Assets statiques servis sous <code>/static/</code>. Créé automatiquement.</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">static/wasm/</td><td class="p-3">Binaires <code>.wasm</code> générés par <code>stew compile</code> + <code>wasm_exec.js</code></td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">.stew/</td><td class="p-3">Cache interne du tracker de fichiers. Gitignored. Purgé par <code>stew clean</code>.</td></tr>
-                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">__nom__/</td><td class="p-3">Dossier entre double underscores = paramètre d'URL dynamique.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">pages/</td><td class="p-3">Routing root. Mandatory.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">static/</td><td class="p-3">Static assets served under <code>/static/</code>. Automatically created.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">static/wasm/</td><td class="p-3">Generated <code>.wasm</code> binaries by <code>stew compile</code> + <code>wasm_exec.js</code>.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">.stew/</td><td class="p-3">Internal file tracker cache. Gitignored. Purged by <code>stew clean</code>.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="p-3 font-mono">__name__/</td><td class="p-3">Folder between double underscores = dynamic URL parameter.</td></tr>
                 </tbody>
             </table>
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Fichier middleware <code>stew.middleware.go</code></h2>
-        <p class="text-sm text-stone-600">Pour ajouter un middleware à une route, créer un fichier <code>stew.middleware.go</code> dans le dossier de la route avec une fonction <code>Middleware</code> :</p>
+        <h2 class="text-2xl font-bold">Middleware File <code>stew.middleware.go</code></h2>
+        <p class="text-sm text-stone-600">To add a middleware to a route, create a <code>stew.middleware.go</code> file in the route's folder with a <code>Middleware</code> function:</p>
         <Code>// pages/admin/stew.middleware.go
 package admin
 
@@ -95,8 +95,9 @@ func Middleware(next http.Handler) http.Handler {
         next.ServeHTTP(w, r)
     })
 }</Code>
-        <p class="text-sm text-stone-500">Le routeur détecte automatiquement ce fichier et enchaîne le middleware dans <code>stew_router_gen.go</code>.</p>
+        <p class="text-sm text-stone-500">The router automatically detects this file and chains the middleware in <code>stew_router_gen.go</code>.</p>
     </section>
 
     <NavFooter PrevLink="/guide/layouts" PrevName="Layouts" NextLink="/guide/assets" NextName="Assets & Tailwind" />
 </div>
+

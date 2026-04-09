@@ -6,53 +6,53 @@
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 03 — Templates</div>
-        <h1 class="text-5xl font-black tracking-tighter mb-4">Syntaxe & Expressions</h1>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Syntax & Expressions</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Les fichiers <code>.stew</code> sont des templates HTML augmentés de logique Go. Ils sont compilés par le compilateur Stew-Lang vers du Go idiomatique avant d'être compilés par Go.
+            <code>.stew</code> files are HTML templates augmented with Go logic. They are compiled by the Stew-Lang compiler into idiomatic Go code before being compiled by Go.
         </p>
     </header>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Expressions <code>&#123;&#123; &#125;&#125;</code></h2>
-        <p class="text-sm text-stone-600">Les doubles accolades évaluent une expression Go et l'affichent dans le HTML. La valeur est automatiquement échappée (HTML-safe).</p>
-        <Code>&lt;!-- Valeur simple --&gt;
+        <p class="text-sm text-stone-600">Double curly braces evaluate a Go expression and display it in the HTML. The value is automatically escaped (HTML-safe).</p>
+        <Code>&lt;!-- Simple value --&gt;
 &lt;p&gt;&#123;&#123; data.Params["id"] &#125;&#125;&lt;/p&gt;
 
-&lt;!-- Expression Go inline --&gt;
+&lt;!-- Inline Go expression --&gt;
 &lt;p&gt;&#123;&#123; strings.ToUpper(data.URL) &#125;&#125;&lt;/p&gt;
 
-&lt;!-- Variable déclarée dans goscript --&gt;
+&lt;!-- Variable declared in goscript --&gt;
 &lt;h1&gt;&#123;&#123; title &#125;&#125;&lt;/h1&gt;</Code>
         <Alert Type="warning">
-            <strong class="text-amber-900">HTML brut non-échappé :</strong> <span class="text-amber-800">Utiliser <code>&#123;&#123; raw(expr) &#125;&#125;</code> pour injecter du HTML brut (dangereux — usage réservé au SDK).</span>
+            <strong class="text-amber-900">Raw unescaped HTML:</strong> <span class="text-amber-800">Use <code>&#123;&#123; raw(expr) &#125;&#125;</code> to inject raw HTML (dangerous — reserved for SDK usage).</span>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Conditionnelle <code>&#123;&#123; if &#125;&#125;</code></h2>
+        <h2 class="text-2xl font-bold">Conditional <code>&#123;&#123; if &#125;&#125;</code></h2>
         <Code>&#123;&#123; if data.Store["user"] != nil &#125;&#125;
-    &lt;p&gt;Connecté en tant que &#123;&#123; data.Store["user"] &#125;&#125;&lt;/p&gt;
+    &lt;p&gt;Logged in as &#123;&#123; data.Store["user"] &#125;&#125;&lt;/p&gt;
 &#123;&#123; else &#125;&#125;
-    &lt;p&gt;&lt;a href="/login"&gt;Se connecter&lt;/a&gt;&lt;/p&gt;
+    &lt;p&gt;&lt;a href="/login"&gt;Sign in&lt;/a&gt;&lt;/p&gt;
 &#123;&#123; end &#125;&#125;</Code>
-        <p class="text-sm text-stone-500">L'expression après <code>if</code> est du Go pur. <code>&#123;&#123; else &#125;&#125;</code> est optionnel. Terminer avec <code>&#123;&#123; end &#125;&#125;</code>.</p>
+        <p class="text-sm text-stone-500">The expression after <code>if</code> is pure Go. <code>&#123;&#123; else &#125;&#125;</code> is optional. Close with <code>&#123;&#123; end &#125;&#125;</code>.</p>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Boucle <code>&#123;&#123; each &#125;&#125;</code></h2>
-        <Code>&lt;!-- Syntaxe : each &lt;slice&gt; as &lt;item&gt;, &lt;index&gt; --&gt;
+        <h2 class="text-2xl font-bold">Loop <code>&#123;&#123; each &#125;&#125;</code></h2>
+        <Code>&lt;!-- Syntax: each &lt;slice&gt; as &lt;item&gt;, &lt;index&gt; --&gt;
 &#123;&#123; each data.Users as user, i &#125;&#125;
     &lt;div&gt;
         &lt;span&gt;&#123;&#123; i &#125;&#125;.&lt;/span&gt;
         &lt;strong&gt;&#123;&#123; user.Name &#125;&#125;&lt;/strong&gt;
     &lt;/div&gt;
 &#123;&#123; end &#125;&#125;</Code>
-        <p class="text-sm text-stone-500">Génère un <code>for i, user := range data.Users</code> en Go. L'index est optionnel.</p>
+        <p class="text-sm text-stone-500">Generates a <code>for i, user := range data.Users</code> in Go. The index is optional.</p>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Blocs <code>&lt;goscript&gt;</code></h2>
-        <p class="text-sm text-stone-600">Les blocs <code>&lt;goscript&gt;</code> (sans attribut ou avec <code>server</code>) contiennent de la logique Go exécutée côté <strong>serveur</strong> lors du rendu de la page. Ils sont exclu du HTML final.</p>
+        <h2 class="text-2xl font-bold"><code>&lt;goscript&gt;</code> Blocks</h2>
+        <p class="text-sm text-stone-600">The <code>&lt;goscript&gt;</code> blocks (with no attribute or <code>server</code>) contain Go logic executed on the **server** during page rendering. They are excluded from the final HTML.</p>
         <Code>&lt;goscript&gt;
     import "strconv"
     import "fmt"
@@ -68,22 +68,23 @@
 &lt;p&gt;Count: &#123;&#123; count &#125;&#125;&lt;/p&gt;</Code>
         <div class="bg-stone-50 border border-stone-200 rounded-xl p-4 text-sm space-y-3">
             <div>
-                <p><strong>Imports automatiques</strong> : Le compilateur analyse votre code Go. S'il détecte l'utilisation de <code>fmt.</code> ou <code>html.</code>, il ajoute automatiquement les imports correspondants. Pour tout autre package (ex: <code>strings</code>, <code>os</code>), vous devez l'importer manuellement dans un bloc <code>&lt;goscript&gt;</code>.</p>
+                <p><strong>Automatic imports</strong>: The compiler analyzes your Go code. If it detects usage of <code>fmt.</code> or <code>html.</code>, it automatically adds the corresponding imports. For any other package (e.g., <code>strings</code>, <code>os</code>), you must manually import it within a <code>&lt;goscript&gt;</code> block.</p>
             </div>
             <div>
-                <p><strong>Variables</strong> : Déclarées avec <code>:=</code> dans un bloc serveur, elles sont injectées comme variables locales dans la fonction de rendu et sont accessibles dans tout le template.</p>
+                <p><strong>Variables</strong>: Declared with <code>:=</code> in a server block, they are injected as local variables in the rendering function and are accessible throughout the template.</p>
             </div>
             <div>
-                <p><strong>Types struct</strong> : Les déclarations <code>type Foo struct { ... }</code> sont extraites et placées au niveau du package Go généré, les rendant accessibles globalement dans le fichier.</p>
+                <p><strong>Struct types</strong>: Declarations like <code>type Foo struct { ... }</code> are extracted and placed at the top level of the generated Go package, making them accessible globally within the file.</p>
             </div>
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Commentaires HTML</h2>
-        <Code>&lt;!-- Ce commentaire est préservé tel quel dans le HTML --&gt;</Code>
-        <p class="text-sm text-stone-500">Les commentaires HTML standard sont passés tels quels dans la sortie générée.</p>
+        <h2 class="text-2xl font-bold">HTML Comments</h2>
+        <Code>&lt;!-- This comment is preserved as-is in the HTML output --&gt;</Code>
+        <p class="text-sm text-stone-500">Standard HTML comments are passed through to the generated output.</p>
     </section>
 
-    <NavFooter PrevLink="/guide/configuration" PrevName="Configuration" NextLink="/guide/components" NextName="Composants" />
+    <NavFooter PrevLink="/guide/configuration" PrevName="Configuration" NextLink="/guide/components" NextName="Components" />
 </div>
+
