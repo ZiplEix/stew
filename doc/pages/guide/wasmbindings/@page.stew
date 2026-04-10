@@ -5,34 +5,34 @@
 </goscript>
 <div class="space-y-12">
     <header>
-        <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 12 — Wasm Isomorphique</div>
-        <h1 class="text-5xl font-black tracking-tighter mb-4">Bindings DOM</h1>
+        <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 12 — Isomorphic Wasm</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">DOM Bindings</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Les directives <code>bind:</code> et <code>on:</code> permettent de lier des variables Go et des événements du navigateur directement dans le HTML, sans code JavaScript.
+            The <code>bind:</code> and <code>on:</code> directives allow you to link Go variables and browser events directly in the HTML, without writing any JavaScript code.
         </p>
     </header>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Directive <code>bind:content</code></h2>
-        <p class="text-sm text-stone-600">Liaison unidirectionnelle <strong>Go → DOM</strong>. Met à jour l'<code>innerHTML</code> d'un élément quand le Signal mutera :</p>
+        <h2 class="text-2xl font-bold">The <code>bind:content</code> Directive</h2>
+        <p class="text-sm text-stone-600">One-way <strong>Go → DOM</strong> binding. Updates the <code>innerHTML</code> of an element whenever the Signal mutates:</p>
         <Code>&lt;goscript client&gt;
     import "stew/state"
-    message := state.New("Bonjour !")
+    message := state.New("Hello!")
 &lt;/goscript&gt;
 
-&lt;h1 bind&#58;content=&#123;&#123; message.Get() &#125;&#125;&gt;Chargement...&lt;/h1&gt;</Code>
-        <p class="text-sm text-stone-500">Le compilateur injecte un <code>id</code> unique sur l'élément et le contenu initial du HTML est remplacé et réagi automatiquement aux changements de la variable grâce à l'Auto-Tracking (Signaux).</p>
+&lt;h1 bind&#58;content=&#123;&#123; message.Get() &#125;&#125;&gt;Loading...&lt;/h1&gt;</Code>
+        <p class="text-sm text-stone-500">The compiler injects a unique <code>id</code> on the element, and the initial HTML content is automatically replaced and reacts to variable changes through Auto-Tracking (Signals).</p>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Directive <code>bind:value</code></h2>
-        <p class="text-sm text-stone-600">Liaison bidirectionnelle sur les <code>&lt;input&gt;</code> : <strong>Go → DOM</strong> et <strong>DOM → Go</strong> en temps réel :</p>
+        <h2 class="text-2xl font-bold">The <code>bind:value</code> Directive</h2>
+        <p class="text-sm text-stone-600">Two-way binding on <code>&lt;input&gt;</code> elements: <strong>Go → DOM</strong> and <strong>DOM → Go</strong> in real-time:</p>
         <Code>&lt;goscript client&gt;
     import "stew/state"
-    name := "World" // Si unbindé par un signal
+    name := "World" // If unbound by a signal
     message := state.New("")
 
-    // Mettre à jour au clic ou autre événement
+    // Update on click or other event
     updateMessage := func(val string) {
         message.Set("Hello " + val + " !")
     }
@@ -40,67 +40,67 @@
 
 &lt;input type="text" on&#58;input=&#123;&#123; updateMessage(this.Get("value").String()) &#125;&#125; /&gt;
 &lt;p bind&#58;content=&#123;&#123; message.Get() &#125;&#125;&gt;&lt;/p&gt;</Code>
-        <p class="text-sm text-stone-500">Avec le système de Signaux, vous écoutez l'événement `input` et mettez à jour votre Signal interne, déclenchant automatiquement la mise à jour du DOM.</p>
+        <p class="text-sm text-stone-500">With the Signal system, you listen for the <code>input</code> event and update your internal Signal, which automatically triggers the DOM update.</p>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Directive <code>on:click</code></h2>
-        <p class="text-sm text-stone-600">Attache un handler de clic directement dans le HTML. L'expression est exécutée lors du clic :</p>
+        <h2 class="text-2xl font-bold">The <code>on:click</code> Directive</h2>
+        <p class="text-sm text-stone-600">Attaches a click handler directly in the HTML. The expression is executed upon clicking:</p>
         <Code>&lt;button on&#58;click=&#123;&#123; count++ &#125;&#125;&gt;+&lt;/button&gt;</Code>
         
         <Alert Type="info">
-            <h3 class="font-bold text-blue-900 leading-tight">Heuristique de Détection des Signaux</h3>
+            <h3 class="font-bold text-blue-900 leading-tight">Signal Detection Heuristic</h3>
             <p class="text-blue-800">
-                Le compilateur Stew détecte de manière transparente l'utilisation des Signaux. S'il repère l'appel <code>.Get()</code> dans une expression (ex: <code>count.Get()</code>), il enveloppera automatiquement le bloc HTML lié dans un système <code>state.Effect(func() { ... })</code>.
+                The Stew compiler transparently detects the use of Signals. If it spots a <code>.Get()</code> call in an expression (e.g., <code>count.Get()</code>), it will automatically wrap the bound HTML block in a <code>state.Effect(func() { ... })</code> system.
             </p>
             <ul class="list-disc list-inside text-blue-800 space-y-1">
-                <li>Génère un identifiant unique (<code>id="stew-bind-page-N"</code>) et lie l'élément ciblé par un <strong>diff sélectif asynchrone</strong> en cas de modification du signal associé.</li>
+                <li>Generates a unique identifier (<code>id="stew-bind-page-N"</code>) and links the targeted element using a <strong>selective asynchronous diff</strong> when the associated signal is modified.</li>
             </ul>
         </Alert>
         
         <Alert Type="warning">
-            <h3 class="font-bold text-amber-900 leading-tight">⚠️ Limitation : Réactivité dans les attributs HTML</h3>
+            <h3 class="font-bold text-amber-900 leading-tight">⚠️ Limitation: Reactivity in HTML Attributes</h3>
             <p class="text-amber-800">
-                Les blocs <code>&#123;&#123; if &#125;&#125;</code> ou expressions insérés directement à l'intérieur des attributs HTML (ex: <code>class="... &#123;&#123; if ... &#125;&#125;"</code>) <strong>ne sont pas réactifs via Wasm</strong>. 
-                S'ils l'étaient, la création du conteneur réactif casserait gravement la validité syntaxique de l'attribut HTML. Ils conserveront toutefois leurs comportements lors du rendu applicatif Serveur initial (SSR).
+                The <code>&#123;&#123; if &#125;&#125;</code> blocks or expressions inserted directly inside HTML attributes (e.g., <code>class="... &#123;&#123; if ... &#125;&#125;"</code>) <strong>are not reactive via Wasm</strong>. 
+                If they were, creating the reactive container would severely break the syntactic validity of the HTML attribute. However, they will retain their behavior during the initial Server-side Rendering (SSR).
             </p>
             <p class="text-amber-800">
-                Pour muter graphiquement une classe au clic, la recommandation officielle est d'accéder à <code>this</code> dans le handler d'événement, ou d'encapsuler la logique d'état complexe au sein d'un composant <code>.stew</code> distinct.
+                To graphically mutate a class on click, the official recommendation is to use the <code>stew/ui</code> package (for <code>ToggleClass</code>, <code>AddClass</code>, etc.), access <code>this</code> in the event handler, or encapsulate complex state logic within a separate <code>.stew</code> component.
             </p>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Expressions Complexes</h2>
-        <p class="text-sm text-stone-600">Grâce au support des accolades équilibrées, vous pouvez écrire du code Go complexe directement dans vos bindings :</p>
-        <Code><span class="text-stone-400">&lt;!-- Fonction anonyme inline --&gt;</span>
+        <h2 class="text-2xl font-bold">Complex Expressions</h2>
+        <p class="text-sm text-stone-600">Thanks to balanced brace support, you can write complex Go code directly in your bindings:</p>
+        <Code><span class="text-stone-400">&lt;!-- Inline anonymous function --&gt;</span>
 &lt;button on&#58;click=&#123;&#123; func() &#123; 
-    console.Log("Clic !")
+    console.Log("Clicked!")
     nav.To("/home")
 &#125; &#125;&#125;&gt;
     Home
 &lt;/button&gt;
 
-<span class="text-stone-400">&lt;!-- Instructions multiples (séparées par des ;) --&gt;</span>
-&lt;button on&#58;click=&#123;&#123; count++; console.Log("Incrémenté") &#125;&#125;&gt;+&lt;/button&gt;</Code>
+<span class="text-stone-400">&lt;!-- Multiple statements (separated by ;) --&gt;</span>
+&lt;button on&#58;click=&#123;&#123; count++; console.Log("Incremented") &#125;&#125;&gt;+&lt;/button&gt;</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Directive générique <code>on:&lt;event&gt;</code></h2>
-        <p class="text-sm text-stone-600">N'importe quel événement DOM peut être ciblé avec la syntaxe <code>on:&lt;eventName&gt;</code> :</p>
+        <h2 class="text-2xl font-bold">Generic <code>on:&lt;event&gt;</code> Directive</h2>
+        <p class="text-sm text-stone-600">Any DOM event can be targeted using the <code>on:&lt;eventName&gt;</code> syntax:</p>
         <Code>&lt;input type="text" on&#58;focus=&#123;&#123; inputFocused = true &#125;&#125; /&gt;
 &lt;div on&#58;mouseover=&#123;&#123; hovered = true &#125;&#125; on&#58;mouseleave=&#123;&#123; hovered = false &#125;&#125;&gt;&lt;/div&gt;</Code>
-        <p class="text-sm text-stone-500">Génère : <code>wasm.OnEvent("id", "focus", func() { inputFocused = true })</code></p>
+        <p class="text-sm text-stone-500">Generates: <code>wasm.OnEvent("id", "focus", func() { inputFocused = true })</code></p>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Mécanisme interne</h2>
-        <p class="text-sm text-stone-600">Quand le compilateur rencontre un attribut <code>bind:</code> ou <code>on:</code> sur un élément HTML :</p>
+        <h2 class="text-2xl font-bold">Internal Mechanism</h2>
+        <p class="text-sm text-stone-600">When the compiler encounters a <code>bind:</code> or <code>on:</code> attribute on an HTML element:</p>
         <ol class="list-decimal list-inside space-y-2 text-stone-700 text-sm">
-            <li>Il génère un identifiant unique <code>"stew-bind-page-N"</code>.</li>
-            <li>Il injecte l'attribut <code>id="stew-bind-page-N"</code> sur l'élément HTML précédent dans le flux.</li>
-            <li>Il retire l'attribut <code>bind:</code>/<code>on:</code> du HTML final (invisible aux navigateurs).</li>
-            <li>Il génère le code de liaison correspondant dans la fonction <code>main()</code> du bundle Wasm.</li>
+            <li>It generates a unique identifier <code>"stew-bind-page-N"</code>.</li>
+            <li>It injects the <code>id="stew-bind-page-N"</code> attribute on the preceding HTML element in the stream.</li>
+            <li>It removes the <code>bind:</code>/<code>on:</code> attribute from the final HTML (invisible to browsers).</li>
+            <li>It generates the corresponding binding code in the <code>main()</code> function of the Wasm bundle.</li>
         </ol>
         <div class="overflow-x-auto mt-4">
             <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
@@ -108,7 +108,7 @@
                     <tr>
                         <th class="text-left p-3 font-bold border-b border-stone-200">Directive</th>
                         <th class="text-left p-3 font-bold border-b border-stone-200">Direction</th>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Génère</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Generates</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,5 +120,6 @@
         </div>
     </section>
 
-    <NavFooter PrevLink="/guide/goscriptclient" PrevName="goscript client" NextLink="/guide/wasmsdk" NextName="SDK Wasm" />
+    <NavFooter PrevLink="/guide/goscriptclient" PrevName="goscript client" NextLink="/guide/wasmsdk" NextName="Wasm SDK" />
 </div>
+

@@ -6,17 +6,17 @@
 
 <div class="space-y-12">
     <header>
-        <div class="text-purple-600 font-mono text-sm mb-2">Packages stew/* / 14.9</div>
+        <div class="text-purple-600 font-mono text-sm mb-2">stew/* Packages / 14.9</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4 italic">🎭 stew/anim</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le package <code>stew/anim</code> exploite l'API <strong>Web Animations</strong> du navigateur pour offrir des transitions fluides pilotées par Go, sans dépendre exclusivement des classes CSS.
+            The <code>stew/anim</code> package leverages the browser's native <strong>Web Animations</strong> API to provide smooth transitions driven by Go, without relying exclusively on CSS classes.
         </p>
     </header>
 
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">Animations Prédéfinies</h2>
+        <h2 class="text-2xl font-bold">Predefined Animations</h2>
         <p class="text-sm text-stone-600 leading-relaxed">
-            Stew propose des fonctions prêtes à l'emploi pour les effets les plus courants.
+            Stew provides ready-to-use functions for the most common effects.
         </p>
         
         <Code>&lt;goscript client&gt;
@@ -40,9 +40,9 @@
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Directions de Glissement (Slide)</h2>
+        <h2 class="text-2xl font-bold">Slide Directions</h2>
         <p class="text-sm text-stone-600">
-            La fonction <code>SlideIn</code> utilise le type <code>anim.Direction</code> pour garantir la validité des directions.
+            The <code>SlideIn</code> function uses the <code>anim.Direction</code> type to ensure direction validity.
         </p>
         <div class="flex gap-2">
             <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-mono">anim.Top</span>
@@ -53,9 +53,9 @@
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Transitions Personnalisées</h2>
+        <h2 class="text-2xl font-bold">Custom Transitions</h2>
         <p class="text-sm text-stone-600">
-            La méthode <code>Transition</code> permet de passer d'un état CSS à un autre de manière impérative.
+            The <code>Transition</code> method allows you to imperatively transition from one CSS state to another.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/anim"
@@ -71,9 +71,9 @@
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">API Bas-Niveau (Keyframes)</h2>
+        <h2 class="text-2xl font-bold">Low-Level API (Keyframes)</h2>
         <p class="text-sm text-stone-600">
-            Pour un contrôle total, utilisez <code>Animate</code> qui interface directement l'API native.
+            For total control, use <code>Animate</code>, which interfaces directly with the native API.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/anim"
@@ -94,11 +94,12 @@
     </section>
 
     <Alert Type="success">
-        <strong class="block mb-1">🏁 Performance Native</strong>
+        <strong class="block mb-1">🏁 Native Performance</strong>
         <p class="text-sm">
-            Contrairement aux animations gérées via des timers Go, <code>stew/anim</code> utilise le thread de rendu du navigateur. Cela garantit une fluidité parfaite et libère le CPU de votre binaire Wasm.
+            Unlike animations managed via Go timers, <code>stew/anim</code> uses the browser's rendering thread. This ensures perfect smoothness and frees up your Wasm binary's CPU.
         </p>
     </Alert>
 
     <NavFooter PrevLink="/guide/packages/cookies" PrevName="stew/cookies" NextLink="/guide/packages/js" NextName="stew/js" />
 </div>
+

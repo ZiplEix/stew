@@ -4,92 +4,72 @@
 </goscript>
 <div class="space-y-12">
     <header>
-        <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 13 — Wasm Isomorphique</div>
-        <h1 class="text-5xl font-black tracking-tighter mb-4">SDK Wasm</h1>
+        <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 13 — Isomorphic Wasm</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Wasm SDK</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le package <code>github.com/ZiplEix/stewsdk/wasm</code> est automatiquement importé dans chaque bundle Wasm client. Il fournit toutes les primitives de réactivité et d'interactivité DOM.
+            The <code>github.com/ZiplEix/stewsdk/wasm</code> package is automatically imported into every client Wasm bundle. It provides all the primitives for reactivity and DOM interactivity.
         </p>
     </header>
 
-    <section class="space-y-6">
-        <h2 class="text-2xl font-bold">Imports de Packages stew/*</h2>
-        <p class="text-sm text-stone-600 leading-relaxed italic">
-            Pour garder les binaires Wasm légers, Stew n'injecte aucune logique par défaut. Vous devez importer explicitement ce dont vous avez besoin via des packages virtuels.
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Low-level vs High-level SDK</h2>
+        <p class="text-sm text-stone-600 leading-relaxed">
+            The core <code>wasm</code> package (detailed below) provides the <strong>low-level foundation</strong> for Stew's client-side reactivity and DOM bindings.
         </p>
-        
-        <div class="grid md:grid-cols-2 gap-4">
-            <a href="/guide/packages/data" class="p-4 border border-stone-200 rounded-2xl hover:border-amber-500 hover:bg-amber-50/30 transition-all group">
-                <div class="font-bold text-sm mb-1 group-hover:text-amber-700">📦 stew/data</div>
-                <div class="text-[10px] text-stone-500">Accès à l'URL, aux Params et au Store serveur.</div>
-            </a>
-            <a href="/guide/packages/io" class="p-4 border border-stone-200 rounded-2xl hover:border-indigo-500 hover:bg-indigo-50/30 transition-all group">
-                <div class="font-bold text-sm mb-1 group-hover:text-indigo-700">📟 stew/io</div>
-                <div class="text-[10px] text-stone-500">Console, alertes, prompts et confirmations.</div>
-            </a>
-            <a href="/guide/packages/nav" class="p-4 border border-stone-200 rounded-2xl hover:border-indigo-500 hover:bg-indigo-50/30 transition-all group">
-                <div class="font-bold text-sm mb-1 group-hover:text-indigo-700">🧭 stew/nav</div>
-                <div class="text-[10px] text-stone-500">Navigation programmatique et Morphing.</div>
-            </a>
-            <a href="/guide/packages/storage" class="p-4 border border-stone-200 rounded-2xl hover:border-emerald-500 hover:bg-emerald-50/30 transition-all group">
-                <div class="font-bold text-sm mb-1 group-hover:text-emerald-700">💾 stew/storage</div>
-                <div class="text-[10px] text-stone-500">LocalStorage & SessionStorage réactifs.</div>
-            </a>
-            <a href="/guide/packages/state" class="p-4 border border-stone-200 rounded-2xl hover:border-rose-500 hover:bg-rose-50/30 transition-all group">
-                <div class="font-bold text-sm mb-1 group-hover:text-rose-700">🚥 stew/state</div>
-                <div class="text-[10px] text-stone-500">Signaux réactifs et Auto-Tracking.</div>
-            </a>
-        </div>
-
-        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-center justify-between">
+        <p class="text-sm text-stone-600 leading-relaxed">
+            For most use cases, it is <strong>easier and recommended</strong> to use the <code>stew/*</code> virtual packages (such as <code>stew/ui</code>, <code>stew/io</code>, or <code>stew/nav</code>). They provide a more idiomatic and higher-level API for interacting with the user and the browser DOM.
+        </p>
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-center justify-between mt-6">
             <div>
-                <h3 class="font-mono font-bold text-amber-800 mb-1">🆘 Un problème ?</h3>
-                <p class="text-amber-900 text-sm">Cache navigateur, erreurs TinyGo ou paniques au démarrage.</p>
+                <h3 class="font-mono font-bold text-amber-800 mb-1">🆘 Having trouble?</h3>
+                <p class="text-amber-900 text-sm">Browser cache, TinyGo errors, or panics at startup.</p>
             </div>
             <a href="/guide/troubleshooting" class="px-6 py-2 bg-amber-200 hover:bg-amber-300 transition text-amber-900 font-bold rounded-xl text-sm">
-                Voir le Dépannage →
+                Check Troubleshooting →
             </a>
         </div>
     </section>
+
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">API Primitives (wasm.*)</h2>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.BindContent(id string, ptr *string)</h3>
-                <p class="text-stone-600 text-sm mb-3">Liaison <strong>unidirectionnelle Go → DOM</strong>. Surveille le pointeur <code>ptr</code> et met à jour l'<code>innerHTML</code> de l'élément <code>id</code> à chaque mutation.</p>
+                <p class="text-stone-600 text-sm mb-3"><strong>One-way Go → DOM</strong> binding. Monitors the <code>ptr</code> pointer and updates the <code>innerHTML</code> of the element <code>id</code> on every mutation.</p>
                 <Code>count := "0"
 wasm.BindContent("counter-display", &count)
-<span class="text-stone-400">// Maintenant si count = "42", le DOM affiche "42" automatiquement</span></Code>
+<span class="text-stone-400">// Now if count = "42", the DOM will show "42" automatically</span></Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.BindInput(id string, ptr *string)</h3>
-                <p class="text-stone-600 text-sm mb-3">Liaison <strong>bidirectionnelle Go ↔ DOM</strong>. Synchronise la valeur HTML d'un <code>&lt;input&gt;</code> avec la variable Go, dans les deux sens (saisie ↔ programme).</p>
+                <p class="text-stone-600 text-sm mb-3"><strong>Two-way Go ↔ DOM</strong> binding. Synchronizes an <code>&lt;input&gt;</code> HTML value with the Go variable in both directions (input ↔ program).</p>
                 <Code>name := "World"
 wasm.BindInput("name-input", &name)
-<span class="text-stone-400">// name est mis à jour à chaque frappe dans l'input</span></Code>
+<span class="text-stone-400">// name is updated upon every keystroke in the input</span></Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">state.New[T any](initial T) *Signal[T]</h3>
-                <p class="text-stone-600 text-sm mb-3">Crée un nouveau <strong>Signal Réactif</strong> (dans `stew/state`). Permet de traquer précisément l'état de l'application cliente pour l'Auto-Tracking.</p>
+                <p class="text-stone-600 text-sm mb-3">Creates a new <strong>Reactive Signal</strong> (in `stew/state`). Allows for precise tracking of the client app state for Auto-Tracking.</p>
                 <Code>count := state.New(0)
-username := state.New("Visiteur")</Code>
+username := state.New("Visitor")</Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">state.Effect(cb func())</h3>
-                <p class="text-stone-600 text-sm mb-3">Enregistre un effet secondaire (dans `stew/state`). Il s'exécute immédiatement, détecte quels `.Get()` sont appelés, et <strong>se ré-exécute automatiquement</strong> seulement lorsque l'un de ces Signaux mute.</p>
+                <p class="text-stone-600 text-sm mb-3">Registers a side effect (in `stew/state`). It executes immediately, detects which <code>.Get()</code> calls are made, and <strong>automatically re-executes</strong> only when one of those Signals mutates.</p>
                 <Code>count := state.New(0)
 
 state.Effect(func() {
-    Console.Log("Compteur :", count.Get()) // Exécuté uniquement quand count change
+    Console.Log("Counter:", count.Get()) // Executed only when count changes
 })</Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.OnClick(id string, handler func())</h3>
-                <p class="text-stone-600 text-sm mb-3">Raccourci pour attacher un listener click sur un élément par son ID. Équivalent à <code>OnEvent(id, "click", handler)</code>.</p>
+                <p class="text-stone-600 text-sm mb-3">Shorthand for attaching a click listener to an element by its ID. Equivalent to <code>OnEvent(id, "click", handler)</code>.</p>
                 <Code>wasm.OnClick("my-button", func() {
     count++
 })</Code>
@@ -97,19 +77,19 @@ state.Effect(func() {
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.OnEvent(id string, eventName string, handler func())</h3>
-                <p class="text-stone-600 text-sm mb-3">Attache un listener pour n'importe quel événement DOM sur un élément par son ID.</p>
+                <p class="text-stone-600 text-sm mb-3">Attaches a listener for any DOM event on an element by its ID.</p>
                 <Code>wasm.OnEvent("search-input", "input", func() {
-    <span class="text-stone-400">// Déclenché à chaque frappe dans l'input</span>
+    <span class="text-stone-400">// Triggered on every keystroke in the input</span>
 })
 
 wasm.OnEvent("form", "submit", func() {
-    <span class="text-stone-400">// Intercepter la soumission du formulaire</span>
+    <span class="text-stone-400">// Intercept form submission</span>
 })</Code>
             </div>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.GetPageDataJSON() string</h3>
-                <p class="text-stone-600 text-sm mb-3">Récupère le JSON de <code>stew.PageData</code> injecté par le serveur dans <code>&lt;script id="stew-pagedata"&gt;</code>. Retourne <code>"{}"</code> si absent.</p>
+                <p class="text-stone-600 text-sm mb-3">Retrieves the <code>stew.PageData</code> JSON injected by the server in <code>&lt;script id="stew-pagedata"&gt;</code>. Returns <code>"{}"</code> if missing.</p>
                 <Code>rawJSON := wasm.GetPageDataJSON()
 var state map[string]interface{}
 json.Unmarshal([]byte(rawJSON), &state)</Code>
@@ -117,22 +97,23 @@ json.Unmarshal([]byte(rawJSON), &state)</Code>
 
             <div class="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5">
                 <h3 class="font-mono font-bold text-indigo-800 mb-2">wasm.StartReactivityLoop()</h3>
-                <p class="text-stone-600 text-sm mb-3"><strong>Appelé automatiquement</strong> par le compilateur à la fin de chaque bundle Wasm. Maintient le thread principal Wasm en vie indéfiniment (via <code>select {}</code>). N'appelez jamais manuellement.</p>
+                <p class="text-stone-600 text-sm mb-3"><strong>Called automatically</strong> by the compiler at the end of each Wasm bundle. Keeps the main Wasm thread alive indefinitely (via <code>select {}</code>). Never call this manually.</p>
             </div>
 
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Système d'Effets — Fonctionnement interne</h2>
-        <p class="text-sm text-stone-600">Le système de Signaux (Auto-Tracking) fonctionne en synchronisation de précision :</p>
+        <h2 class="text-2xl font-bold">Effect System — Internal Workings</h2>
+        <p class="text-sm text-stone-600">The Signal system (Auto-Tracking) works with precise synchronization:</p>
         <ol class="list-decimal list-inside space-y-2 text-stone-700 text-sm">
-            <li><strong>Enregistrement</strong> : Lorsqu'un <code>state.Effect</code> s'exécute, il s'inscrit au thread global temporaire.</li>
-            <li><strong>Auto-Tracking</strong> : Si un <code>Signal.Get()</code> est appelé durant ce thread, le Signal ajoute l'effet à sa liste d'abonnés exclusifs.</li>
-            <li><strong>Propagation</strong> : Lorsqu'un <code>Signal.Set()</code> est déclenché, il notifie la liste d'abonnés de se ré-exécuter.</li>
+            <li><strong>Registration</strong>: When a <code>state.Effect</code> runs, it registers itself with the temporary global thread.</li>
+            <li><strong>Auto-Tracking</strong>: If a <code>Signal.Get()</code> is called during this thread, the Signal adds the effect to its exclusive list of subscribers.</li>
+            <li><strong>Propagation</strong>: When a <code>Signal.Set()</code> is triggered, it notifies the subscriber list to re-execute.</li>
         </ol>
-        <p class="text-sm text-stone-500">Ce cycle garantit que votre application n'utilise strictement aucune ressource CPU lorsqu'aucune modification d'état (Set) n'est induite.</p>
+        <p class="text-sm text-stone-500">This cycle ensures that your application uses zero CPU resources when no state changes (Set) are induced.</p>
     </section>
 
-    <NavFooter PrevLink="/guide/wasm-bindings" PrevName="Bindings DOM" NextLink="/guide/cli" NextName="CLI" />
+    <NavFooter PrevLink="/guide/wasmbindings" PrevName="DOM Bindings" NextLink="/guide/cli" NextName="CLI" />
 </div>
+

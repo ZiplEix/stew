@@ -4,10 +4,10 @@
 </goscript>
 <div class="space-y-12">
     <header>
-        <div class="text-emerald-600 font-mono text-sm mb-2">Packages stew/* / 14.4</div>
+        <div class="text-emerald-600 font-mono text-sm mb-2">stew/* Packages / 14.4</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4 italic">💾 stew/storage</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-             Le package <code>stew/storage</code> offre une interface réactive et idiomatique pour les API de stockage du navigateur (LocalStorage et SessionStorage).
+            The <code>stew/storage</code> package provides a reactive and idiomatic interface for the browser's storage APIs (LocalStorage and SessionStorage).
         </p>
     </header>
 
@@ -16,31 +16,31 @@
         <div class="grid md:grid-cols-2 gap-4">
             <div class="p-6 bg-white border border-stone-200 rounded-3xl shadow-sm">
                 <div class="font-mono font-bold text-emerald-700 underline decoration-emerald-100 decoration-4 mb-2">storage.Local</div>
-                <div class="text-stone-600 text-[10px] leading-relaxed">Utilise <code>window.localStorage</code>. Les données persistent même après la fermeture de l'onglet ou du navigateur.</div>
+                <div class="text-stone-600 text-[10px] leading-relaxed">Uses <code>window.localStorage</code>. Data persists even after the tab or browser is closed.</div>
             </div>
             <div class="p-6 bg-white border border-stone-200 rounded-3xl shadow-sm">
                 <div class="font-mono font-bold text-emerald-700 underline decoration-emerald-100 decoration-4 mb-2">storage.Session</div>
-                <div class="text-stone-600 text-[10px] leading-relaxed">Utilise <code>window.sessionStorage</code>. Les données sont conservées uniquement pour la durée de l'onglet courant.</div>
+                <div class="text-stone-600 text-[10px] leading-relaxed">Uses <code>window.sessionStorage</code>. Data is kept only for the duration of the current tab.</div>
             </div>
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Méthodes Disponibles (Local & Session)</h2>
+        <h2 class="text-2xl font-bold">Available Methods (Local & Session)</h2>
         <div class="overflow-x-auto">
             <table class="w-full text-sm border border-stone-100 rounded-2xl overflow-hidden">
                 <thead class="bg-stone-50">
                     <tr>
-                        <th class="text-left p-4 font-bold border-b border-stone-200">Méthode</th>
-                        <th class="text-left p-4 font-bold border-b border-stone-200">Rôle</th>
+                        <th class="text-left p-4 font-bold border-b border-stone-200">Method</th>
+                        <th class="text-left p-4 font-bold border-b border-stone-200">Role</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b border-stone-50"><td class="p-4 font-mono text-emerald-600">Get(key string) string</td><td class="p-4">Récupère une valeur. Retourne une chaîne vide si absente.</td></tr>
-                    <tr class="border-b border-stone-50"><td class="p-4 font-mono text-emerald-600">Set(key, val string)</td><td class="p-4">Enregistre une valeur.</td></tr>
-                    <tr class="border-b border-stone-50"><td class="p-4 font-mono text-emerald-600">Remove(key string)</td><td class="p-4">Supprime une clé.</td></tr>
-                    <tr class="border-b border-stone-50"><td class="p-4 font-mono text-emerald-600">Clear()</td><td class="p-4">Supprime toutes les données de ce stockage.</td></tr>
-                    <tr><td class="p-4 font-mono text-amber-600 font-bold">Bind(&ptr, key string)</td><td class="p-4">Liaison réactive bidirectionnelle (voir plus bas).</td></tr>
+                    <tr class="border-b border-stone-50"><td class="p-4 font-mono text-emerald-600">Get(key string) string</td><td class="p-4">Retrieves a value. Returns an empty string if missing.</td></tr>
+                    <tr class="border-b border-stone-50"><td class="p-4 font-mono text-emerald-600">Set(key, val string)</td><td class="p-4">Saves a value.</td></tr>
+                    <tr class="border-b border-stone-50"><td class="p-4 font-mono text-emerald-600">Remove(key string)</td><td class="p-4">Deletes a key.</td></tr>
+                    <tr class="border-b border-stone-50"><td class="p-4 font-mono text-emerald-600">Clear()</td><td class="p-4">Clears all data from this storage area.</td></tr>
+                    <tr><td class="p-4 font-mono text-amber-600 font-bold">Bind(signal *state.Signal[string], key string)</td><td class="p-4">Two-way reactive binding (see below).</td></tr>
                 </tbody>
             </table>
         </div>
@@ -48,30 +48,31 @@
 
     <section class="space-y-4">
         <div class="p-8 border border-emerald-500/20 rounded-3xl bg-emerald-50/20">
-            <h2 class="text-2xl font-bold text-emerald-900 mb-2 italic">Réactivité : <code>Bind(&var, key)</code></h2>
+            <h2 class="text-2xl font-bold text-emerald-900 mb-2 italic">Reactivity: <code>Bind(signal, key)</code></h2>
             <p class="text-sm text-stone-700 mb-6 leading-relaxed">
-                C'est la fonctionnalité la plus puissante du package. Elle permet de synchroniser une variable Go avec une clé de stockage de manière transparente.
+                This is the most powerful feature of the package. It allows you to transparently synchronize a Go variable with a storage key.
             </p>
             
             <ul class="list-decimal list-inside space-y-3 text-xs text-stone-600 mb-6 font-mono">
-                <li>Au chargement, la variable est initialisée avec la valeur du stockage (si elle existe).</li>
-                <li>Si vous modifiez la variable en Go, le stockage est automatiquement mis à jour.</li>
-                <li>Si vous liez la variable à un input HTML, la valeur persistera entre les rafraîchissements de page.</li>
+                <li>Upon loading, the variable is initialized with the value from storage (if it exists).</li>
+                <li>If you modify the variable in Go, the storage is automatically updated.</li>
+                <li>If you bind the variable to an HTML input, the value will persist between page refreshes.</li>
             </ul>
 
             <Code>&lt;goscript client&gt;
     import "stew/storage"
     import "stew/state"
 
-    userName := state.New("Visiteur")
-    // Liaison instantanée avec une clé du LocalStorage
+    userName := state.New("Visitor")
+    // Instant binding with a LocalStorage key
     storage.Local.Bind(userName, "cached_name")
 &lt;/goscript&gt;
 
 &lt;input type="text" bind:value=&#123;&#123;userName&#125;&#125; /&gt;
-&lt;p&gt;Nom persisté : &#123;&#123;userName&#125;&#125;&lt;/p&gt;</Code>
+&lt;p&gt;Persisted Name: &#123;&#123;userName&#125;&#125;&lt;/p&gt;</Code>
         </div>
     </section>
 
     <NavFooter PrevLink="/guide/packages/nav" PrevName="stew/nav" NextLink="/guide/packages/state" NextName="stew/state" />
 </div>
+

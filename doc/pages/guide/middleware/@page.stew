@@ -4,16 +4,16 @@
 </goscript>
 <div class="space-y-12">
     <header>
-        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 10 — Logique Go</div>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 10 — Go Logic</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4">Middleware</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Les middlewares interceptent les requêtes avant qu'elles atteignent le handler de page. Ils gèrent l'authentification, les logs, CORS, etc.
+            Middlewares intercept requests before they reach the page handler. They handle tasks like authentication, logging, CORS, and more.
         </p>
     </header>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Créer un middleware de route</h2>
-        <p class="text-sm text-stone-600">Créer le fichier <code>stew.middleware.go</code> dans le dossier de la route concernée. Le fichier doit contenir une fonction <code>Middleware</code> avec la signature standard de middleware Go :</p>
+        <h2 class="text-2xl font-bold">Creating a Route Middleware</h2>
+        <p class="text-sm text-stone-600">Create a file named <code>stew.middleware.go</code> in the relevant route directory. This file must contain a <code>Middleware</code> function with the standard Go middleware signature:</p>
         <Code><span class="text-stone-400">// pages/admin/stew.middleware.go</span>
 package admin
 
@@ -25,14 +25,14 @@ import (
 
 func Middleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        <span class="text-stone-400">// Vérification d'authentification</span>
+        <span class="text-stone-400">// Authentication check</span>
         token := r.Cookie("session")
         if token == nil {
             http.Redirect(w, r, "/login", http.StatusFound)
             return
         }
 
-        <span class="text-stone-400">// Logger la requête</span>
+        <span class="text-stone-400">// Log the request</span>
         start := time.Now()
         next.ServeHTTP(w, r)
         log.Printf("[%s] %s — %v", r.Method, r.URL.Path, time.Since(start))
@@ -41,8 +41,8 @@ func Middleware(next http.Handler) http.Handler {
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Middleware global/de logging</h2>
-        <p class="text-sm text-stone-600">Pour appliquer un middleware à <strong>toutes les routes</strong>, le créer à la <strong>racine</strong> des pages (<code>pages/stew.middleware.go</code>) :</p>
+        <h2 class="text-2xl font-bold">Global/Logging Middleware</h2>
+        <p class="text-sm text-stone-600">To apply a middleware to <strong>all routes</strong>, create it at the <strong>root</strong> of the pages directory (<code>pages/stew.middleware.go</code>):</p>
         <Code><span class="text-stone-400">// pages/stew.middleware.go</span>
 package pages
 
@@ -61,17 +61,17 @@ func Middleware(next http.Handler) http.Handler {
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Chaînage des middlewares</h2>
-        <p class="text-sm text-stone-600">Les middlewares se chaînent automatiquement selon la hiérarchie des dossiers. Le middleware parent encapsule le middleware enfant :</p>
-        <Code><span class="text-stone-400">// Exemple : GET /admin/dashboard
-// → pages/stew.middleware.go (logging global)
-//   → pages/admin/stew.middleware.go (auth check)
-//     → pages/admin/dashboard/@page.stew (rendu)</span>
+        <h2 class="text-2xl font-bold">Middleware Chaining</h2>
+        <p class="text-sm text-stone-600">Middlewares are automatically chained based on the directory hierarchy. A parent middleware wraps its child middlewares:</p>
+        <Code><span class="text-stone-400">// Example: GET /admin/dashboard
+// → pages/stew.middleware.go (Global logging)
+//   → pages/admin/stew.middleware.go (Auth check)
+//     → pages/admin/dashboard/@page.stew (Rendering)</span>
 
-<span class="text-stone-400">// Dans stew_router_gen.go :</span>
+<span class="text-stone-400">// In stew_router_gen.go:</span>
 mux.Handle("GET /admin/dashboard",
-    stew_pages_root.Middleware(        <span class="text-stone-400">// Wrapper global</span>
-        stew_pages_admin.Middleware(   <span class="text-stone-400">// Wrapper admin</span>
+    stew_pages_root.Middleware(        <span class="text-stone-400">// Global wrapper</span>
+        stew_pages_admin.Middleware(   <span class="text-stone-400">// Admin wrapper</span>
             http.HandlerFunc(handler)
         )
     )
@@ -79,9 +79,9 @@ mux.Handle("GET /admin/dashboard",
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Handlers HTTP custom (<code>server.go</code>)</h2>
-        <p class="text-sm text-stone-600">Pour des méthodes non-GET (POST, PUT, DELETE, etc.), créer un fichier <code>server.go</code> dans le dossier de la route :</p>
-        <Code><span class="text-stone-400">// pages/users/server.go</span>
+        <h2 class="text-2xl font-bold">Custom HTTP Handlers (<code>stew.server.go</code>)</h2>
+        <p class="text-sm text-stone-600">For non-GET methods (POST, PUT, DELETE, etc.), create a <code>stew.server.go</code> file in the route directory:</p>
+        <Code><span class="text-stone-400">// pages/users/stew.server.go</span>
 package users
 
 import (
@@ -93,7 +93,7 @@ import (
 func Post(w http.ResponseWriter, r *http.Request) {
     var body struct{ Name string }
     json.NewDecoder(r.Body).Decode(&body)
-    <span class="text-stone-400">// ... insérer en base ...</span>
+    <span class="text-stone-400">// ... insert into database ...</span>
     w.WriteHeader(http.StatusCreated)
 }
 
@@ -101,8 +101,9 @@ func Post(w http.ResponseWriter, r *http.Request) {
 func Delete(w http.ResponseWriter, r *http.Request) {
     <span class="text-stone-400">// ...</span>
 }</Code>
-        <p class="text-sm text-stone-500">Le scanner de <code>stew generate</code> détecte automatiquement les fonctions exportées de <code>server.go</code> et les enregistre dans le routeur avec la méthode HTTP correspondant au nom de la fonction.</p>
+        <p class="text-sm text-stone-500">The <code>stew generate</code> scanner automatically detects exported functions in <code>stew.server.go</code> and registers them in the router with the HTTP method corresponding to the function name.</p>
     </section>
 
-    <NavFooter PrevLink="/guide/pagedata" PrevName="PageData" NextLink="/guide/serverhandlers" NextName="Handlers Serveur" />
+    <NavFooter PrevLink="/guide/pagedata" PrevName="PageData" NextLink="/guide/serverhandlers" NextName="Server Handlers" />
 </div>
+

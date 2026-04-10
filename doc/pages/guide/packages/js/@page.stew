@@ -6,36 +6,44 @@
 
 <div class="space-y-12">
     <header>
-        <div class="text-yellow-600 font-mono text-sm mb-2">Packages stew/* / 14.10</div>
+        <div class="text-yellow-600 font-mono text-sm mb-2">stew/* Packages / 14.10</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4 italic">🔌 stew/js</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le package <code>stew/js</code> sert de pont (bridge) entre le runtime Go/Wasm et l'environnement JavaScript du navigateur pour charger des bibliothèques externes et exécuter du code ad-hoc.
+            The <code>stew/js</code> package serves as a bridge between the Go/Wasm runtime and the browser's JavaScript environment, allowing you to load external libraries and execute ad-hoc JS code.
         </p>
     </header>
-
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">Exécution et Évaluation</h2>
+        <h2 class="text-2xl font-bold">Execution and Evaluation</h2>
         <p class="text-sm text-stone-600 leading-relaxed">
-            Exécutez du code JavaScript brut ou évaluez des expressions avec conversion de type automatique.
+            Execute raw JavaScript code or evaluate expressions with automatic type conversion.
         </p>
-        
-        <Code>&lt;goscript client&gt;
-    import "stew/js"
 
-    js.Run("console.log('Hello from JS block')")
-
-    // Évaluation type-safe (Génériques)
-    width, _ := js.Eval[int]("window.innerWidth")
-
-    // Accès aux objets globaux
-    chartLib := js.Global("Chart")
-&lt;/goscript&gt;</Code>
+        <div class="grid md:grid-cols-2 gap-4 mt-6">
+            <div class="p-5 bg-white border border-stone-100 rounded-2xl shadow-sm">
+                <code class="font-bold text-yellow-700">js.Run(code string)</code>
+                <p class="text-[10px] text-stone-500 mt-1 italic">Executes a raw JS block in global scope.</p>
+            </div>
+            <div class="p-5 bg-white border border-stone-100 rounded-2xl shadow-sm">
+                <code class="font-bold text-yellow-700">js.Invoke(fn, ...args)</code>
+                <p class="text-[10px] text-stone-500 mt-1 italic">Calls a global function with arguments.</p>
+            </div>
+            <div class="p-5 bg-white border border-stone-100 rounded-2xl shadow-sm">
+                <code class="font-bold text-yellow-700">js.Eval[T](code) (T, error)</code>
+                <p class="text-[10px] text-stone-500 mt-1 italic">Evaluates an expression into a Go type.</p>
+            </div>
+            <div class="p-5 bg-white border border-stone-100 rounded-2xl shadow-sm">
+                <code class="font-bold text-yellow-700">js.Global(name) js.Value</code>
+                <p class="text-[10px] text-stone-500 mt-1 italic">Returns a raw JavaScript object.</p>
+            </div>
+        </div>
     </section>
 
+
+
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Gestion Dynamique des Scripts</h2>
+        <h2 class="text-2xl font-bold">Dynamic Script Management</h2>
         <p class="text-sm text-stone-600">
-            Le package permet de charger des scripts externes (CDN) de manière asynchrone, de vérifier leur présence ou de les décharger.
+            The package allows you to asynchronously load external scripts (CDNs), check for their presence, or unload them.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/js"
@@ -61,30 +69,32 @@
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Interopérabilité (Exposer vers JS)</h2>
+        <h2 class="text-2xl font-bold">Interoperability (Exposing to JS)</h2>
         <p class="text-sm text-stone-600">
-            Vous pouvez exposer des fonctions ou variables Go pour qu'elles soient accessibles depuis le monde JavaScript.
+            You can expose Go functions or variables to make them accessible from the JavaScript world.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/js"
     import "stew/io"
+    import "syscall/js"
 
     func init() {
-        // Expose une fonction Go vers le JS global
-        js.Set("notifyFromJS", func(this js.Value, args []js.Value) any {
-            io.Alert("Appelé depuis JS: " + args[0].String())
+        // Expose a Go function to the JS global scope
+        js.Set("notifyFromJS", js.FuncOf(func(this js.Value, args []js.Value) any {
+            io.Alert("Called from JS: " + args[0].String())
             return nil
-        })
+        }))
     }
 &lt;/goscript&gt;</Code>
     </section>
 
     <Alert Type="warning">
-        <strong class="block mb-1">⚖️ Utilisation parcimonieuse</strong>
+        <strong class="block mb-1">⚖️ Use Sparingly</strong>
         <p class="text-sm">
-            L'utilisation abusive de <code>stew/js</code> pour manipuler le DOM contourne le moteur de réactivité de Stew. Privilégiez les bibliothèques purement Go ou les Signaux pour le rendu UI.
+            Abusing <code>stew/js</code> to manipulate the DOM bypasses Stew's reactivity engine. Prefer pure Go libraries or Signals for UI rendering.
         </p>
     </Alert>
 
     <NavFooter PrevLink="/guide/packages/anim" PrevName="stew/anim" NextLink="/guide/packages/net" NextName="stew/net" />
 </div>
+

@@ -6,24 +6,24 @@
 
 <div class="space-y-12">
     <header>
-        <div class="text-blue-600 font-mono text-sm mb-2">Packages stew/* / 14.6</div>
+        <div class="text-blue-600 font-mono text-sm mb-2">stew/* Packages / 14.6</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4 italic">✨ stew/ui</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le package <code>stew/ui</code> fournit des outils pour manipuler l'état visuel et le DOM qui ne relèvent pas directement du contenu réactif.
+            The <code>stew/ui</code> package provides tools for manipulating visual state and the DOM that do not directly fall under reactive content.
         </p>
     </header>
 
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">Manipulation du Titre et du Focus</h2>
+        <h2 class="text-2xl font-bold">Title and Focus Manipulation</h2>
         <p class="text-sm text-stone-600 leading-relaxed">
-            Modifiez dynamiquement l'onglet du navigateur ou gérez l'accessibilité en déplaçant le focus utilisateur.
+            Dynamically update the browser tab title or manage accessibility by moving user focus.
         </p>
         
         <Code>&lt;goscript client&gt;
     import "stew/ui"
 
     updateTitle := func() {
-        ui.Title("Nouveau Titre — Mon App")
+        ui.Title("New Title — My App")
     }
 
     focusInput := func() {
@@ -33,9 +33,9 @@
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Classes CSS et Styles</h2>
+        <h2 class="text-2xl font-bold">CSS Classes and Styles</h2>
         <p class="text-sm text-stone-600">
-            Bien que Stew encourage la réactivité via les Signaux, il est parfois plus simple de manipuler directement les classes pour des animations ou des états éphémères.
+            While Stew encourages reactivity via Signals, it is sometimes simpler to directy manipulate classes for animations or ephemeral states.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/ui"
@@ -49,26 +49,50 @@
         ui.SetStyle("#badge", "backgroundColor", "#fbbf24")
     }
 &lt;/goscript&gt;</Code>
-        <div class="grid md:grid-cols-3 gap-4 mt-4">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
             <div class="p-4 border border-stone-100 rounded-2xl bg-stone-50/50">
                 <code class="text-blue-700 font-bold text-xs">ui.AddClass(sel, class)</code>
-                <p class="text-[10px] text-stone-500 mt-1">Ajoute une classe sans doublons.</p>
+                <p class="text-[10px] text-stone-500 mt-1 italic">Adds a class safely.</p>
+            </div>
+            <div class="p-4 border border-stone-100 rounded-2xl bg-stone-50/50">
+                <code class="text-blue-700 font-bold text-xs">ui.RemoveClass(sel, class)</code>
+                <p class="text-[10px] text-stone-500 mt-1 italic">Removes a specific class.</p>
             </div>
             <div class="p-4 border border-stone-100 rounded-2xl bg-stone-50/50">
                 <code class="text-blue-700 font-bold text-xs">ui.ToggleClass(sel, class)</code>
-                <p class="text-[10px] text-stone-500 mt-1">Ajoute ou retire la classe.</p>
+                <p class="text-[10px] text-stone-500 mt-1 italic">Toggles the class on/off.</p>
             </div>
             <div class="p-4 border border-stone-100 rounded-2xl bg-stone-50/50">
                 <code class="text-blue-700 font-bold text-xs">ui.HasClass(sel, class)</code>
-                <p class="text-[10px] text-stone-500 mt-1">Vérifie l'existence d'une classe.</p>
+                <p class="text-[10px] text-stone-500 mt-1 italic">Checks if a class exists.</p>
             </div>
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Défilement (Scrolling)</h2>
+        <h2 class="text-2xl font-bold italic tracking-tight italic">Form & Element Values</h2>
         <p class="text-sm text-stone-600">
-            Utilisez <code>ScrollTo</code> pour naviguer visuellement dans la page. Le second paramètre active le défilement fluide (smooth scrolling).
+            Interact with standard input elements (input, textarea, select) directly.
+        </p>
+        <Code>&lt;goscript client&gt;
+    import "stew/ui"
+
+    onSearch := func() {
+        query := ui.GetValue("#search-field")
+        if query == "" {
+             ui.Focus("#search-field")
+             return
+        }
+        // ...
+        ui.SetValue("#search-field", "") // Reset
+    }
+&lt;/goscript&gt;</Code>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Scrolling</h2>
+        <p class="text-sm text-stone-600">
+            Use <code>ScrollTo</code> to visually navigate within the page. The second parameter enables smooth scrolling.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/ui"
@@ -79,12 +103,14 @@
 &lt;/goscript&gt;</Code>
     </section>
 
+
     <Alert Type="info">
-        <strong class="block mb-1">💡 Manipulation directe vs Réactivité</strong>
+        <strong class="block mb-1">💡 Direct Manipulation vs Reactivity</strong>
         <p class="text-sm">
-            Favorisez toujours les Signaux (`stew/state`) pour le contenu de vos balises. Utilisez `stew/ui` pour les interactions impératives comme le focus, le titre de la page ou les animations CSS complexes.
+            Always prefer Signals (<code>stew/state</code>) for the content of your tags. Use <code>stew/ui</code> for imperative interactions like focus, page title, or complex CSS animations.
         </p>
     </Alert>
 
     <NavFooter PrevLink="/guide/packages/state" PrevName="stew/state" NextLink="/guide/packages/event" NextName="stew/event" />
 </div>
+

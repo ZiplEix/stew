@@ -6,27 +6,27 @@
 
 <div class="space-y-12">
     <header>
-        <div class="text-amber-600 font-mono text-sm mb-2">Packages stew/* / 14.5</div>
+        <div class="text-amber-600 font-mono text-sm mb-2">stew/* Packages / 14.11</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4 italic">🌐 stew/net</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-             Le package <code>stew/net</code> est une encapsulation type-safe de l'API Fetch du navigateur, permettant des requêtes HTTP asynchrones avec une syntaxe Go synchrone.
+             The <code>stew/net</code> package is a type-safe wrapper around the browser's Fetch API, allowing asynchronous HTTP requests with synchronous Go syntax.
         </p>
     </header>
 
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">Concept : Allégement de l'Asynchronisme</h2>
+        <h2 class="text-2xl font-bold">Concept: Simplifying Asynchrony</h2>
         <p class="text-sm text-stone-600 leading-relaxed">
-            En JavaScript, <code>fetch</code> retourne des Promesses (<code>Promise</code>) nécessitant des <code>.then()</code> ou <code>await</code>. 
-            Dans Stew, nous utilisons un <strong>pont de synchronisation</strong> (Bridge) via des channels Go.
+            In JavaScript, <code>fetch</code> returns Promises (<code>Promise</code>) requiring <code>.then()</code> or <code>await</code>. 
+            In Stew, we use a <strong>synchronization bridge</strong> via Go channels.
         </p>
         <Alert Type="info">
-            <strong class="text-blue-900">Fonctionnement interne :</strong> <span class="text-blue-800">Lorsqu'un appel <code>net.Get</code> est effectué, la Go-routine est mise en pause (bloquée sur un channel) pendant que le navigateur effectue la requête. Dès que la Promise JS est résolue, le résultat est injecté dans le channel, débloquant la Go-routine de manière transparente.</span>
+            <strong class="text-blue-900">Internal mechanism:</strong> <span class="text-blue-800">When a <code>net.Get</code> call is made, the Go-routine is paused (blocked on a channel) while the browser performs the request. As soon as the JS Promise is resolved, the result is injected back into the channel, transparently unblocking the Go-routine.</span>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Requêtes Typées (Génériques)</h2>
-        <p class="text-sm text-stone-600">Utilisez les génériques Go pour désérialiser automatiquement le JSON dans vos propres structures.</p>
+        <h2 class="text-2xl font-bold">Typed Requests (Generics)</h2>
+        <p class="text-sm text-stone-600">Use Go generics to automatically deserialize JSON into your own structures.</p>
         <Code>&lt;goscript client&gt;
     import "stew/net"
 
@@ -38,65 +38,75 @@
     loadData := func() {
         user, err := net.Get[User]("https://api.example.com/me")
         if err != nil {
-            fmt.Println("Erreur:", err)
+            fmt.Println("Error:", err)
             return
         }
-        fmt.Println("Utilisateur:", user.Name)
+        fmt.Println("User:", user.Name)
     }
 &lt;/goscript&gt;</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Méthodes Supportées</h2>
-        <div class="grid md:grid-cols-2 gap-4">
-            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2">
+        <h2 class="text-2xl font-bold">Supported Methods</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2 shadow-sm">
                 <div class="font-mono font-bold text-amber-700">net.Get[T](url)</div>
-                <div class="text-xs text-stone-500">Récupère une ressource.</div>
+                <div class="text-[10px] text-stone-500 italic">Retrieves a resource.</div>
             </div>
-            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2">
+            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2 shadow-sm">
                 <div class="font-mono font-bold text-amber-700">net.Post[T](url, body)</div>
-                <div class="text-xs text-stone-500">Envoie des données (JSON auto-marshall).</div>
+                <div class="text-[10px] text-stone-500 italic">Sends data (JSON auto-marshaling).</div>
             </div>
-            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2">
-                <div class="font-mono font-bold text-amber-700">net.Put / Patch / Delete</div>
-                <div class="text-xs text-stone-500">Support complet des verbes REST.</div>
+            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2 shadow-sm">
+                <div class="font-mono font-bold text-amber-700">net.Put[T](url, body)</div>
+                <div class="text-[10px] text-stone-500 italic">Updates an existing resource entirely.</div>
             </div>
-            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2">
+            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2 shadow-sm">
+                <div class="font-mono font-bold text-amber-700">net.Patch[T](url, body)</div>
+                <div class="text-[10px] text-stone-500 italic">Partially updates a resource.</div>
+            </div>
+            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2 shadow-sm">
+                <div class="font-mono font-bold text-amber-700">net.Delete[T](url)</div>
+                <div class="text-[10px] text-stone-500 italic">Removes a resource.</div>
+            </div>
+            <div class="p-6 bg-white border border-stone-200 rounded-3xl space-y-2 shadow-sm">
                 <div class="font-mono font-bold text-amber-700">net.Fetch(url, opts)</div>
-                <div class="text-xs text-stone-500">Pour des requêtes complexes (Headers personnalisés).</div>
+                <div class="text-[10px] text-stone-500 italic">Raw Fetch API access (Headers, etc.).</div>
             </div>
         </div>
     </section>
 
+
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Observation Réactive : <code>net.Watch</code></h2>
+        <h2 class="text-2xl font-bold">Reactive Observation: <code>net.Watch</code></h2>
         <p class="text-sm text-stone-600">
-            Crée un <strong>Signal</strong> qui se met à jour automatiquement à intervalle régulier. Idéal pour des tableaux de bord ou des flux de données.
+            Creates a <strong>Signal</strong> that automatically updates at a regular interval. Ideal for dashboards or live data feeds.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/net"
     import "time"
 
-    // Poll l'API toutes les 5 secondes
+    // Poll the API every 5 seconds
     stats := net.Watch[Stats]("https://api.site.com/stats", 5*time.Second)
 &lt;/goscript&gt;
 
-&lt;p&gt;Visiteurs actuels : &#123;&#123; stats.Get().Visits &#125;&#125;&lt;/p&gt;</Code>
+&lt;p&gt;Current visitors: &#123;&#123; stats.Get().Visits &#125;&#125;&lt;/p&gt;</Code>
     </section>
 
     <section class="p-8 bg-amber-50 border border-amber-500/20 rounded-3xl space-y-4">
-        <h2 class="text-2xl font-bold text-amber-900 italic">État du réseau : <code>net.IsLoading</code></h2>
+        <h2 class="text-2xl font-bold text-amber-900 italic">Network State: <code>net.IsLoading</code></h2>
         <p class="text-sm text-amber-800 leading-relaxed">
-            Un Signal global de type <code>bool</code> qui passe à <code>true</code> dès qu'une requête <code>stew/net</code> est en cours.
+            A global <code>bool</code> Signal that becomes <code>true</code> whenever a <code>stew/net</code> request is in progress.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/net"
 &lt;/goscript&gt;
 
 &#123;&#123; if net.IsLoading.Get() &#125;&#125;
-    &lt;div class="spinner"&gt;Chargement...&lt;/div&gt;
+    &lt;div class="spinner"&gt;Loading...&lt;/div&gt;
 &#123;&#123; end &#125;&#125;</Code>
     </section>
 
-    <NavFooter PrevLink="/guide/packages/js" PrevName="stew/js" NextLink="/guide/packages/reference" NextName="Récapitulatif API" />
+    <NavFooter PrevLink="/guide/packages/js" PrevName="stew/js" NextLink="/guide/packages/reference" NextName="API Reference" />
 </div>
+

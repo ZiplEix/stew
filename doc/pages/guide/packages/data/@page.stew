@@ -5,43 +5,54 @@
 </goscript>
 <div class="space-y-12">
     <header>
-        <div class="text-amber-600 font-mono text-sm mb-2">Packages stew/* / 14.1</div>
+        <div class="text-amber-600 font-mono text-sm mb-2">stew/* Packages / 14.1</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4 italic">📦 stew/data</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le package <code>stew/data</code> permet d'accéder aux données d'état envoyées par le serveur lors du rendu initial de la page.
+            The <code>stew/data</code> package provides access to state data sent by the server during the initial page rendering.
         </p>
     </header>
 
     <section class="space-y-6">
         <div class="bg-amber-50 border border-amber-200 rounded-3xl p-8">
-            <h3 class="text-xl font-bold text-amber-800 mb-4">Structure Globale <code>data</code></h3>
+            <h3 class="text-xl font-bold text-amber-800 mb-4">Global <code>data</code> Structure</h3>
             <p class="text-sm text-amber-900 mb-6 leading-relaxed">
-                Lorsque vous importez ce package, une variable globale <strong><code>data</code></strong> est automatiquement injectée dans votre script client. Elle contient les champs suivants :
+                When you import this package, a global <strong><code>data</code></strong> variable is automatically injected into your client script. It corresponds to the <code>WasmPageData</code> struct:
             </p>
+
+            <Code>&lt;goscript client&gt;
+type WasmPageData struct {
+    URL    string              // Initial URL path
+    Params map[string]string   // Dynamic path parameters
+    Query  map[string][]string // Search parameters
+    Store  map[string]any      // Custom data from handlers
+}
+&lt;/goscript&gt;</Code>
+
             
             <div class="grid md:grid-cols-2 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-amber-100 shadow-sm">
                     <div class="font-mono font-bold text-amber-700 mb-2 underline decoration-amber-200 decoration-2">data.URL string</div>
-                    <div class="text-stone-600 text-xs leading-relaxed italic">Le chemin (pathname) de l'URL au moment du rendu serveur (ex: <code>/users/42</code>).</div>
+                    <div class="text-stone-600 text-xs leading-relaxed italic">The pathname of the URL at the time of server rendering (e.g., <code>/users/42</code>).</div>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-amber-100 shadow-sm">
                     <div class="font-mono font-bold text-amber-700 mb-2 underline decoration-amber-200 decoration-2">data.Params map[string]string</div>
-                    <div class="text-stone-600 text-xs leading-relaxed italic">Contient les paramètres dynamiques capturés dans le chemin (ex: <code>id</code>).</div>
+                    <div class="text-stone-600 text-xs leading-relaxed italic">Contains dynamic parameters captured in the path (e.g., <code>id</code>).</div>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-amber-100 shadow-sm">
                     <div class="font-mono font-bold text-amber-700 mb-2 underline decoration-amber-200 decoration-2">data.Query map[string][]string</div>
-                    <div class="text-stone-600 text-xs leading-relaxed italic">Les paramètres de recherche (query string) décodés.</div>
+                    <div class="text-stone-600 text-xs leading-relaxed italic">The decoded search parameters (query string).</div>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-amber-100 shadow-sm">
                     <div class="font-mono font-bold text-amber-700 mb-2 underline decoration-amber-200 decoration-2">data.Store map[string]any</div>
-                    <div class="text-stone-600 text-xs leading-relaxed italic">Données injectées manuellement par le serveur via <code>handlers.PageData</code>.</div>
+                    <div class="text-stone-600 text-xs leading-relaxed italic">Data manually injected by the server via <code>handlers.PageData</code>.</div>
                 </div>
             </div>
         </div>
     </section>
 
+
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Exemple d'utilisation</h2>
+        <h2 class="text-2xl font-bold">Usage Example</h2>
         <Code>&lt;goscript client&gt;
     import "stew/data"
     import "stew/io"
@@ -50,21 +61,22 @@
         userID := data.Params["id"]
         source := data.Query["ref"][0]
         
-        Console.Log("Utilisateur " + userID + " venant de : " + source)
+        Console.Log("User " + userID + " coming from: " + source)
         
         if val, ok := data.Store["is_admin"]; ok && val.(bool) {
-             Alert("Accès administrateur détecté !")
+             Alert("Administrator access detected!")
         }
     }
 &lt;/goscript&gt;</Code>
     </section>
 
     <Alert Type="error">
-        <strong class="text-rose-900 block mb-1 font-bold">⚖️ Poids du binaire</strong>
+        <strong class="text-rose-900 block mb-1 font-bold">⚖️ Binary Weight</strong>
         <p class="text-rose-800">
-            L'import de ce package inclut la gestion JSON (<code>encoding/json</code>) dans le Wasm, ajoutant environ <strong>200 à 300 Ko</strong>. Ne l'utilisez que si l'accès à l'état serveur est indispensable.
+            Importing this package includes JSON handling (<code>encoding/json</code>) in the Wasm bundle, adding approximately <strong>200 to 300 KB</strong>. Use it only if accessing server state is indispensable.
         </p>
     </Alert>
 
-    <NavFooter PrevLink="/guide/packages" PrevName="Vue d'ensemble" NextLink="/guide/packages/io" NextName="stew/io" />
+    <NavFooter PrevLink="/guide/packages" PrevName="Overview" NextLink="/guide/packages/io" NextName="stew/io" />
 </div>
+

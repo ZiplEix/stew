@@ -6,39 +6,39 @@
 
 <div class="space-y-12">
     <header>
-        <div class="text-rose-600 font-mono text-sm mb-2">Packages stew/* / 14.5</div>
+        <div class="text-rose-600 font-mono text-sm mb-2">stew/* Packages / 14.5</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4 italic">🚥 stew/state</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le package <code>stew/state</code> est le cœur du moteur de réactivité de Stew. Il implémente le pattern <strong>Signaux</strong> (Signals) avec un système d'<strong>Auto-Tracking</strong> ultra-performant.
+            The <code>stew/state</code> package is the heart of Stew's reactivity engine. It implements the <strong>Signals</strong> pattern with a high-performance <strong>Auto-Tracking</strong> system.
         </p>
     </header>
 
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">Qu'est-ce qu'un Signal ?</h2>
+        <h2 class="text-2xl font-bold">What is a Signal?</h2>
         <p class="text-sm text-stone-600 leading-relaxed">
-            Un Signal est une cellule de donnée qui "traque" qui l'utilise. Contrairement à une variable standard, un Signal peut notifier automatiquement les parties de votre interface qui doivent être mises à jour lorsqu'il change.
+            A Signal is a data cell that "tracks" who is using it. Unlike a standard variable, a Signal can automatically notify the parts of your interface that need to be updated when it changes.
         </p>
         
         <div class="grid md:grid-cols-3 gap-4">
             <div class="p-6 bg-white border border-stone-200 rounded-3xl shadow-sm">
                 <div class="font-mono font-bold text-rose-700 mb-2 underline decoration-rose-100 decoration-4">New(val)</div>
-                <div class="text-stone-600 text-[10px] leading-relaxed italic">Crée un nouveau Signal typé avec sa valeur initiale.</div>
+                <div class="text-stone-600 text-[10px] leading-relaxed italic">Creates a new typed Signal with its initial value.</div>
             </div>
             <div class="p-6 bg-white border border-stone-200 rounded-3xl shadow-sm">
                 <div class="font-mono font-bold text-rose-700 mb-2 underline decoration-rose-100 decoration-4">.Get()</div>
-                <div class="text-stone-600 text-[10px] leading-relaxed italic">Lit la valeur et s'enregistre comme dépendance si appelé dans un Effet.</div>
+                <div class="text-stone-600 text-[10px] leading-relaxed italic">Reads the value and registers itself as a dependency if called within an Effect.</div>
             </div>
             <div class="p-6 bg-white border border-stone-200 rounded-3xl shadow-sm">
                 <div class="font-mono font-bold text-rose-700 mb-2 underline decoration-rose-100 decoration-4">.Set(val)</div>
-                <div class="text-stone-600 text-[10px] leading-relaxed italic">Met à jour la valeur et déclenche la re-exécution des abonnés.</div>
+                <div class="text-stone-600 text-[10px] leading-relaxed italic">Updates the value and triggers the re-execution of subscribers.</div>
             </div>
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Les Effets (Auto-Tracking)</h2>
+        <h2 class="text-2xl font-bold">Effects (Auto-Tracking)</h2>
         <p class="text-sm text-stone-600">
-            La fonction <code>state.Effect</code> permet de créer un bloc de logique qui réagit aux changements d'état. Vous n'avez pas besoin de déclarer manuellement les dépendances : Stew les détecte lors de l'exécution.
+            The <code>state.Effect</code> function allows you to create a logic block that reacts to state changes. You don't need to manually declare dependencies: Stew detects them during execution.
         </p>
         <Code>&lt;goscript client&gt;
     import "stew/state"
@@ -46,9 +46,9 @@
 
     count := state.New(0)
 
-    // Cet effet s'exécute immédiatement, puis à chaque fois que 'count' change.
+    // This effect runs immediately, then every time 'count' changes.
     state.Effect(func() {
-        Console.Log("Le compteur est à :", count.Get())
+        Console.Log("Counter is at:", count.Get())
     })
 
     // Mutation
@@ -59,24 +59,25 @@
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Intégration HTML</h2>
+        <h2 class="text-2xl font-bold">HTML Integration</h2>
         <p class="text-sm text-stone-600">
-            Le compilateur Stew facilite l'utilisation des Signaux dans le HTML. Si vous utilisez <code>.Get()</code> dans un binding, Stew crée automatiquement l'Effet pour vous.
+            The Stew compiler makes it easy to use Signals in HTML. If you use <code>.Get()</code> in a binding, Stew automatically creates the Effect for you.
         </p>
-        <Code>&lt;!-- Automatiquement réactif grâce à l'appel .Get() --&gt;
-&lt;h1&gt;Compteur : &#123;&#123; count.Get() &#125;&#125;&lt;/h1&gt;
+        <Code>&lt;!-- Automatically reactive thanks to the .Get() call --&gt;
+&lt;h1&gt;Counter: &#123;&#123; count.Get() &#125;&#125;&lt;/h1&gt;
 
 &lt;button on:click=&#123;&#123; count.Set(count.Get() + 1) &#125;&#125;&gt;
-    Incrémenter
+    Increment
 &lt;/button&gt;</Code>
     </section>
 
     <Alert Type="info">
-        <strong class="block mb-1">🚀 Optimisation chirurgicale</strong>
+        <strong class="block mb-1">🚀 Surgical Optimization</strong>
         <p class="text-sm">
-            Grâce aux Signaux, Stew ne re-render jamais toute votre page. Seuls les nœuds DOM exacts qui dépendent d'un Signal modifié sont mis à jour, garantissant une fluidité de 60 FPS même sur des terminaux mobiles modestes.
+            Thanks to Signals, Stew never re-renders your entire page. Only the exact DOM nodes that depend on a modified Signal are updated, ensuring a smooth 60 FPS even on modest mobile devices.
         </p>
     </Alert>
 
     <NavFooter PrevLink="/guide/packages/storage" PrevName="stew/storage" NextLink="/guide/packages/ui" NextName="stew/ui" />
 </div>
+

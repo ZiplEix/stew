@@ -5,10 +5,10 @@
 </goscript>
 <div class="space-y-12">
     <header>
-        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 09 — Logique Go</div>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 09 — Go Logic</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4">PageData</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            <code>stew.PageData</code> est la structure centrale de données passée à chaque page, layout et composant lors du rendu SSR.
+            <code>stew.PageData</code> is the central data structure passed to every page, layout, and component during SSR.
         </p>
     </header>
 
@@ -16,73 +16,93 @@
         <h2 class="text-2xl font-bold">Structure</h2>
         <Code><span class="text-stone-400">// sdk/stew/types.go</span>
 type PageData struct {
-    URL     string              // Chemin URL courant (ex: "/users/42")
-    Params  map[string]string   // Paramètres d'URL ({id} → "42")
-    Query   url.Values          // Paramètres de query (?page=2)
-    Request *http.Request       // Requête HTTP brute
-    Store   map[string]any      // Map libre pour stocker des données
+    URL     string              // Current URL path (e.g., "/users/42")
+    Params  map[string]string   // URL parameters ({id} → "42")
+    Query   url.Values          // Query parameters (?page=2)
+    Request *http.Request       // Raw HTTP request
+    Store   map[string]any      // Free-form map for data storage
 }</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Accès dans les templates</h2>
+        <h2 class="text-2xl font-bold">Template Access</h2>
         <Code>&lt;goscript&gt;
     import "strconv"
 
-    // URL courante
+    // Current URL
     currentPath := data.URL
 
-    // Paramètre dynamique d'URL (/users/{id})
+    // Dynamic URL parameter (/users/{id})
     userId := data.Params["id"]
 
     // Query string (?page=2&sort=desc)
     page := data.Query.Get("page")
     sort := data.Query.Get("sort")
 
-    // Header HTTP
+    // HTTP Header
     userAgent := data.Request.Header.Get("User-Agent")
 
-    // Store libre
+    // Free-form Store
     data.Store["user"] = "Baptiste"
 &lt;/goscript&gt;
 
-&lt;p&gt;URL : &#123;&#123; currentPath &#125;&#125;&lt;/p&gt;
-&lt;p&gt;Utilisateur #&#123;&#123; userId &#125;&#125;&lt;/p&gt;</Code>
+&lt;p&gt;URL: &#123;&#123; currentPath &#125;&#125;&lt;/p&gt;
+&lt;p&gt;User #&#123;&#123; userId &#125;&#125;&lt;/p&gt;</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Propagation à travers les layouts</h2>
-        <p class="text-sm text-stone-600">Le même objet <code>PageData</code> est créé une fois par requête dans le routeur et transmis à <strong>toute</strong> la chaîne de rendu (layout racine → layouts imbriqués → page → composants). Les modifications apportées à <code>data.Store</code> dans un <code>&lt;goscript&gt;</code> sont visibles dans tout le rendu de la même requête.</p>
+        <h2 class="text-2xl font-bold">Propagation Through Layouts</h2>
+        <p class="text-sm text-stone-600">The same <code>PageData</code> object is created once per request in the router and passed to the <strong>entire</strong> rendering chain (root layout → nested layouts → page → components). Changes made to <code>data.Store</code> in a <code>&lt;goscript&gt;</code> are visible throughout the entire rendering of that request.</p>
         <Alert Type="warning">
-            <strong class="text-amber-900">Ordre d'exécution :</strong> <span class="text-amber-800">Le code <code>&lt;goscript&gt;</code> d'une <strong>page</strong> est exécuté <em>avant</em> le rendu HTML de cette page. Mais le layout est rendu <em>autour</em> : son HTML se génère donc avant et après le contenu de la page dans le flux.</span>
+            <strong class="text-amber-900">Execution Order:</strong> <span class="text-amber-800">The <code>&lt;goscript&gt;</code> code of a <strong>page</strong> is executed <em>before</em> the HTML rendering of that page. However, the layout is rendered <em>around</em> the page: its HTML is generated both before and after the page content in the stream.</span>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Sérialisation JSON pour le client Wasm</h2>
-        <p class="text-sm text-stone-600">Lorsqu'une page contient un bloc <code>&lt;goscript client&gt;</code>, le compilateur injecte automatiquement :</p>
+        <h2 class="text-2xl font-bold">Accessing Data in Wasm</h2>
+        <p class="text-sm text-stone-600">To avoid JSON unmarshaling boilerplate, Stew provides a virtual import <code>stew/data</code>. When imported, a local <code>data</code> variable (of type <code>stew.PageData</code>) becomes available in your client-side scope.</p>
+        <Code>&lt;goscript client&gt;
+    import "stew/data"
+
+    func HandleClick() {
+        // Access URL parameters directly
+        userId := data.Params["id"]
+        
+        // Access the free-form Store
+        if title, ok := data.Store["Title"].(string); ok {
+            println("Page title: " + title)
+        }
+        
+        // Current URL
+        println("Current path: " + data.URL)
+    }
+&lt;/goscript&gt;</Code>
+        <Alert Type="important">
+            <strong class="text-blue-900">Recommended:</strong> <span class="text-blue-800">Using <code>import "stew/data"</code> is the standard way to retrieve state passed from the server in your Wasm scripts.</span>
+        </Alert>
+    </section>
+
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Low-level JSON Serialization (Manual)</h2>
+        <p class="text-sm text-stone-600">When a page contains a <code>&lt;goscript client&gt;</code> block, the compiler automatically injects the state as JSON:</p>
         <Code>&lt;script type="application/json" id="stew-pagedata"&gt;
-    {"URL":"/","Params":{},"Store":{"Title":"Mon App"},...}
+    {"URL":"/","Params":{},"Store":{"Title":"My App"},...}
 &lt;/script&gt;</Code>
-        <p class="text-sm text-stone-600">Côté Wasm, pour récupérer cette donnée :</p>
+        <p class="text-sm text-stone-600">If you need to unmarshal it manually (low-level access):</p>
         <Code>&lt;goscript client&gt;
     import "encoding/json"
 
-    pageData := wasm.GetPageDataJSON()
+    pageData := wasm.GetPageDataJSON() // Get raw JSON string
     var state map[string]interface{}
     json.Unmarshal([]byte(pageData), &state)
-
-    serverTitle := ""
-    if state["Store"] != nil {
-        if title, ok := state["Store"].(map[string]interface{})["Title"]; ok {
-            serverTitle = title.(string)
-        }
-    }
 &lt;/goscript&gt;</Code>
         <Alert Type="error">
-            <strong class="text-rose-900">Contrainte sécurité :</strong> <span class="text-rose-800">Ne jamais mettre de données sensibles dans <code>data.Store</code> si elles ne doivent pas être exposées au client. Toutes les données du <code>Store</code> sont sérialisées en JSON et visibles dans le HTML source.</span>
+            <strong class="text-rose-900">Security Constraint:</strong> <span class="text-rose-800">Never place sensitive data in <code>data.Store</code> if it should not be exposed to the client. All data in the <code>Store</code> is serialized into JSON and visible in the HTML source code.</span>
         </Alert>
     </section>
 
-    <NavFooter PrevLink="/guide/goscript-server" PrevName="goscript server" NextLink="/guide/middleware" NextName="Middleware" />
+
+    <NavFooter PrevLink="/guide/goscriptserver" PrevName="goscript server" NextLink="/guide/middleware" NextName="Middleware" />
 </div>
+

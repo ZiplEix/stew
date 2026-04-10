@@ -7,74 +7,75 @@
 </goscript>
 <div class="space-y-12">
     <header>
-        <div class="text-indigo-600 font-mono text-sm mb-2">Packages stew/* / 14.2</div>
+        <div class="text-indigo-600 font-mono text-sm mb-2">stew/* Packages / 14.2</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4 italic">📟 stew/io</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le package <code>stew/io</code> fournit des méthodes simples et légères pour interagir avec l'utilisateur et le développeur sans avoir à manipuler le bridge JS manuellement.
+            The <code>stew/io</code> package provides simple and lightweight methods for interacting with the user and the developer without having to manipulate the JS bridge manually.
         </p>
     </header>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-bold underline decoration-indigo-200 decoration-4">Console & Debug</h2>
-        <p class="text-sm text-stone-600">Ces méthodes s'affichent dans la console de développement du navigateur.</p>
+        <p class="text-sm text-stone-600">These methods are displayed in the browser's developer console.</p>
         <div class="grid md:grid-cols-2 gap-4">
             <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
                 <code class="font-bold text-indigo-700">Console.Log(...args)</code>
-                <p class="text-xs text-stone-500 mt-1">Affiche un message standard.</p>
+                <p class="text-xs text-stone-500 mt-1">Displays a standard message.</p>
             </div>
             <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
                 <code class="font-bold text-indigo-700">Console.Warn(...args)</code>
-                <p class="text-xs text-stone-500 mt-1">Affiche un avertissement (jaune).</p>
+                <p class="text-xs text-stone-500 mt-1">Displays a warning message (yellow).</p>
             </div>
             <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
                 <code class="font-bold text-indigo-700">Console.Warning(...args)</code>
-                <p class="text-xs text-stone-500 mt-1">Alias pour <code>Warn</code>.</p>
+                <p class="text-xs text-stone-500 mt-1">Alias for <code>Warn</code>.</p>
             </div>
             <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
                 <code class="font-bold text-indigo-700">Console.Error(...args)</code>
-                <p class="text-xs text-stone-500 mt-1">Affiche une erreur (rouge).</p>
+                <p class="text-xs text-stone-500 mt-1">Displays an error message (red).</p>
             </div>
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold underline decoration-indigo-200 decoration-4">Dialogues Navigateur</h2>
-        <p class="text-sm text-stone-600">Ces méthodes bloquent l'exécution du script (synchrone) jusqu'à interaction de l'utilisateur.</p>
+        <h2 class="text-2xl font-bold underline decoration-indigo-200 decoration-4">Browser Dialogs</h2>
+        <p class="text-sm text-stone-600">These methods block execution (synchronous) until user interaction.</p>
         <div class="grid md:grid-cols-2 gap-4">
             <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
                 <code class="font-bold text-indigo-700">Alert(message)</code>
-                <p class="text-xs text-stone-500 mt-1">Affiche une boîte d'alerte avec un bouton OK.</p>
+                <p class="text-xs text-stone-500 mt-1">Displays an alert box with an OK button.</p>
             </div>
             <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
                 <code class="font-bold text-indigo-700">Confirm(message) bool</code>
-                <p class="text-xs text-stone-500 mt-1">Demande une confirmation (OK/Annuler). Retourne true si OK.</p>
+                <p class="text-xs text-stone-500 mt-1">Requests a confirmation (OK/Cancel). Returns true if OK.</p>
             </div>
             <div class="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/20">
                 <code class="font-bold text-indigo-700">Prompt(message) string</code>
-                <p class="text-xs text-stone-500 mt-1">Demande une saisie texte. Retourne la valeur ou une chaîne vide.</p>
+                <p class="text-xs text-stone-500 mt-1">Requests text input. Returns the value or an empty string.</p>
             </div>
         </div>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Exemple Complet</h2>
+        <h2 class="text-2xl font-bold">Full Example</h2>
         <Code>&lt;goscript client&gt;
     import "stew/io"
 
     onDelete := func() {
-        if Confirm("Êtes-vous certain de vouloir supprimer ?") {
-            Console.Log("Action confirmée")
-            // Logique de suppression...
+        if Confirm("Are you sure you want to delete?") {
+            Console.Log("Action confirmed")
+            // Deletion logic...
         } else {
-            Console.Warn("Action annulée")
+            Console.Warn("Action cancelled")
         }
     }
 &lt;/goscript&gt;</Code>
     </section>
 
     <Alert Type="info">
-        <strong>⚡ Performance :</strong> Ce package est extrêmement léger car il utilise directement les fonctions natives du runtime Wasm Go.
+        <strong>⚡ Performance:</strong> This package is extremely lightweight as it directly uses native functions from the Go Wasm runtime.
     </Alert>
 
     <NavFooter PrevLink="/guide/packages/data" PrevName="stew/data" NextLink="/guide/packages/nav" NextName="stew/nav" />
 </div>
+

@@ -4,10 +4,10 @@
 </goscript>
 <div class="space-y-12">
     <header>
-        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 14 — Packages stew/*</div>
-        <h1 class="text-5xl font-black tracking-tighter mb-4">Vue d'ensemble des Packages</h1>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 14 — stew/* Packages</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">Packages Overview</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Stew-Lang fournit un ensemble de packages virtuels <code>stew/*</code> conçus pour offrir des fonctionnalités de haut niveau dans vos blocs <code>&lt;goscript client&gt;</code> tout en minimisant le poids du binaire TinyGo.
+            Stew-Lang provides a set of virtual <code>stew/*</code> packages designed to offer high-level functionality within your <code>&lt;goscript client&gt;</code> blocks while minimizing the TinyGo binary weight.
         </p>
     </header>
 
@@ -16,95 +16,104 @@
             <h3 class="text-xl font-bold mb-2 group-hover:text-amber-600 flex items-center gap-2">
                 📦 stew/data
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Accédez aux paramètres d'URL, à l'état de la route et aux données synchronisées par le serveur via le Store.</p>
-            <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Access URL parameters, route state, and server-side data synchronized via the Store.</p>
+            <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">View details →</span>
         </a>
 
         <a href="/guide/packages/io" class="group p-6 border border-stone-200 rounded-3xl hover:border-indigo-500 hover:bg-indigo-50/30 transition-all duration-300">
             <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 flex items-center gap-2">
                 📟 stew/io
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Interagissez avec l'utilisateur via des alertes, des prompts, des confirmations et la console de debug.</p>
-            <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Interact with the user through browser alerts, prompts, confirmations, and the debug console.</p>
+            <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">View details →</span>
         </a>
 
         <a href="/guide/packages/nav" class="group p-6 border border-stone-200 rounded-3xl hover:border-indigo-500 hover:bg-indigo-50/30 transition-all duration-300">
             <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 flex items-center gap-2">
                 🧭 stew/nav
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Gérez la navigation client, les changements d'URL sans rechargement (Morphing) et l'historique.</p>
-            <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Manage client-side navigation, URL changes without reloads (Morphing), and browser history.</p>
+            <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">View details →</span>
         </a>
 
         <a href="/guide/packages/storage" class="group p-6 border border-stone-200 rounded-3xl hover:border-emerald-500 hover:bg-emerald-50/30 transition-all duration-300">
             <h3 class="text-xl font-bold mb-2 group-hover:text-emerald-600 flex items-center gap-2">
                 💾 stew/storage
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Manipulez le LocalStorage et le SessionStorage de manière réactive avec synchronisation automatique.</p>
-            <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Manipulate LocalStorage and SessionStorage reactively with automatic synchronization.</p>
+            <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider">View details →</span>
         </a>
 
         <a href="/guide/packages/state" class="group p-6 border border-stone-200 rounded-3xl hover:border-rose-500 hover:bg-rose-50/30 transition-all duration-300">
             <h3 class="text-xl font-bold mb-2 group-hover:text-rose-600 flex items-center gap-2">
                 🚥 stew/state
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Le cœur de la réactivité : Signaux, Effects et Auto-Tracking pour des interfaces vivantes.</p>
-            <span class="text-xs font-bold text-rose-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">The heart of reactivity: Signals, Effects, and Auto-Tracking for living interfaces.</p>
+            <span class="text-xs font-bold text-rose-500 uppercase tracking-wider">View details →</span>
         </a>
 
         <a href="/guide/packages/ui" class="group p-6 border border-stone-200 rounded-3xl hover:border-blue-500 hover:bg-blue-50/30 transition-all duration-300">
             <h3 class="text-xl font-bold mb-2 group-hover:text-blue-600 flex items-center gap-2">
                 ✨ stew/ui
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Manipulez l'état visuel : titre de page, scroll, focus et classes CSS impératives.</p>
-            <span class="text-xs font-bold text-blue-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Control visual state: page title, scrolling, focus, and imperative CSS class manipulation.</p>
+            <span class="text-xs font-bold text-blue-500 uppercase tracking-wider">View details →</span>
         </a>
 
         <a href="/guide/packages/event" class="group p-6 border border-stone-200 rounded-3xl hover:border-indigo-500 hover:bg-indigo-50/30 transition-all duration-300">
             <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 flex items-center gap-2">
                 ⌨️ stew/event
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Écoutez les événements globaux (clavier, fenêtre, réseau) pour des interactions avancées.</p>
-            <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Listen to global events (keyboard, window, network) for advanced user interactions.</p>
+            <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">View details →</span>
         </a>
 
         <a href="/guide/packages/cookies" class="group p-6 border border-stone-200 rounded-3xl hover:border-emerald-500 hover:bg-emerald-50/30 transition-all duration-300">
             <h3 class="text-xl font-bold mb-2 group-hover:text-emerald-600 flex items-center gap-2">
                 🍪 stew/cookies
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Gérez les cookies client (sessions, préférences) sans parser de chaines complexes.</p>
-            <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Manage client-side cookies (sessions, preferences) without complex string parsing.</p>
+            <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider">View details →</span>
         </a>
 
         <a href="/guide/packages/anim" class="group p-6 border border-stone-200 rounded-3xl hover:border-purple-500 hover:bg-purple-50/30 transition-all duration-300">
             <h3 class="text-xl font-bold mb-2 group-hover:text-purple-600 flex items-center gap-2">
                 🎭 stew/anim
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Pilotez des animations fluides via l'API Web Animations native du navigateur.</p>
-            <span class="text-xs font-bold text-purple-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Drive smooth animations using the browser's native Web Animations API.</p>
+            <span class="text-xs font-bold text-purple-500 uppercase tracking-wider">View details →</span>
         </a>
 
         <a href="/guide/packages/js" class="group p-6 border border-stone-200 rounded-3xl hover:border-yellow-500 hover:bg-yellow-50/30 transition-all duration-300">
             <h3 class="text-xl font-bold mb-2 group-hover:text-yellow-600 flex items-center gap-2">
                 🔌 stew/js
             </h3>
-            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Pont d'interopérabilité pour exécuter du code JS et charger des bibliothèques externes.</p>
-            <span class="text-xs font-bold text-yellow-500 uppercase tracking-wider">Voir les détails →</span>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Bridge for executing raw JS code and loading external third-party libraries.</p>
+            <span class="text-xs font-bold text-yellow-500 uppercase tracking-wider">View details →</span>
+        </a>
+
+        <a href="/guide/packages/net" class="group p-6 border border-stone-200 rounded-3xl hover:border-amber-500 hover:bg-amber-50/30 transition-all duration-300">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-amber-600 flex items-center gap-2">
+                🌐 stew/net
+            </h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">Perform type-safe HTTP requests using Fetch, with reactive loading states.</p>
+            <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">View details →</span>
         </a>
     </div>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold italic">"Importation Explicite, Binaire Léger"</h2>
+        <h2 class="text-2xl font-bold italic">"Explicit Import, Lightweight Binary"</h2>
         <p class="text-sm text-stone-600 leading-relaxed">
-            Par défaut, un bundle Wasm Stew est extrêmement minimaliste. Aucun package n'est inclus s'il n'est pas utilisé. Cela vous permet de contrôler précisément le poids de vos pages.
+            By default, a Stew Wasm bundle is extremely minimalist. No package is included if it's not used. This allows you to precisely control your page weight.
         </p>
         <Alert Type="error">
-            <h4 class="text-rose-900 font-bold mb-2">⚖️ Impact sur la performance</h4>
+            <h4 class="text-rose-900 font-bold mb-2">⚖️ Performance Impact</h4>
             <p class="text-rose-800 text-sm">
-                Certains packages (comme <code>stew/data</code> qui nécessite la gestion JSON) peuvent augmenter la taille du binaire Wasm de plusieurs centaines de Ko. Utilisez-les avec discernement.
+                Some packages (like <code>stew/data</code> which requires JSON handling) can increase the Wasm binary size by several hundred KB. Use them with discernment.
             </p>
         </Alert>
     </section>
 
-    <NavFooter PrevLink="/guide/wasmsdk" PrevName="SDK Wasm" NextLink="/guide/packages/data" NextName="stew/data" />
+    <NavFooter PrevLink="/guide/wasmsdk" PrevName="Wasm SDK" NextLink="/guide/packages/data" NextName="stew/data" />
 </div>
+

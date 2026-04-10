@@ -5,36 +5,36 @@
 </goscript>
 <div class="space-y-12">
     <header>
-        <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 11 — Wasm Isomorphique</div>
+        <div class="text-indigo-600 font-mono text-sm mb-2">Guide / 11 — Isomorphic Wasm</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4">goscript client</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le bloc <code>&lt;goscript client&gt;</code> contient de la logique Go compilée en <strong>WebAssembly via TinyGo</strong>. Il s'exécute dans le navigateur, sans aucune requête serveur.
+            The <code>&lt;goscript client&gt;</code> block contains Go logic compiled into <strong>WebAssembly via TinyGo</strong>. It executes within the browser, without any server requests.
         </p>
     </header>
 
     <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-sm mb-12">
         <h3 class="font-bold text-amber-900 mb-2 flex items-center gap-2">
-            ⚠️ Note sur la performance de compilation
+            ⚠️ Note on Compilation Performance
         </h3>
         <p class="text-amber-800 leading-relaxed">
-            Contrairement au code serveur qui est compilé quasi-instantanément, la compilation du WebAssembly par <strong>TinyGo</strong> peut prendre entre <strong>1 et 5 secondes</strong> selon la complexité de vos scripts et de vos imports.
+            Unlike server-side code, which is compiled almost instantaneously, WebAssembly compilation by <strong>TinyGo</strong> can take between <strong>1 and 5 seconds</strong> depending on the complexity of your scripts and imports.
         </p>
         <p class="text-amber-800 mt-2">
-            En mode développement (<code>stew run dev</code>), il est normal de constater un léger délai entre la sauvegarde de votre fichier et l'application effective des changements dans le navigateur. Si vos modifications ne semblent pas prises en compte immédiatement, attendez quelques secondes que le binaire Wasm soit prêt.
+            In development mode (<code>stew run dev</code>), it is normal to experience a slight delay between saving your file and the changes taking effect in the browser. If your modifications don't seem to be reflected immediately, wait a few seconds for the Wasm binary to be ready.
         </p>
     </div>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Syntaxe de base (Signaux)</h2>
+        <h2 class="text-2xl font-bold">Basic Syntax (Signals)</h2>
         <Code>&lt;goscript client&gt;
-    import "stew/state" // Import du package de Signaux
+    import "stew/state" // Import the Signals package
 
-    <span class="text-stone-400">// Variables réactives (Signaux)</span>
+    <span class="text-stone-400">// Reactive variables (Signals)</span>
     count := state.New(0)
 
-    <span class="text-stone-400">// Computed / Effet : recalculé automatiquement (Auto-Tracking)</span>
+    <span class="text-stone-400">// Computed / Effect: Automatically recalculated (Auto-Tracking)</span>
     state.Effect(func() {
-        console.Log("Le compteur est à :", count.Get())
+        console.Log("The counter is at:", count.Get())
     })
 &lt;/goscript&gt;
 
@@ -42,49 +42,49 @@
 &lt;button on&#58;click=&#123;&#123; count.Set(count.Get() + 1) &#125;&#125;&gt;+&lt;/button&gt;
 &lt;button on&#58;click=&#123;&#123; count.Set(count.Get() - 1) &#125;&#125;&gt;-&lt;/button&gt;</Code>
         <Alert Type="info">
-            <strong class="text-indigo-900">Note :</strong> <span class="text-indigo-800">Grâce à <code>stew/state</code>, le DOM ne se rafraîchit que lorsqu'un Signal précis est mis à jour, optimisant grandement les performances CPU.</span>
+            <strong class="text-indigo-900">Note:</strong> <span class="text-indigo-800">Thanks to <code>stew/state</code>, the DOM only refreshes when a specific Signal is updated, greatly optimizing CPU performance.</span>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Ce que génère le compilateur</h2>
-        <p class="text-sm text-stone-600">À partir de la page ci-dessus, Stew génère un fichier temporaire <code>/tmp/stew_wasm/stew_main_wasm_pages_page.go</code> :</p>
+        <h2 class="text-2xl font-bold">What the Compiler Generates</h2>
+        <p class="text-sm text-stone-600">From the page above, Stew generates a temporary file <code>/tmp/stew_wasm/stew_main_wasm_pages_page.go</code>:</p>
         <Code>package main
 
 import (
-    github.com/ZiplEix/stew/sdk/wasm"
-    github.com/ZiplEix/stew/sdk/wasm/state"
+    "github.com/ZiplEix/stew/sdk/wasm"
+    "github.com/ZiplEix/stew/sdk/wasm/state"
 )
 
 func main() {
-    <span class="text-stone-400">// Code du bloc &lt;goscript client&gt;</span>
+    <span class="text-stone-400">// Code from the &lt;goscript client&gt; block</span>
     count := state.New(0)
 
     state.Effect(func() {
-        console.Log("Le compteur est à :", count.Get())
+        console.Log("The counter is at:", count.Get())
     })
 
-    <span class="text-stone-400">// Bindings générés automatiquement</span>
+    <span class="text-stone-400">// Automatically generated bindings</span>
     wasm.BindBlock("stew-bind-page-0", func() string { return fmt.Sprint(count.Get()) })
     wasm.OnEvent("stew-bind-page-1", "click", func() { count.Set(count.Get() + 1) })
 
-    wasm.StartReactivityLoop() <span class="text-stone-400">// Bloque le main thread Wasm ouvert</span>
+    wasm.StartReactivityLoop() <span class="text-stone-400">// Keeps the Wasm main thread open</span>
 
     _ = count
 }</Code>
-        <p class="text-sm text-stone-500">Ce fichier est ensuite compilé avec :</p>
+        <p class="text-sm text-stone-500">This file is then compiled with:</p>
         <Code>tinygo build -target wasm -no-debug -o ./static/wasm/pages_page.wasm ...</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Naming du binaire Wasm</h2>
-        <p class="text-sm text-stone-600">Le fichier <code>.wasm</code> est nommé d'après le chemin relatif du fichier <code>.stew</code> source pour éviter les collisions :</p>
+        <h2 class="text-2xl font-bold">Wasm Binary Naming</h2>
+        <p class="text-sm text-stone-600">The <code>.wasm</code> file is named after the relative path of the source <code>.stew</code> file to avoid collisions:</p>
         <div class="overflow-x-auto">
             <table class="w-full text-sm border border-stone-200 rounded-xl overflow-hidden">
                 <thead class="bg-stone-50">
                     <tr>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Fichier source</th>
-                        <th class="text-left p-3 font-bold border-b border-stone-200">Binaire Wasm généré</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Source File</th>
+                        <th class="text-left p-3 font-bold border-b border-stone-200">Generated Wasm Binary</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -97,37 +97,37 @@ func main() {
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Récupérer les données serveur (DX)</h2>
-        <p class="text-sm text-stone-600">Pour éviter le boilerplate de désérialisation JSON, Stew propose un import virtuel <code>stew/data</code> qui expose automatiquement une variable globale <code>data</code>.</p>
+        <h2 class="text-2xl font-bold">Retrieving Server Data (DX)</h2>
+        <p class="text-sm text-stone-600">To avoid JSON unmarshaling boilerplate, Stew offers a virtual import <code>stew/data</code> which automatically exposes a global <code>data</code> variable.</p>
         <Code>&lt;goscript client&gt;
     import "stew/data"
 
-    console.Log("URL de la page :", data.URL)
+    console.Log("Page URL:", data.URL)
     userId := data.Params["id"]
 &lt;/goscript&gt;</Code>
         <Alert Type="info">
-            <strong class="text-indigo-900">📚 Référence complète :</strong> <span class="text-indigo-800">Consultez le guide sur l'<strong><a href="/guide/wasmsdk" class="underline">SDK Wasm</a></strong> pour voir la liste complète des champs disponibles et l'impact sur le poids du binaire.</span>
+            <strong class="text-indigo-900">📚 Full Reference:</strong> <span class="text-indigo-800">Check the <strong><a href="/guide/wasmsdk" class="underline">Wasm SDK</a></strong> guide for a complete list of available fields and impact on binary size.</span>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Performance et Réactivité</h2>
+        <h2 class="text-2xl font-bold">Performance and Reactivity</h2>
         <Alert Type="info">
-            <h3 class="font-bold text-blue-900 mb-1">Architecture Push-Based</h3>
+            <h3 class="font-bold text-blue-900 mb-1">Push-Based Architecture</h3>
             <p class="text-blue-800 leading-relaxed">
-                Contrairement à certains frameworks qui vérifient 60 fois par seconde si vos variables ont changé (Dirty Checking / Polling), le système de Signaux de Stew (<code>stew/state</code>) est complètement inerte et passif. 
+                Unlike some frameworks that check 60 times per second if your variables have changed (Dirty Checking / Polling), Stew's Signal system (<code>stew/state</code>) is completely inert and passive. 
             </p>
             <ul class="list-disc list-inside mt-2 text-blue-800 space-y-1">
-                <li>Le DOM est repeint uniquement quand un `.Set()` est appelé.</li>
-                <li>Absolument 0% de CPU n'est gaspillé au repos.</li>
-                <li>Les appels de diff partiel (via l'intégration Idiomorph interne de Stew) sont granulaires et limités aux blocs impactés par un Signal précis.</li>
+                <li>The DOM is only repainted when a <code>.Set()</code> is called.</li>
+                <li>Absolutely 0% CPU is wasted at rest.</li>
+                <li>Partial diff calls (via Stew's internal Idiomorph integration) are granular and limited to the blocks impacted by a specific Signal.</li>
             </ul>
         </Alert>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Isolation et Scopes</h2>
-        <p class="text-sm text-stone-600">Stew sépare hermétiquement l'exécution serveur (SSR) de l'exécution client (Wasm). Voici les règles d'or :</p>
+        <h2 class="text-2xl font-bold">Isolation and Scopes</h2>
+        <p class="text-sm text-stone-600">Stew hermetically separates server-side execution (SSR) from client-side execution (Wasm). Here are the golden rules:</p>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6">
@@ -135,10 +135,10 @@ func main() {
                     🖥️ goscript server (SSR)
                 </h3>
                 <ul class="text-sm text-indigo-800 space-y-2">
-                    <li><strong>Binaire</strong> : Natif (Linux/macOS/Windows)</li>
-                    <li><strong>Capacités</strong> : Accès aux fichiers, DB, réseau total</li>
-                    <li><strong>Lifecycle</strong> : Exécuté une seule fois par requête</li>
-                    <li><strong>Scope</strong> : N'est <strong>pas accessible</strong> par les bindings <code>on:</code> / <code>bind:</code></li>
+                    <li><strong>Binary</strong>: Native (Linux/macOS/Windows)</li>
+                    <li><strong>Capabilities</strong>: File access, DB, full network access</li>
+                    <li><strong>Lifecycle</strong>: Executed once per request</li>
+                    <li><strong>Scope</strong>: <strong>Not accessible</strong> by <code>on:</code> / <code>bind:</code> bindings</li>
                 </ul>
             </div>
             <div class="bg-amber-50 border border-amber-100 rounded-2xl p-6">
@@ -146,31 +146,32 @@ func main() {
                     🌐 goscript client (Wasm)
                 </h3>
                 <ul class="text-sm text-amber-800 space-y-2">
-                    <li><strong>Binaire</strong> : WebAssembly (W3C Standard)</li>
-                    <li><strong>Capacités</strong> : Sandboxé, DOM, SDK Navigation/IO</li>
-                    <li><strong>Lifecycle</strong> : Boucle de réactivité infinie</li>
-                    <li><strong>Scope</strong> : C'est le <strong>scope exclusif</strong> des bindings</li>
+                    <li><strong>Binary</strong>: WebAssembly (W3C Standard)</li>
+                    <li><strong>Capabilities</strong>: Sandboxed, DOM, Navigation/IO SDKs</li>
+                    <li><strong>Lifecycle</strong>: Infinite reactivity loop</li>
+                    <li><strong>Scope</strong>: The <strong>exclusive scope</strong> for bindings</li>
                 </ul>
             </div>
         </div>
 
         <div class="bg-rose-50 border border-rose-200 rounded-xl p-5 text-sm mt-8">
-            <h3 class="font-bold text-rose-900 mb-2">Pourquoi mes variables serveur sont "undefined" ?</h3>
+            <h3 class="font-bold text-rose-900 mb-2">Why are my server variables "undefined"?</h3>
             <p class="text-rose-800 leading-relaxed">
-                Si vous déclarez <code>user := ...</code> dans un bloc serveur et tentez de faire <code>on&#58;click=&#123;&#123; user.Save() &#125;&#125;</code>, la compilation Wasm échouera. Les bindings <code>bind:</code> et <code>on:</code> sont compilés <strong>directement dans le binaire Wasm</strong>. Ils ne voient que ce qui est importé ou déclaré dans <code>&lt;goscript client&gt;</code>.
+                If you declare <code>user := ...</code> in a server block and try to use <code>on&#58;click=&#123;&#123; user.Save() &#125;&#125;</code>, the Wasm compilation will fail. The <code>bind:</code> and <code>on:</code> bindings are compiled <strong>directly into the Wasm binary</strong>. They can only see what is imported or declared within the <code>&lt;goscript client&gt;</code> block.
             </p>
         </div>
 
         <div class="bg-green-50 border border-green-200 rounded-xl p-5 text-sm">
-            <h3 class="font-bold text-green-900 mb-2">✅ Recommandation : Communication</h3>
+            <h3 class="font-bold text-green-900 mb-2">✅ Recommendation: Communication</h3>
             <p class="text-green-800">
-                Pour faire passer des données du serveur vers un binding client :
-                <br/>1. Déposez-les dans <code>data.Store</code> côté serveur.
-                <br/>2. Récupérez-les via <code>import "stew/data"</code> côté client.
-                <br/>3. Liez la variable client obtenue à votre HTML.
+                To pass data from the server to a client-side binding:
+                <br/>1. Store it in <code>data.Store</code> on the server side.
+                <br/>2. Retrieve it via <code>import "stew/data"</code> on the client side.
+                <br/>3. Bind the resulting client variable to your HTML.
             </p>
         </div>
     </section>
 
-    <NavFooter PrevLink="/guide/middleware" PrevName="Middleware" NextLink="/guide/wasm-bindings" NextName="Bindings DOM" />
+    <NavFooter PrevLink="/guide/middleware" PrevName="Middleware" NextLink="/guide/wasmbindings" NextName="DOM Bindings" />
 </div>
+
