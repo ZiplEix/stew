@@ -2,51 +2,67 @@
     import "../../../components/Code.stew"
     import "../../../components/NavFooter.stew"
 </goscript>
+
 <div class="space-y-12">
+    <!-- Troll Intro Section -->
+    <section class="min-h-screen flex flex-col items-center justify-center text-center space-y-8 border-b-4 border-dashed border-stone-200">
+        <div class="text-8xl">📦</div>
+        <h1 class="text-7xl font-black tracking-tighter text-stone-900 italic">It's a Binary.</h1>
+        <p class="text-3xl text-stone-500 max-w-2xl leading-tight">
+            Not a Next.js project. Not a collection of 50,000 node_modules. No complex runtime required.
+        </p>
+        <div class="bg-stone-900 text-amber-400 p-8 rounded-3xl font-mono text-xl shadow-2xl skew-y-1 hover:skew-y-0 transition-transform duration-500 cursor-default">
+            Download. Run. Done.
+        </div>
+        <p class="text-sm text-stone-400 animate-bounce">
+            Scroll down for the "boring" technical details
+        </p>
+    </section>
+
     <header>
-        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 17 — Production</div>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 18 — Production</div>
         <h1 class="text-5xl font-black tracking-tighter mb-4">Deployment & Docker</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            De votre cuisine locale vers le cloud. Les applications Stew sont compilées en un binaire Go unique et sans dépendances, idéal pour la conteneurisation.
+            From your local kitchen to the cloud. Stew applications are compiled into a single Go binary with no dependencies, making them perfect for containerization.
         </p>
     </header>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Dépendance : TinyGo</h2>
-        <p class="text-sm text-stone-600">Pour compiler les parties client (Wasm) de votre application, vous devez disposer de <strong>TinyGo</strong> installé sur votre machine de build ou dans votre conteneur CI/CD.</p>
+        <h2 class="text-2xl font-bold">Dependency: TinyGo</h2>
+        <p class="text-sm text-stone-600">To compile the client-side (Wasm) parts of your application, you must have <strong>TinyGo</strong> installed on your build machine or in your CI/CD container.</p>
         <Code>wget https://github.com/tinygo-org/tinygo/releases/download/v0.40.1/tinygo_0.40.1_amd64.deb
 sudo dpkg -i tinygo_0.40.1_amd64.deb</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Le processus de Build</h2>
-        <p class="text-sm text-stone-600">Avant de déployer, vous devez exécuter la commande de build séquentielle. Cela garantit que le routeur est à jour et que tous les composants Stew sont compilés avant la création du binaire final.</p>
+        <h2 class="text-2xl font-bold">The Build Process</h2>
+        <p class="text-sm text-stone-600">Before deploying, you must execute the sequential build command. This ensures the router is up-to-date and all Stew components are compiled before creating the final binary.</p>
         <Code>stew run build</Code>
-        <p class="text-xs text-stone-500 italic">Cette commande exécute séquentiellement : <code>stew compile</code> → <code>stew generate</code> → <code>go build</code>.</p>
+        <p class="text-xs text-stone-500 italic">This command sequentially runs: <code>stew compile</code> → <code>stew generate</code> → <code>go build</code>.</p>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Dockerfile Multi-Stage</h2>
-        <p class="text-sm text-stone-600">La méthode la plus efficace pour déployer est un build Docker multi-stage. Nous utilisons une image lourde pour compiler et une image légère (<code>alpine</code> ou <code>scratch</code>) pour l'exécution.</p>
+        <h2 class="text-2xl font-bold">Multi-Stage Dockerfile</h2>
+        <p class="text-sm text-stone-600">The most efficient way to deploy is a multi-stage Docker build. We use a "heavy" image for compilation and a lightweight image (<code>alpine</code> or <code>scratch</code>) for execution.</p>
         
         <Code># Stage 1: Build
 FROM golang:1.22-alpine AS builder
 
-# Installer Stew
+# Install Stew
 RUN go install github.com/ZiplEix/stew@latest
 
 WORKDIR /app
 COPY . .
 
-# Compiler le projet
+# Compile the project
 RUN stew run build
 
 # Stage 2: Run
 FROM alpine:latest
 WORKDIR /root/
-# Copier le binaire généré (ajuster le chemin si nécessaire)
+# Copy the generated binary (adjust path if needed)
 COPY --from=builder /app/bin/app .
-# Copier les assets statiques et Wasm
+# Copy static and Wasm assets
 COPY --from=builder /app/static ./static
 
 EXPOSE 8080
@@ -54,17 +70,17 @@ CMD ["./app"]</Code>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Variables d'environnement</h2>
-        <p class="text-sm text-stone-600">En production, Steward ignore les fichiers <code>.env.local</code> et privilégie les variables système. Assurez-vous que votre hébergeur (Fly.io, Railway, DigitalOcean) possède les variables suivantes :</p>
+        <h2 class="text-2xl font-bold">Environment Variables</h2>
+        <p class="text-sm text-stone-600">In production, Stew ignores <code>.env.local</code> files and prefers system environment variables. Ensure your host (Fly.io, Railway, DigitalOcean) has the following variables set:</p>
         <ul class="list-disc list-inside text-stone-600 text-sm space-y-2 ml-4">
-            <li><code class="font-bold text-stone-900">PORT</code> : Le port d'écoute (par défaut 8080).</li>
-            <li><code class="font-bold text-stone-900">STEW_DEV</code> : Doit être à <code>false</code> pour désactiver les scripts de Hot Morphing.</li>
+            <li><code class="font-bold text-stone-900">PORT</code>: The listening port (defaults to 8080).</li>
+            <li><code class="font-bold text-stone-900">STEW_DEV</code>: Must be set to <code>false</code> to disable Hot Morphing scripts.</li>
         </ul>
     </section>
 
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold italic text-amber-700">📦 Assets Statiques & Embed</h2>
-        <p class="text-sm text-stone-600">Pour garder votre application sous forme d'un **binaire unique**, nous recommandons d'utiliser le package <code>embed</code> de Go pour inclure vos fichiers statiques (images, CSS, Wasm) directement dans l'exécutable.</p>
+        <h2 class="text-2xl font-bold italic text-amber-700">📦 Static Assets & Embed</h2>
+        <p class="text-sm text-stone-600">To maintain your application as a <strong>single binary</strong>, we recommend using Go's <code>embed</code> package to include your static files (images, CSS, Wasm) directly in the executable.</p>
         <Code>// main.go
 //go:embed static/*
 var staticFS embed.FS
@@ -76,5 +92,6 @@ func main() {
 }</Code>
     </section>
 
-    <NavFooter PrevLink="/guide/internals" PrevName="Internals" NextLink="/guide" NextName="Getting Started" />
+    <NavFooter PrevLink="/guide/internals" PrevName="Internals" NextLink="/guide/troubleshooting" NextName="Troubleshooting" />
 </div>
+

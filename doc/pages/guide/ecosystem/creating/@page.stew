@@ -6,31 +6,31 @@
 
 <div class="space-y-12">
     <header>
-        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 15 — Écosystème</div>
-        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">Créer une librairie Stew</h1>
+        <div class="text-amber-600 font-mono text-sm mb-2">Guide / 15 — Ecosystem</div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 italic">Creating a Stew Library</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Grâce à son intégration native avec l'écosystème Go, la création et la publication de bibliothèques tierces (UI, Wrappers JS, Utilitaires) sont simples, sans gestionnaire de paquets supplémentaire.
+            Thanks to its native integration with the Go ecosystem, creating and publishing third-party libraries (UI, JS Wrappers, Utilities) is simple and doesn't require an additional package manager.
         </p>
     </header>
 
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">1. La Fondation : Un Go Module standard</h2>
+        <h2 class="text-2xl font-bold">1. The Foundation: A Standard Go Module</h2>
         <p class="text-sm text-stone-600">
-            Puisque Stew transpile vers du code Go, une librairie Stew est avant tout un module Go classique.
+            Since Stew transpiles to Go code, a Stew library is, first and foremost, a classic Go module.
         </p>
         
         <Alert Type="info">
-            N'inventez pas de nouveau système de publication ! Initiez un module, codez, pushez sur GitHub, et publiez des tags de version.
+            No need to invent a new publication system! Initialize a module, code, push to GitHub, and publish version tags just like any other Go library.
         </Alert>
 
         <Code>mkdir stew-awesome-ui && cd stew-awesome-ui
-go mod init github.com/votre_nom/stew-awesome-ui</Code>
+go mod init github.com/your_name/stew-awesome-ui</Code>
     </section>
 
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">2. Création de Composants Réutilisables</h2>
+        <h2 class="text-2xl font-bold">2. Creating Reusable Components</h2>
         <p class="text-sm text-stone-600">
-            Créez vos fichiers <code>.stew</code> normalement dans l'arborescence de votre module. Par exemple, <code>components/Button.stew</code> :
+            Create your <code>.stew</code> files as you normally would within your module's structure. For example, <code>components/Button.stew</code>:
         </p>
 
         <Code>&lt;button class="bg-blue-500 rounded p-2"&gt;
@@ -38,22 +38,22 @@ go mod init github.com/votre_nom/stew-awesome-ui</Code>
 &lt;/button&gt;</Code>
         
         <p class="text-sm text-stone-700 italic">
-            Les utilisateurs importeront ensuite ce composant de manière absolue dans leurs projets :
+            Users will then import this component using its absolute path in their own projects:
         </p>
         <Code>&lt;goscript&gt;
-    import "github.com/votre_nom/stew-awesome-ui/components/Button.stew"
+    import "github.com/your_name/stew-awesome-ui/components/Button.stew"
 &lt;/goscript&gt;
 
-&lt;Button&gt;Mon bouton tiers&lt;/Button&gt;</Code>
-        <p class="text-xs text-stone-500">
-            Le compilateur Stew du projet hôte se chargera automatiquement d'aller chercher et lire vos fichiers <code>.stew</code> directement depuis son cache <code>GOMODCACHE</code> !
+&lt;Button&gt;My third-party button&lt;/Button&gt;</Code>
+        <p class="text-xs text-stone-500 leading-relaxed">
+            <strong>How it works:</strong> The host project's Stew compiler automatically resolves these imports. If the module is a dependency (listed in <code>go.mod</code>), the compiler will read the <code>.stew</code> files directly from your <code>GOMODCACHE</code>! 
         </p>
     </section>
 
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">3. Encapsulation Asynchrone de Bibliothèques JS</h2>
+        <h2 class="text-2xl font-bold">3. Asynchronous JS Library Wrapping</h2>
         <p class="text-sm text-stone-600">
-            Si votre composant encapsule une bibliothèques JavaScript existante (Chart.js, Stripe, etc...), le meilleur moyen d'offrir une expérience <strong>Zero-Config</strong> à l'utilisateur est de charger le CDN à la volée grâce à <code>stew/js</code>.
+            If your component wraps an existing JavaScript library (Chart.js, Stripe, etc.), the best way to offer a <strong>Zero-Config</strong> experience is to load the CDN on the fly using <code>stew/js</code>.
         </p>
 
         <Code>&lt;goscript client&gt;
@@ -61,12 +61,12 @@ go mod init github.com/votre_nom/stew-awesome-ui</Code>
     import "stew/data"
 
     func onMount() {
-        // Le script est chargé seulement si son URL n'est pas déjà présente dans le document
+        // The script is loaded only if its URL is not already present in the document
         js.Load("https://cdn.jsdelivr.net/npm/chart.js", func() {
-            // Le code Wasm suivant sera exécuté APRES le téléchargement de la librairie JS tierce
+            // The following Wasm code will be executed AFTER the JS library is downloaded
             chart := js.Global("Chart").New(
                 js.Global("document").Call("getElementById", data.Attr["id"]),
-                // ... configuration JSON ...
+                // ... JSON configuration ...
             )
         })
     }
@@ -74,24 +74,24 @@ go mod init github.com/votre_nom/stew-awesome-ui</Code>
     </section>
 
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">4. Fichiers Statiques Additionnels</h2>
+        <h2 class="text-2xl font-bold">4. Additional Static Files</h2>
         <p class="text-sm text-stone-600">
-            Si votre librairie nécessite des images ou des CSS spécifiques embarqués, placez-les dans un dossier <code>static/</code> à la racine de votre module Go.
+            If your library requires images or specific embedded CSS, place them in a <code>static/</code> folder at the root of your Go module.
         </p>
         <Alert Type="success">
-            La commande <code>stew install</code> scannera automatiquement les modules Go dépendants de votre projet. S'ils contiennent un dossier <code>static/</code>, il sera recopié intégralement dans <code>static/vendor/github.com/.../</code> dans le projet de l'utilisateur.
+            The <code>stew install</code> command automatically scans your project's Go dependencies. If they contain a <code>static/</code> folder, it will be fully copied into <code>static/vendor/github.com/.../</code> in the user's project.
         </Alert>
     </section>
 
     <section class="p-8 bg-indigo-50 border border-indigo-200 rounded-3xl space-y-4">
-        <h2 class="text-2xl font-bold text-indigo-900 italic">5. Étape impérative avant publication</h2>
-        <p class="text-sm text-indigo-800 leading-relaxed">
-            Stew reste un environnement compilé vers Go. Pour que les utilisateurs (ainsi que la commande <code>go build</code>) puissent l'utiliser, il faut que Stew génère les fichiers <code>.go</code> correspondant à vos composants <strong>avant qu'ils n'atterrissent sur GitHub</strong>.
+        <h2 class="text-2xl font-bold text-indigo-900 italic">5. Mandatory Step Before Publishing</h2>
+        <p class="text-sm text-indigo-800 leading-relaxed font-bold">
+            Stew is a Go-compiled environment. For users (and the <code>go build</code> command) to use your library, Stew must generate the <code>.go</code> files corresponding to your components <strong>before you push to GitHub</strong>.
         </p>
-        <Code># Compile les fichiers .stew en fichiers .go
+        <Code># Compiles .stew files into .go files
 stew compile</Code>
         <p class="text-xs text-indigo-700 italic">
-            Vos fichiers <code>.go</code> doivent être committés dans votre dépôt distant.
+            Your generated <code>.go</code> files <strong>must</strong> be committed to your remote repository. This ensures the library is usable even by developers who don't have the <code>stew</code> binary installed in their CI/CD pipeline.
         </p>
     </section>
 

@@ -4,14 +4,14 @@
 <div class="space-y-12">
     <header>
         <div class="text-amber-600 font-mono text-sm mb-2">Guide / 14 — CLI</div>
-        <h1 class="text-5xl font-black tracking-tighter mb-4">Toutes les commandes</h1>
+        <h1 class="text-5xl font-black tracking-tighter mb-4">All Commands</h1>
         <p class="text-xl text-stone-500 leading-relaxed">
-            Le CLI <code>stew</code> offre toutes les commandes nécessaires au développement, la compilation, la génération de code, et la maintenance du projet.
+            The <code>stew</code> CLI provides all the commands necessary for development, compilation, code generation, and project maintenance.
         </p>
     </header>
 
     <section class="space-y-6">
-        <h2 class="text-2xl font-bold">Référence complète</h2>
+        <h2 class="text-2xl font-bold">Full Reference</h2>
 
         <div class="space-y-4">
 
@@ -20,8 +20,8 @@
                     <code class="text-amber-400 font-mono font-bold">stew init [module-name]</code>
                 </div>
                 <div class="p-5 text-sm space-y-2">
-                    <p>Initialise un nouveau projet Stew dans le dossier courant. Crée tout le scaffolding nécessaire.</p>
-                    <p class="text-stone-500"><strong>Actions</strong> : <code>go mod init</code>, génère <code>.stew.yaml</code>, <code>main.go</code>, <code>.gitignore</code>, <code>pages/</code>, copie <code>wasm_exec.js</code>, lance <code>stew install</code> + <code>stew compile</code> + <code>stew generate</code> + <code>go mod tidy</code>.</p>
+                    <p>Initializes a new Stew project in the current folder. Creates all necessary scaffolding.</p>
+                    <p class="text-stone-600"><strong>Actions</strong>: Runs <code>go mod init</code>, generates <code>.stew.yaml</code>, <code>main.go</code>, <code>.gitignore</code>, <code>pages/</code> directory, copies <code>wasm_exec.js</code>, and runs <code>stew install</code> + <code>stew compile</code> + <code>stew generate</code> + <code>go mod tidy</code>.</p>
                 </div>
             </div>
 
@@ -30,9 +30,9 @@
                     <code class="text-amber-400 font-mono font-bold">stew compile [--watch / -w]</code>
                 </div>
                 <div class="p-5 text-sm space-y-2">
-                    <p>Compile récursivement tous les fichiers <code>.stew</code> du projet en fichiers Go. Génère aussi les binaires Wasm pour les pages avec un bloc <code>&lt;goscript client&gt;</code>. Enregistre tous les fichiers générés dans <code>.stew/compiled.json</code>.</p>
-                    <p class="text-stone-500"><strong>Output</strong> : <code>stew.page.go</code>, <code>stew.layout.go</code>, <code>Component.go</code>, <code>static/wasm/*.wasm</code></p>
-                    <p class="text-stone-500"><strong>Watch</strong> : En mode <code>--watch</code>, surveille les modifications de fichiers <code>.stew</code> et recompile automatiquement (debounce 100ms). Les fichiers supprimés déclenchent la suppression du fichier Go correspondant.</p>
+                    <p>Recursively compiles all <code>.stew</code> files in the project into Go files. It also generates Wasm binaries for pages containing a <code>&lt;goscript client&gt;</code> block. All generated files are tracked in <code>.stew/compiled.json</code>.</p>
+                    <p class="text-stone-600"><strong>Output</strong>: <code>stew.page.go</code>, <code>stew.layout.go</code>, <code>Component.go</code>, <code>static/wasm/*.wasm</code>.</p>
+                    <p class="text-stone-600"><strong>Watch</strong>: In <code>--watch</code> mode, it monitors <code>.stew</code> file changes and recompiles automatically (100ms debounce). Deleted files will trigger the removal of their corresponding generated Go files.</p>
                 </div>
             </div>
 
@@ -41,19 +41,19 @@
                     <code class="text-amber-400 font-mono font-bold">stew generate [--watch / -w]</code>
                 </div>
                 <div class="p-5 text-sm space-y-2">
-                    <p>Analyse l'arborescence <code>pages/</code> et régénère <code>stew_router_gen.go</code>. Doit être relancé après toute création/suppression de page ou de layout.</p>
-                    <p class="text-stone-500">En mode watch, surveille le dossier <code>pages/</code> pour les créations/suppressions de fichiers Go.</p>
+                    <p>Analyzes the <code>pages/</code> directory and regenerates <code>stew_router_gen.go</code>. This must be rerun after creating or deleting any page or layout.</p>
+                    <p class="text-stone-600"><strong>Watch</strong>: Monitors the <code>pages/</code> directory for Go file additions or removals.</p>
                 </div>
             </div>
 
             <div class="border border-stone-200 rounded-2xl overflow-hidden">
                 <div class="bg-stone-900 px-5 py-3">
-                    <code class="text-amber-400 font-mono font-bold">stew run &lt;command-name&gt;</code>
+                    <code class="text-amber-400 font-mono font-bold">stew run <command-name></code>
                 </div>
                 <div class="p-5 text-sm space-y-2">
-                    <p>Exécute un script défini dans la section <code>commands</code> de <code>.stew.yaml</code>. Charge automatiquement les <code>env_files</code>.</p>
-                    <p class="text-stone-500"><strong>dev</strong> : Lance <code>stew compile --watch</code>, <code>stew generate --watch</code> et <code>air</code> en parallèle avec logs colorés.</p>
-                    <p class="text-stone-500"><strong>build</strong> : Lance séquentiellement compile → generate → <code>go build</code>.</p>
+                    <p>Executes a custom script defined in the <code>commands</code> section of <code>.stew.yaml</code>. Automatically loads environment variables from <code>env_files</code>.</p>
+                    <p class="text-stone-600"><strong>dev</strong>: Runs <code>stew compile --watch</code>, <code>stew generate --watch</code>, and <code>air</code> in parallel with colorized logs.</p>
+                    <p class="text-stone-600"><strong>build</strong>: Sequentially runs compile → generate → <code>go build</code>.</p>
                 </div>
             </div>
 
@@ -62,10 +62,10 @@
                     <code class="text-amber-400 font-mono font-bold">stew clean</code>
                 </div>
                 <div class="p-5 text-sm space-y-2">
-                    <p>Nettoie tous les fichiers générés. Opère en deux phases :</p>
+                    <p>Cleans up all generated files in two phases:</p>
                     <ol class="list-decimal list-inside text-stone-600 space-y-1">
-                        <li><strong>Phase 1</strong> : Lit <code>.stew/compiled.json</code> et supprime exactement les fichiers trackés (Go compilés + <code>.wasm</code>). Supprime le dossier <code>.stew/</code>.</li>
-                        <li><strong>Phase 2</strong> : Applique les patterns de la section <code>clean:</code> de <code>.stew.yaml</code>.</li>
+                        <li><strong>Phase 1</strong>: Reads <code>.stew/compiled.json</code> and deletes exactly the tracked files (compiled Go files + <code>.wasm</code>). It then removes the <code>.stew/</code> directory.</li>
+                        <li><strong>Phase 2</strong>: Applies the patterns defined in the <code>clean:</code> section of <code>.stew.yaml</code>.</li>
                     </ol>
                 </div>
             </div>
@@ -75,7 +75,7 @@
                     <code class="text-amber-400 font-mono font-bold">stew install</code>
                 </div>
                 <div class="p-5 text-sm space-y-2">
-                    <p>Installe les dépendances Go définies dans la section <code>requires:</code> de <code>.stew.yaml</code> via <code>go install</code>. Saute si déjà installé.</p>
+                    <p>Installs Go dependencies defined in the <code>requires:</code> section of <code>.stew.yaml</code> using <code>go install</code>. Skips if already installed.</p>
                 </div>
             </div>
 
@@ -84,7 +84,7 @@
                     <code class="text-amber-400 font-mono font-bold">stew check</code>
                 </div>
                 <div class="p-5 text-sm space-y-2">
-                    <p>Vérifie que toutes les dépendances déclarées dans <code>requires:</code> sont installées et disponibles dans le <code>$PATH</code>.</p>
+                    <p>Verifies that all dependencies declared in <code>requires:</code> are installed and available in the system <code>$PATH</code>.</p>
                 </div>
             </div>
 
@@ -93,17 +93,17 @@
                     <code class="text-amber-400 font-mono font-bold">stew env</code>
                 </div>
                 <div class="p-5 text-sm space-y-2">
-                    <p>Affiche toutes les variables d'environnement chargées depuis les <code>env_files</code> de <code>.stew.yaml</code>.</p>
+                    <p>Displays all environment variables loaded from the <code>env_files</code> specified in <code>.stew.yaml</code>.</p>
                 </div>
             </div>
 
             <div class="border border-stone-200 rounded-2xl overflow-hidden">
                 <div class="bg-stone-900 px-5 py-3">
-                    <code class="text-amber-400 font-mono font-bold">stew exec -- &lt;commande&gt;</code>
+                    <code class="text-amber-400 font-mono font-bold">stew exec -- <commande></code>
                 </div>
                 <div class="p-5 text-sm space-y-2">
-                    <p>Exécute une commande ounce-off avec les variables d'environnement de <code>.stew.yaml</code> chargées.</p>
-                    <p class="text-stone-500">Exemple : <code>stew exec -- go run . -port 9090</code></p>
+                    <p>Executes a one-off command with environment variables from <code>.stew.yaml</code> pre-loaded.</p>
+                    <p class="text-stone-600">Example: <code>stew exec -- go run . -port 9090</code></p>
                 </div>
             </div>
 
@@ -112,12 +112,13 @@
                     <code class="text-amber-400 font-mono font-bold">stew version</code>
                 </div>
                 <div class="p-5 text-sm">
-                    <p>Affiche la version du CLI Stew installée.</p>
+                    <p>Displays the currently installed version of the Stew CLI.</p>
                 </div>
             </div>
 
         </div>
     </section>
 
-    <NavFooter PrevLink="/guide/packages/reference" PrevName="Récapitulatif API" NextLink="/guide/ecosystem/creating" NextName="Créer une librairie" />
+    <NavFooter PrevLink="/guide/packages/reference" PrevName="API Reference" NextLink="/guide/ecosystem/creating" NextName="Creating a Library" />
 </div>
+
