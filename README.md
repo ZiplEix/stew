@@ -111,5 +111,3 @@ Stew files combine the simplicity of HTML with the power of Go.
 📝 **License**
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
-Handcrafted with ❤️ by **ZiplEix** for the Go community.
