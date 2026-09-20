@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: ghcr.io/leroyerbaptiste/stew-doc:latest
+        image: ghcr.io/zipleix/stew-doc:latest
         imagePullPolicy: Always
         ports:
         - name: http
