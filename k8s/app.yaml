@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stew-doc
+  namespace: default
+  labels:
+    app: stew-doc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stew-doc
+  template:
+    metadata:
+      labels:
+        app: stew-doc
+    spec:
+      containers:
+      - name: web
+        image: ghcr.io/leroyerbaptiste/stew-doc:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stew-doc
+  namespace: default
+  labels:
+    app: stew-doc
+spec:
+  type: ClusterIP
+  selector:
+    app: stew-doc
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stew-doc-ingress
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - stew.baptiste.zip
+    secretName: stew-baptiste-zip-tls
+  rules:
+  - host: stew.baptiste.zip
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: stew-doc
+            port:
+              name: http
